@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi Tienda Online</title>
+  <title>Store EGP</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
     header { background: #111; color: white; padding: 20px; text-align: center; }
     .productos { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
-    .producto { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); text-align: center; transition: transform 0.2s; }
+    .producto { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s; }
     .producto:hover { transform: scale(1.05); }
     .producto img { width: 100%; border-radius: 6px; }
     .producto h3 { margin: 10px 0 5px; }
     .producto p { margin: 5px 0; }
-    button { background: #007bff; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+    button { background: #007bff; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
     button:hover { background: #0056b3; }
-    .carrito { position: fixed; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); width: 250px; }
+    .carrito { position: fixed; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 250px; max-height: 80vh; overflow-y: auto; }
     .carrito h3 { margin: 0 0 10px; }
     .carrito ul { list-style: none; padding: 0; margin: 0; }
-    .carrito ul li { margin-bottom: 5px; }
-    .carrito .total { font-weight: bold; margin-top: 10px; }
+    .carrito ul li { margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .carrito .total { font-weight: bold; margin-top: 10px; text-align: right; }
     footer { text-align: center; padding: 15px; background: #222; color: white; }
     .contacto { padding: 20px; text-align: center; }
     .contacto form { max-width: 500px; margin: 0 auto; }
     .contacto input, .contacto textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
     .contacto button { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    .mensaje { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 5px; display: none; }
   </style>
 </head>
 <body>
@@ -54,17 +55,26 @@
       <p>Precio: 16 €</p>
       <button onclick="agregarAlCarrito(this)">Añadir al carrito</button>
     </div>
- <div class="producto">
+
+    <div class="producto" data-nombre="Camiseta Steve Harrington" data-precio="16">
       <img src="camiseta-steve.jpg" alt="Camiseta Steve Harrington">
       <h3>Steve Harrington</h3>
       <p>Precio: 16 €</p>
-      <button onclick="comprar('Camiseta Steve', 16)">Comprar</button>
+      <button onclick="agregarAlCarrito(this)">Añadir al carrito</button>
     </div>
   </section>
 
+  <div class="carrito">
+    <h3>Carrito</h3>
+    <ul id="lista-carrito"></ul>
+    <div class="total">Total: 0 €</div>
+  </div>
+
+  <div class="mensaje" id="mensaje">Producto añadido al carrito</div>
+
   <section class="contacto">
     <h2>Contacto</h2>
-    <form>
+    <form onsubmit="return enviarFormulario()">
       <input type="text" name="nombre" placeholder="Tu nombre" required />
       <input type="email" name="email" placeholder="Tu email" required />
       <textarea name="mensaje" placeholder="Tu mensaje" rows="4" required></textarea>
@@ -73,7 +83,64 @@
   </section>
 
   <footer>
-    <p>© 2026 Mi Tienda Online</p>
+    <p>@storeegp</p>
   </footer>
 
   <script>
+    let carrito = [];
+
+    // Cargar carrito desde localStorage
+    if(localStorage.getItem('carrito')) {
+      carrito = JSON.parse(localStorage.getItem('carrito'));
+      actualizarCarrito();
+    }
+
+    function agregarAlCarrito(boton) {
+      const producto = boton.parentElement;
+      const nombre = producto.dataset.nombre;
+      const precio = parseFloat(producto.dataset.precio);
+
+      const existe = carrito.find(p => p.nombre === nombre);
+      if(existe) {
+        existe.cantidad += 1;
+      } else {
+        carrito.push({ nombre, precio, cantidad: 1 });
+      }
+
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+      actualizarCarrito();
+      mostrarMensaje("Producto añadido al carrito");
+    }
+
+    function actualizarCarrito() {
+      const lista = document.getElementById('lista-carrito');
+      lista.innerHTML = '';
+      let total = 0;
+      carrito.forEach(item => {
+        total += item.precio * item.cantidad;
+        lista.innerHTML += `<li>${item.nombre} x${item.cantidad} - ${item.precio*item.cantidad} € <button onclick="eliminarDelCarrito('${item.nombre}')">X</button></li>`;
+      });
+      document.querySelector('.carrito .total').textContent = `Total: ${total.toFixed(2)} €`;
+    }
+
+    function eliminarDelCarrito(nombre) {
+      carrito = carrito.filter(item => item.nombre !== nombre);
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+      actualizarCarrito();
+    }
+
+    function mostrarMensaje(texto) {
+      const mensaje = document.getElementById('mensaje');
+      mensaje.textContent = texto;
+      mensaje.style.display = 'block';
+      setTimeout(() => { mensaje.style.display = 'none'; }, 2000);
+    }
+
+    function enviarFormulario() {
+      alert("Formulario enviado correctamente.");
+      return false; // Evita recargar la página
+    }
+  </script>
+</body>
+</html>
+
