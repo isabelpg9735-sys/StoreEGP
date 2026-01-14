@@ -1,428 +1,429 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store EGP Profesional</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Store EGP - Pago</title>
 <style>
 :root{
-  --dark:#0f0f0f;
-  --bg:#f3f3f3;
-  --card:#ffffff;
-  --primary:#1d4ed8;
-  --accent:#22c55e;
-  --radius:16px;
+  --dark:#0f0f0f; --bg:#f3f3f3; --card:#ffffff;
+  --primary:#1d4ed8; --accent:#22c55e; --radius:14px;
   --shadow:0 10px 30px rgba(0,0,0,.15);
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+body{background:var(--bg);color:var(--dark);}
 
-/* HEADER */
+/* Header */
 header{
-  background:linear-gradient(135deg,#000,#222);
-  color:white;padding:50px 20px;text-align:center;
+  background:linear-gradient(135deg,#000,#222); color:#fff; text-align:center;
+  padding:48px 16px;
 }
-header h1{margin-bottom:6px;font-size:40px;}
-header p{opacity:.85;margin-bottom:20px;}
+header h1{font-size:34px;margin-bottom:8px}
+header p{opacity:.9;margin-bottom:18px}
 header input{
-  width:100%;max-width:450px;padding:14px 18px;border-radius:999px;border:none;font-size:16px;
+  width:100%;max-width:520px;padding:12px 16px;border-radius:999px;border:none;font-size:15px;
 }
 
-/* PRODUCT GRID */
+/* Productos grid */
 .productos{
-  max-width:1500px;margin:auto;padding:50px 25px;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:35px;
+  max-width:1200px;margin:36px auto;padding:0 18px 60px;
+  display:grid;gap:26px;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
 }
 
-/* PRODUCT CARD */
+/* Card */
 .producto{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  display:flex;flex-direction:column;overflow:hidden;
-  transition:.35s;cursor:pointer;position:relative;
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  overflow:hidden;display:flex;flex-direction:column;transition:.28s;cursor:pointer;position:relative;
 }
-.producto:hover{
-  transform:translateY(-8px);
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-}
-.producto img{
-  width:100%;height:280px;object-fit:contain;background:#fafafa;padding:25px;
-  transition:.4s;
-}
-.producto:hover img{transform:scale(1.05);}
-.info{padding:22px;display:flex;flex-direction:column;flex:1;}
-.badge{
-  background:gold;padding:6px 12px;border-radius:999px;font-size:12px;width:max-content;margin-bottom:10px;
-}
-.info h3{margin:0 0 6px;font-size:20px;}
-.descripcion{font-size:14px;opacity:.8;margin-bottom:12px;}
-.precio{font-size:22px;font-weight:700;margin-bottom:18px;}
-.info button{
-  margin-top:auto;padding:16px;border:none;border-radius:12px;background:var(--primary);
-  color:white;font-size:16px;cursor:pointer;transition:.3s;
-}
-.info button:hover{opacity:.9; transform:scale(1.05);}
+.producto:hover{transform:translateY(-6px)}
+.producto img{width:100%;height:220px;object-fit:contain;background:#fafafa;padding:20px}
+.info{padding:16px;display:flex;flex-direction:column;flex:1}
+.info h3{margin:0 0 8px;font-size:18px}
+.precio{font-weight:700;font-size:18px;margin-bottom:12px}
+.descripcion{font-size:13px;color:#333;margin-bottom:10px}
+.info button{margin-top:auto;padding:12px;border-radius:10px;border:none;background:var(--primary);color:#fff;cursor:pointer}
+.badge{position:absolute;left:12px;top:12px;background:gold;padding:6px 10px;border-radius:999px;font-size:12px}
 
-/* CARRITO LOGO */
+/* Carrito flotante */
 #btnCarrito{
-  position:fixed;bottom:25px;right:25px;width:70px;height:70px;border-radius:50%;
-  background:var(--accent);color:white;font-size:30px;display:flex;
-  align-items:center;justify-content:center;cursor:pointer;z-index:1000;
-  box-shadow:0 5px 20px rgba(0,0,0,.3);transition:.3s;
+  position:fixed;right:20px;bottom:20px;width:68px;height:68px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:26px;z-index:1200;box-shadow:0 8px 28px rgba(0,0,0,.2);cursor:pointer;
 }
-#btnCarrito:hover{transform:scale(1.1);}
-#cantidadCarrito{
-  position:absolute;top:-10px;right:-10px;background:red;color:white;width:22px;height:22px;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;
-}
+#cantidadCarrito{position:absolute;top:-8px;right:-8px;background:#e11;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px}
 
-/* OVERLAY */
-#overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);
-  display:none;z-index:998;
-}
+/* Overlay */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:1100}
 
-/* CARRITO */
+/* Panel carrito */
 #carrito{
-  position:fixed;right:-500px;top:0;width:500px;height:100%;
-  background:white;padding:30px;z-index:999;display:flex;flex-direction:column;
-  transition:.5s;overflow-y:auto;border-left:5px solid var(--accent);
+  position:fixed;right:-520px;top:0;width:520px;height:100%;background:#fff;padding:22px;z-index:1150;
+  box-shadow:-10px 0 40px rgba(0,0,0,.15);transition:.35s;display:flex;flex-direction:column;
 }
-#carrito.abierto{right:0;}
-#lista{flex:1;margin:20px 0;}
-.item{
-  display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;
-}
-.item img{width:50px;height:50px;object-fit:contain;border-radius:10px;margin-right:10px;}
-.item span{flex:1;}
-.item button{
-  background:red;color:white;border:none;padding:4px 7px;border-radius:6px;cursor:pointer;
-}
-.total{font-size:20px;font-weight:bold;margin-bottom:20px;}
-.finalizar{
-  padding:18px;border:none;border-radius:14px;background:var(--primary);
-  color:white;font-size:16px;cursor:pointer;
-}
+#carrito.abierto{right:0}
+#cerrarCarrito{position:absolute;top:12px;right:12px;background:#e11;color:#fff;border:none;border-radius:999px;width:34px;height:34px;cursor:pointer}
+#lista{flex:1;overflow:auto;margin-top:18px}
+.item{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.item img{width:56px;height:56px;object-fit:contain;border-radius:8px}
+.item .meta{flex:1;font-size:14px}
+.item button{background:#e11;color:#fff;border:none;padding:6px 8px;border-radius:8px;cursor:pointer}
+.total{font-weight:700;margin-top:12px;font-size:18px}
 
-/* CERRAR CARRITO */
-#cerrarCarrito{
-  position:absolute;top:15px;right:15px;
-  background:red;color:white;border:none;border-radius:50%;
-  width:30px;height:30px;font-size:18px;cursor:pointer;
-}
-
-/* VENTANA DETALLE */
+/* Detalle modal */
 #detalle{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:340px;background:white;padding:25px;border-radius:16px;
-  box-shadow:0 5px 25px rgba(0,0,0,.3);z-index:1001;display:none;animation:fadeIn .4s;
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:1300;display:none;width:320px;
 }
-#detalle h3{margin-top:0;}
-#detalle button{
-  margin-top:15px;padding:14px;background:var(--accent);color:white;border:none;border-radius:12px;cursor:pointer;width:100%;
-}
-#detalle select{
-  width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ccc;font-size:16px;
-}
+#detalle h3{margin-bottom:8px}
+#detalle select{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;margin-top:8px}
+#detalle button{margin-top:12px;padding:10px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;width:100%}
 
-/* CHECKOUT */
+/* Checkout area */
 #checkout{
-  max-width:450px;margin:50px auto;background:white;padding:25px;border-radius:16px;
-  box-shadow:0 5px 25px rgba(0,0,0,.2);
-  display:none;
+  max-width:720px;margin:30px auto;padding:18px;background:#fff;border-radius:12px;box-shadow:var(--shadow);display:none;
 }
-#checkout input, #checkout select{
-  width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:12px;font-size:15px;
-}
-#checkout button{
-  width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;cursor:pointer;
-  font-size:16px;margin-top:10px;transition:.3s;
-}
-#checkout button:hover{transform:scale(1.03);}
+#checkout h3{margin-bottom:12px}
+#checkout .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#checkout input,#checkout select{width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;margin:6px 0}
+#checkout .full{grid-column:1/3}
+#checkout .info-line{margin:8px 0;font-size:15px}
+#btnPagar{display:inline-block;padding:12px 16px;border-radius:10px;border:none;background:var(--primary);color:#fff;cursor:pointer;margin-top:10px}
 
-/* FOOTER */
-footer p{
-  font-size:12px;opacity:.7;text-align:center;margin-top:50px;
-}
+/* Footer */
+footer{padding:40px 16px;text-align:center}
+footer p{font-size:13px;color:#444;opacity:.8}
 
-/* ANIMACIONES */
-@keyframes fadeIn{
-  from{opacity:0; transform:translate(-50%,-48%) scale(0.95);}
-  to{opacity:1; transform:translate(-50%,-50%) scale(1);}
-}
-
-/* MOBILE */
-@media(max-width:700px){
-  #carrito{width:100%;}
-  #detalle,#checkout{width:90%;}
-  .productos{padding:30px 15px; gap:20px;}
+/* Responsive */
+@media(max-width:720px){
+  .productos{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));padding:18px}
+  #carrito{width:100%;right:-100%}
+  #carrito.abierto{right:0}
+  #detalle{width:92%}
+  #checkout{margin:16px}
 }
 </style>
 </head>
 <body>
 
 <header>
-<h1>Store EGP</h1>
-<p>Aquí encuentras lo que buscas</p>
-<input placeholder="Buscar productos..." oninput="buscar(this.value)">
+  <h1>Store EGP</h1>
+  <p>Aquí encuentras lo que buscas</p>
+  <input placeholder="Buscar productos..." oninput="buscar(this.value)">
 </header>
 
+<!-- carrito botón -->
 <div id="btnCarrito" onclick="abrir()">
-  🛒<span id="cantidadCarrito">0</span>
+  🛒<div id="cantidadCarrito">0</div>
 </div>
 <div id="overlay" onclick="cerrar()"></div>
 
+<!-- productos -->
 <section class="productos">
-
-<!-- PRODUCTOS -->
-<div class="producto" data-nombre="Alejense Gordas" data-precio="12" data-desc="Lo necesario para que no se acerquen 🔥" data-img="camiseta-clash.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-clash.jpg">
-  <div class="info">
-    <h3>Alejense Gordas</h3>
-    <div class="precio">12 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Alejense Gordas" data-precio="12" data-desc="Lo necesario para que no se acerquen 🔥" data-img="camiseta-clash.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-clash.jpg" alt="">
+    <div class="info">
+      <h3>Alejense Gordas</h3>
+      <div class="descripcion">Lo necesario para que no se acerquen 🔥</div>
+      <div class="precio">12 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="South Things" data-precio="16" data-desc="UHHHH referencia 🗣️" data-img="camiseta-south-things.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-south-things.jpg">
-  <div class="info">
-    <h3>South Things</h3>
-    <div class="precio">16 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="South Things" data-precio="16" data-desc="UHHHH referencia 🗣️" data-img="camiseta-south-things.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-south-things.jpg" alt="">
+    <div class="info">
+      <h3>South Things</h3>
+      <div class="descripcion">UHHHH referencia 🗣️</div>
+      <div class="precio">16 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Jhon Pork" data-precio="15" data-desc="¿Alguien me coje el teléfono?" data-img="camiseta-pork.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-pork.jpg">
-  <div class="info">
-    <h3>Jhon Pork</h3>
-    <div class="precio">15 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Jhon Pork" data-precio="15" data-desc="¿Alguien me coje el teléfono?" data-img="camiseta-pork.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-pork.jpg" alt="">
+    <div class="info">
+      <h3>Jhon Pork</h3>
+      <div class="descripcion">¿Alguien me coje el teléfono?</div>
+      <div class="precio">15 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Steve Harrington" data-precio="10" data-desc="El tremendo Stranger Things" data-img="camiseta-steve.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-steve.jpg">
-  <div class="info">
-    <h3>Steve Harrington</h3>
-    <div class="precio">10 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Steve Harrington" data-precio="10" data-desc="El tremendo Stranger Things" data-img="camiseta-steve.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-steve.jpg" alt="">
+    <div class="info">
+      <h3>Steve Harrington</h3>
+      <div class="descripcion">El tremendo Stranger Things</div>
+      <div class="precio">10 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Baby" data-precio="9" data-desc="La niñera de los nenes" data-img="camiseta-baby.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-baby.jpg">
-  <div class="info">
-    <h3>Baby</h3>
-    <div class="precio">9 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Baby" data-precio="9" data-desc="La niñera de los nenes" data-img="camiseta-baby.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-baby.jpg" alt="">
+    <div class="info">
+      <h3>Baby</h3>
+      <div class="descripcion">La niñera de los nenes</div>
+      <div class="precio">9 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Asco" data-precio="16" data-desc="Mensaje directo" data-img="camiseta-asco.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-asco.jpg">
-  <div class="info">
-    <h3>Dais Asco</h3>
-    <div class="precio">16 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Asco" data-precio="16" data-desc="Mensaje directo" data-img="camiseta-asco.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-asco.jpg" alt="">
+    <div class="info">
+      <h3>Dais Asco</h3>
+      <div class="descripcion">Mensaje directo</div>
+      <div class="precio">16 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Drunk" data-precio="15" data-desc="No estarás borracho ¿No?" data-img="camiseta-drunk.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-drunk.jpg">
-  <div class="info">
-    <h3>Drunk</h3>
-    <div class="precio">15 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Drunk" data-precio="15" data-desc="No estarás borracho ¿No?" data-img="camiseta-drunk.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-drunk.jpg" alt="">
+    <div class="info">
+      <h3>Drunk</h3>
+      <div class="descripcion">No estarás borracho ¿No?</div>
+      <div class="precio">15 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Fuerte" data-precio="9" data-desc="Diseño potentemente fuerte" data-img="camiseta-fuerte.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-fuerte.jpg">
-  <div class="info">
-    <h3>Fuerte</h3>
-    <div class="precio">9 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Fuerte" data-precio="9" data-desc="Diseño potentemente fuerte" data-img="camiseta-fuerte.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-fuerte.jpg" alt="">
+    <div class="info">
+      <h3>Fuerte</h3>
+      <div class="descripcion">Diseño potentemente fuerte</div>
+      <div class="precio">9 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
 
-<div class="producto" data-nombre="Raro" data-precio="14" data-desc="Vaya facto" data-img="camiseta-raro.jpg" onclick="abrirDetalle(this)">
-  <img src="camiseta-raro.jpg">
-  <div class="info">
-    <span class="badge">DESTACADO</span>
-    <h3>Raro</h3>
-    <div class="precio">14 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
+  <div class="producto" data-nombre="Raro" data-precio="14" data-desc="Vaya facto" data-img="camiseta-raro.jpg" onclick="abrirDetalle(this)">
+    <img src="camiseta-raro.jpg" alt="">
+    <div class="info">
+      <span class="badge">DESTACADO</span>
+      <h3>Raro</h3>
+      <div class="descripcion">Vaya facto</div>
+      <div class="precio">14 €</div>
+      <button onclick="abrirDetalle(this)">Ver detalle</button>
+    </div>
   </div>
-</div>
-
 </section>
 
-<!-- VENTANA DETALLE -->
+<!-- detalle modal -->
 <div id="detalle">
-<h3 id="dNombre"></h3>
-<p id="dDesc"></p>
-<div class="precio" id="dPrecio"></div>
-<label for="talla">Selecciona talla:</label>
-<select id="talla">
-<option value="XS">XS</option>
-<option value="S">S</option>
-<option value="M">M</option>
-<option value="L">L</option>
-<option value="XL">XL</option>
-</select>
-<button onclick="addDetalle()">Añadir al carrito</button>
+  <h3 id="dNombre"></h3>
+  <p id="dDesc"></p>
+  <div id="dPrecio" style="font-weight:700;margin-top:6px"></div>
+  <label style="display:block;margin-top:10px">Selecciona talla</label>
+  <select id="talla">
+    <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+  </select>
+  <button onclick="addDetalle()">Añadir al carrito</button>
 </div>
 
-<!-- CARRITO -->
+<!-- carrito panel -->
 <div id="carrito">
-<button id="cerrarCarrito" onclick="cerrar()">✖</button>
-<h2>Tu carrito</h2>
-<div id="lista"></div>
-<div class="total">Total: <span id="total">0</span> €</div>
-<button onclick="mostrarCheckout()">Proceder al pago</button>
+  <button id="cerrarCarrito" onclick="cerrar()">✖</button>
+  <h2>Tu carrito</h2>
+  <div id="lista"></div>
+  <div class="total">Total: <span id="total">0</span> €</div>
+  <button onclick="mostrarCheckout()" style="margin-top:12px;padding:10px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer">Proceder al pago</button>
 </div>
 
-<!-- CHECKOUT -->
+<!-- checkout -->
 <div id="checkout">
-<h3>Checkout</h3>
-<input type="text" id="nombre" placeholder="Nombre completo" required>
-<input type="email" id="email" placeholder="Correo electrónico" required>
-<input type="text" id="direccion" placeholder="Dirección completa" required>
-<select id="pais" onchange="calcularEnvio()">
-  <option value="España">España</option>
-  <option value="Europa">Europa</option>
-  <option value="Resto">Resto del mundo</option>
-</select>
-<p>Gastos de envío estimados: <span id="precioEnvio">0</span> €</p>
-<p>Total final: <span id="totalFinal">0</span> €</p>
-<div id="paypal-button-container"></div>
-<button onclick="cerrarCheckout()">Cancelar</button>
+  <h3>Checkout</h3>
+  <div class="row">
+    <input id="nombre" placeholder="Nombre completo" class="full">
+  </div>
+  <div class="row" style="margin-top:6px">
+    <input id="email" type="email" placeholder="Correo electrónico">
+    <input id="direccion" placeholder="Dirección completa">
+  </div>
+  <div style="margin-top:8px">
+    <label>Pais / Zona</label>
+    <select id="pais" onchange="calcularEnvio()">
+      <option>España</option>
+      <option>Europa</option>
+      <option>Resto</option>
+    </select>
+  </div>
+
+  <div class="info-line">Gastos de envío estimados: <strong><span id="precioEnvio">0</span> €</strong></div>
+  <div class="info-line">Total final: <strong><span id="totalFinal">0</span> €</strong></div>
+
+  <button id="btnPagar" onclick="scrollPayPal()">Pagar con PayPal</button>
+
+  <div id="paypal-button-container" style="margin-top:10px"></div>
+
+  <div style="margin-top:12px">
+    <button onclick="cerrarCheckout()" style="padding:8px 12px;border-radius:8px;border:none;background:#e11;color:#fff;cursor:pointer">Cancelar</button>
+  </div>
 </div>
 
 <footer>
-<p>Envíos a casi todo el mundo. El coste exacto se calcula en plataformas profesionales con Correos Express.</p>
+  <p>Envíos a casi todo el mundo. El coste exacto se calcula en plataformas profesionales con Correos Express.</p>
 </footer>
 
+<!-- PayPal SDK (sustituye TU_CLIENT_ID) -->
 <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=EUR"></script>
+
 <script>
-let carrito = JSON.parse(localStorage.getItem("carrito"))||[];
-let currentProducto=null;
-const lista=document.getElementById("lista");
-const total=document.getElementById("total");
-const cantidadCarrito=document.getElementById("cantidadCarrito");
-let envio=0;
+/* estado */
+let carrito = JSON.parse(localStorage.getItem('carrito'))||[];
+let currentProducto = null;
+let envio = 0;
 
-// ABRIR/CERRAR
-function abrir(){document.getElementById("carrito").classList.add("abierto");document.getElementById("overlay").classList.add("activo");}
+const lista = document.getElementById('lista');
+const totalSpan = document.getElementById('total');
+const cantidadCarrito = document.getElementById('cantidadCarrito');
+const precioEnvioEl = document.getElementById('precioEnvio');
+const totalFinalEl = document.getElementById('totalFinal');
+
+/* abrir/cerrar */
+function abrir(){
+  document.getElementById('carrito').classList.add('abierto');
+  document.getElementById('overlay').style.display='block';
+}
 function cerrar(){
-  document.getElementById("carrito").classList.remove("abierto");
-  document.getElementById("overlay").classList.remove("activo");
-  closeDetalle(); cerrarCheckout();
+  document.getElementById('carrito').classList.remove('abierto');
+  document.getElementById('overlay').style.display='none';
+  closeDetalle();
+  cerrarCheckout();
 }
 
-// RENDER CARRITO
-function save(){localStorage.setItem("carrito",JSON.stringify(carrito)); render();}
+/* render carrito */
+function save(){ localStorage.setItem('carrito', JSON.stringify(carrito)); render(); }
 function render(){
- lista.innerHTML="";
- let t=0;
- carrito.forEach((i,idx)=>{
-  t+=i.pr*i.c;
-  lista.innerHTML+=`
-   <div class="item">
-    <img src="${i.img}" alt="${i.n}"/>
-    <span>${i.n} (${i.talla}) x${i.c}</span>
-    <span>${i.pr*i.c}€</span>
-    <button onclick="eliminar(${idx})">X</button>
-   </div>`;
- });
- total.textContent=t;
- cantidadCarrito.textContent=carrito.length;
+  lista.innerHTML = '';
+  let t = 0;
+  carrito.forEach((it, idx) => {
+    t += it.pr * it.c;
+    const html = `
+      <div class="item">
+        <img src="${it.img}" alt="${it.n}">
+        <div class="meta">${it.n} <br><small>${it.talla} ×${it.c}</small></div>
+        <div style="min-width:70px;text-align:right">${(it.pr*it.c).toFixed(2)}€</div>
+        <button onclick="eliminar(${idx})">X</button>
+      </div>`;
+    lista.insertAdjacentHTML('beforeend', html);
+  });
+  totalSpan.textContent = t.toFixed(2);
+  cantidadCarrito.textContent = carrito.length;
+  calcularEnvio(); // actualiza totalFinal
 }
 
-// ELIMINAR ITEM
-function eliminar(idx){carrito.splice(idx,1); save();}
+/* eliminar item */
+function eliminar(idx){ carrito.splice(idx,1); save(); }
 
-// BUSCAR
-function buscar(t){
-  t=t.toLowerCase();
-  document.querySelectorAll(".producto").forEach(p=>{
-    const n=p.dataset.nombre.toLowerCase();
-    p.style.display=n.includes(t)?"flex":"none";
+/* buscar */
+function buscar(q){
+  q = q.toLowerCase();
+  document.querySelectorAll('.producto').forEach(p=>{
+    const name = p.dataset.nombre.toLowerCase();
+    p.style.display = name.includes(q) ? 'block' : 'none';
   });
 }
 
-// DETALLE
-function abrirDetalle(btn){
-  const p=btn.closest(".producto");
+/* detalle producto */
+function abrirDetalle(el){
+  // el puede ser el elemento o el botón; resuelve al producto
+  const p = el.closest ? el.closest('.producto') : document.querySelector(el);
   currentProducto = p;
-  document.getElementById("dNombre").textContent=p.dataset.nombre;
-  document.getElementById("dDesc").textContent=p.dataset.desc;
-  document.getElementById("dPrecio").textContent=p.dataset.precio + " €";
-  document.getElementById("detalle").style.display="block";
-  document.getElementById("overlay").classList.add("activo");
+  document.getElementById('dNombre').textContent = p.dataset.nombre;
+  document.getElementById('dDesc').textContent = p.dataset.desc || '';
+  document.getElementById('dPrecio').textContent = p.dataset.precio + ' €';
+  document.getElementById('detalle').style.display = 'block';
+  document.getElementById('overlay').style.display='block';
 }
-function closeDetalle(){document.getElementById("detalle").style.display="none";}
+function closeDetalle(){
+  document.getElementById('detalle').style.display = 'none';
+}
+
+/* añadir desde detalle */
 function addDetalle(){
-  const n=currentProducto.dataset.nombre;
-  const pr=+currentProducto.dataset.precio;
-  const img=currentProducto.dataset.img;
-  const talla=document.getElementById("talla").value;
+  const n = currentProducto.dataset.nombre;
+  const pr = +currentProducto.dataset.precio;
+  const img = currentProducto.dataset.img;
+  const talla = document.getElementById('talla').value;
   carrito.push({n,pr,talla,c:1,img});
   save();
   closeDetalle();
   abrir();
 }
 
-// CHECKOUT
+/* checkout */
 function mostrarCheckout(){
-  document.getElementById("checkout").style.display="block";
-  document.getElementById("carrito").classList.remove("abierto");
-  document.getElementById("overlay").classList.add("activo");
+  // si carrito vacío, no abrir
+  if(carrito.length === 0){ alert('Tu carrito está vacío'); return; }
+  document.getElementById('checkout').style.display = 'block';
+  document.getElementById('carrito').classList.remove('abierto');
+  document.getElementById('overlay').style.display='block';
+  // scroll hasta checkout
+  setTimeout(()=> document.getElementById('checkout').scrollIntoView({behavior:'smooth',block:'center'}), 80);
   calcularEnvio();
 }
 function cerrarCheckout(){
-  document.getElementById("checkout").style.display="none";
-  document.getElementById("overlay").classList.remove("activo");
+  document.getElementById('checkout').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
 }
 
-// CALCULAR ENVIO ESTIMADO
+/* calcular envio estimado */
 function calcularEnvio(){
-  const pais=document.getElementById("pais").value;
-  if(pais==="España") envio=5;
-  else if(pais==="Europa") envio=12;
-  else envio=20;
-  document.getElementById("precioEnvio").textContent=envio;
-  let totalProductos = carrito.reduce((sum,i)=>sum+i.pr*i.c,0);
-  document.getElementById("totalFinal").textContent=totalProductos+envio;
+  const pais = document.getElementById('pais').value || 'España';
+  if(pais === 'España') envio = 5;
+  else if(pais === 'Europa') envio = 12;
+  else envio = 20;
+  precioEnvioEl.textContent = envio.toFixed(2);
+  const productos = carrito.reduce((s, i) => s + i.pr * i.c, 0);
+  totalFinalEl.textContent = (productos + envio).toFixed(2);
 }
 
-// PAYPAL
-paypal.Buttons({
-  createOrder: function(data, actions) {
-    let totalProductos = carrito.reduce((sum,i)=>sum+i.pr*i.c,0);
-    let totalFinal = totalProductos + envio;
-    return actions.order.create({
-      purchase_units: [{
-        amount: { value: totalFinal.toFixed(2) }
-      }]
-    });
-  },
-  onApprove: function(data, actions) {
-    return actions.order.capture().then(function(details) {
-      alert('Pago completado. Gracias, ' + details.payer.name.given_name + '!');
-      carrito=[]; save(); cerrarCheckout();
-    });
-  }
-}).render('#paypal-button-container');
+/* Scroll al contenedor de PayPal */
+function scrollPayPal(){
+  const el = document.getElementById('paypal-button-container');
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
 
+/* Iniciar PayPal Buttons (solo una vez) */
+function initPayPal(){
+  if (!window.paypal) {
+    console.error('PayPal SDK no cargado. Sustituye TU_CLIENT_ID en el script.');
+    return;
+  }
+
+  paypal.Buttons({
+    style:{layout:'vertical',color:'gold',shape:'rect',label:'paypal'},
+    createOrder: function(data, actions) {
+      const totalProductos = carrito.reduce((s,i)=>s+i.pr*i.c,0);
+      const totalFinal = (totalProductos + envio).toFixed(2);
+      return actions.order.create({
+        purchase_units: [{ amount: { value: totalFinal.toString(), currency_code: 'EUR' } }]
+      });
+    },
+    onApprove: function(data, actions) {
+      return actions.order.capture().then(function(details) {
+        // aquí podrías enviar pedido a tu backend o notificar por email
+        alert('Pago completado. Gracias, ' + (details.payer.name && details.payer.name.given_name ? details.payer.name.given_name : '') + '!');
+        carrito = []; save();
+        cerrarCheckout();
+      });
+    },
+    onError: function(err){
+      console.error(err);
+      alert('Error en el pago. Intenta de nuevo.');
+    }
+  }).render('#paypal-button-container');
+}
+
+/* inicialización */
 render();
+initPayPal();
 </script>
 </body>
 </html>
-
-
 
 
