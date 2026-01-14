@@ -156,7 +156,7 @@ header input{
 
 <header>
 <h1>Store EGP</h1>
-<p>Ropa con personalidad propia</p>
+<p>Aquí encuentras lo que buscas</p>
 <input placeholder="Buscar productos..." oninput="buscar(this.value)">
 </header>
 
@@ -167,12 +167,11 @@ header input{
 
 <section class="productos">
 
-<!-- PRODUCTOS: los 9 originales -->
-<!-- Ejemplo de un producto -->
+<!-- PRODUCTOS -->
+
 <div class="producto" data-nombre="Alejense Gordas" data-precio="12" data-desc="Lo necesario para que no se acerquen 🔥" data-img="camiseta-clash.jpg">
 <img src="camiseta-clash.jpg">
 <div class="info">
-<span class="badge">DESTACADO</span>
 <h3>Alejense Gordas</h3>
 <p class="descripcion">Lo necesario para que no se acerquen 🔥</p>
 <div class="precio">12 €</div>
@@ -180,7 +179,86 @@ header input{
 </div>
 </div>
 
-<!-- Repite los 8 restantes igual que antes, cambiando datos -->
+<div class="producto" data-nombre="South Things" data-precio="16" data-desc="UHHHH referencia 🗣️" data-img="camiseta-south-things.jpg">
+<img src="camiseta-south-things.jpg">
+<div class="info">
+<h3>South Things</h3>
+<p class="descripcion">UHHHH referencia 🗣️</p>
+<div class="precio">16 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Jhon Pork" data-precio="15" data-desc="¿Alguien me coje el teléfono?" data-img="camiseta-pork.jpg">
+<img src="camiseta-pork.jpg">
+<div class="info">
+<h3>Jhon Pork</h3>
+<p class="descripcion">¿Alguien me coje el teléfono?</p>
+<div class="precio">15 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Steve Harrington" data-precio="10" data-desc="El tremendo Stranger Things" data-img="camiseta-steve.jpg">
+<img src="camiseta-steve.jpg">
+<div class="info">
+<h3>Steve Harrington</h3>
+<p class="descripcion">El tremendo Stranger Things</p>
+<div class="precio">10 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Baby" data-precio="9" data-desc="La niñera de los nenes" data-img="camiseta-baby.jpg">
+<img src="camiseta-baby.jpg">
+<div class="info">
+<h3>Baby</h3>
+<p class="descripcion">La niñera de los nenes</p>
+<div class="precio">9 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Asco" data-precio="16" data-desc="Mensaje directo" data-img="camiseta-asco.jpg">
+<img src="camiseta-asco.jpg">
+<div class="info">
+<h3>Dais Asco</h3>
+<p class="descripcion">Mensaje directo</p>
+<div class="precio">16 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Drunk" data-precio="15" data-desc="No estarás borracho ¿No?" data-img="camiseta-drunk.jpg">
+<img src="camiseta-drunk.jpg">
+<div class="info">
+<h3>Drunk</h3>
+<p class="descripcion">No estarás borracho ¿No?</p>
+<div class="precio">15 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Fuerte" data-precio="9" data-desc="Diseño potentemente fuerte" data-img="camiseta-fuerte.jpg">
+<img src="camiseta-fuerte.jpg">
+<div class="info">
+<h3>Fuerte</h3>
+<p class="descripcion">Diseño potentemente fuerte</p>
+<div class="precio">9 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
+
+<div class="producto" data-nombre="Raro" data-precio="14" data-desc="Vaya facto" data-img="camiseta-raro.jpg">
+<img src="camiseta-raro.jpg">
+<div class="info">
+<span class="badge">DESTACADO</span>
+<h3>Raro</h3>
+<p class="descripcion">Vaya facto</p>
+<div class="precio">14 €</div>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
+</div>
+</div>
 
 </section>
 
@@ -291,3 +369,4 @@ render();
 </script>
 </body>
 </html>
+
