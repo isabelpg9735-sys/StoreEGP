@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store EGP</title>
+<title>Store EGP Mejorada</title>
 
 <style>
 :root{
@@ -42,7 +42,7 @@ header input{
   font-size:16px;
 }
 
-/* GRID */
+/* GRID PRODUCTOS */
 .productos{
   max-width:1500px;
   margin:auto;
@@ -52,7 +52,7 @@ header input{
   gap:35px;
 }
 
-/* CARD */
+/* CARD PRODUCTO */
 .producto{
   background:var(--card);
   border-radius:var(--radius);
@@ -62,12 +62,12 @@ header input{
   overflow:hidden;
   transition:.35s;
   cursor:pointer;
+  position:relative;
 }
 .producto:hover{
   transform:translateY(-10px);
   box-shadow:0 30px 60px rgba(0,0,0,.2);
 }
-
 .producto img{
   width:100%;
   height:280px;
@@ -75,14 +75,12 @@ header input{
   background:#fafafa;
   padding:25px;
 }
-
 .info{
   padding:22px;
   display:flex;
   flex-direction:column;
   flex:1;
 }
-
 .badge{
   background:gold;
   padding:6px 12px;
@@ -91,24 +89,20 @@ header input{
   width:max-content;
   margin-bottom:10px;
 }
-
 .info h3{
   margin:0 0 6px;
   font-size:20px;
 }
-
 .descripcion{
   font-size:14px;
   opacity:.8;
   margin-bottom:12px;
 }
-
 .precio{
   font-size:22px;
   font-weight:700;
   margin-bottom:18px;
 }
-
 .info button{
   margin-top:auto;
   padding:16px;
@@ -118,10 +112,11 @@ header input{
   color:white;
   font-size:16px;
   cursor:pointer;
+  transition:.3s;
 }
-.info button:hover{opacity:.9}
+.info button:hover{opacity:.9; transform:scale(1.05);}
 
-/* BOTÓN CARRITO */
+/* CARRITO LOGO */
 #btnCarrito{
   position:fixed;
   bottom:25px;
@@ -137,7 +132,10 @@ header input{
   justify-content:center;
   cursor:pointer;
   z-index:1000;
+  box-shadow:0 5px 15px rgba(0,0,0,.3);
+  transition:.3s;
 }
+#btnCarrito:hover{transform:scale(1.1);}
 
 /* OVERLAY */
 #overlay{
@@ -151,9 +149,9 @@ header input{
 /* CARRITO */
 #carrito{
   position:fixed;
-  right:-440px;
+  right:-500px;
   top:0;
-  width:440px;
+  width:500px;
   height:100%;
   background:white;
   padding:30px;
@@ -162,28 +160,27 @@ header input{
   flex-direction:column;
   transition:.5s;
   overflow-y:auto;
+  border-left:5px solid var(--accent);
 }
 #carrito.abierto{right:0}
 #overlay.activo{display:block}
-
-#lista{
-  flex:1;
-  margin:20px 0;
-}
-
+#lista{flex:1;margin:20px 0;}
 .item{
   display:flex;
   justify-content:space-between;
   margin-bottom:10px;
   font-size:14px;
+  align-items:center;
 }
-
+.item button{
+  background:red;color:white;border:none;padding:2px 6px;border-radius:6px;cursor:pointer;
+  margin-left:5px;
+}
 .total{
   font-size:20px;
   font-weight:bold;
   margin-bottom:20px;
 }
-
 .finalizar{
   padding:18px;
   border:none;
@@ -200,38 +197,57 @@ header input{
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:300px;
+  width:320px;
   background:white;
-  padding:20px;
+  padding:25px;
   border-radius:16px;
   box-shadow:0 5px 25px rgba(0,0,0,.3);
   z-index:1001;
   display:none;
+  animation:fadeIn .4s;
 }
 #detalle h3{margin-top:0;}
-#detalle button{margin-top:10px;padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;cursor:pointer;}
-#detalle select{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ccc;}
+#detalle button{
+  margin-top:15px;padding:14px;background:var(--accent);color:white;border:none;border-radius:12px;cursor:pointer;
+  width:100%;
+}
+#detalle select{
+  width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ccc;
+  font-size:16px;
+}
 
 /* FORMULARIO CONSULTA */
 #consulta{
-  max-width:400px;
-  margin:40px auto;
+  max-width:450px;
+  margin:60px auto;
   background:white;
-  padding:20px;
+  padding:25px;
   border-radius:16px;
   box-shadow:0 5px 25px rgba(0,0,0,.2);
 }
 #consulta input,#consulta textarea{
-  width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:10px;
+  width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:12px;
+  font-size:15px;
 }
 #consulta button{
   width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;cursor:pointer;
+  font-size:16px;
+  margin-top:10px;
+  transition:.3s;
+}
+#consulta button:hover{transform:scale(1.03);}
+
+/* ANIMACIONES */
+@keyframes fadeIn{
+  from{opacity:0; transform:translate(-50%,-48%) scale(0.95);}
+  to{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
 /* MOBILE */
-@media(max-width:650px){
-  #carrito{width:100%}
-  #detalle{width:90%}
+@media(max-width:700px){
+  #carrito{width:100%;}
+  #detalle{width:90%;}
+  .productos{padding:30px 15px; gap:20px;}
 }
 </style>
 </head>
@@ -244,12 +260,12 @@ header input{
 <input placeholder="Buscar productos..." oninput="buscar(this.value)">
 </header>
 
-<div id="btnCarrito" onclick="abrir()">🛒</div>
+<div id="btnCarrito" onclick="abrir()">🛒<span id="cantidadCarrito" style="position:absolute;top:-10px;right:-10px;background:red;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">0</span></div>
 <div id="overlay" onclick="cerrar()"></div>
 
 <section class="productos">
 
-<!-- PRODUCTOS EXISTENTES -->
+<!-- PRODUCTOS (los mismos 9 que tenías) -->
 <div class="producto" data-nombre="Alejense Gordas" data-precio="12" data-desc="Lo necesario para que no se acerquen 🔥" data-img="camiseta-clash.jpg">
 <img src="camiseta-clash.jpg">
 <div class="info">
@@ -381,6 +397,7 @@ header input{
 </form>
 
 <script>
+// Carrito
 let carrito = JSON.parse(localStorage.getItem("carrito"))||[];
 let currentProducto=null;
 
@@ -389,9 +406,28 @@ const total=document.getElementById("total");
 const pedido=document.getElementById("pedido");
 const carritoDiv=document.getElementById("carrito");
 const overlay=document.getElementById("overlay");
+const cantidadCarrito=document.getElementById("cantidadCarrito");
 
+// Funciones carrito
 function abrir(){carritoDiv.classList.add("abierto"); overlay.classList.add("activo")}
 function cerrar(){carritoDiv.classList.remove("abierto"); overlay.classList.remove("activo"); closeDetalle();}
+function save(){localStorage.setItem("carrito",JSON.stringify(carrito)); render();}
+function render(){
+ lista.innerHTML="";
+ let t=0;
+ carrito.forEach((i,idx)=>{
+  t+=i.pr*i.c;
+  lista.innerHTML+=`
+   <div class="item">
+    <span>${i.n} (${i.talla}) x${i.c}</span>
+    <span>${i.pr*i.c}€ <button onclick="eliminar(${idx})">X</button></span>
+   </div>`;
+ });
+ total.textContent=t;
+ pedido.value=JSON.stringify(carrito);
+ cantidadCarrito.textContent=carrito.length;
+}
+function eliminar(idx){carrito.splice(idx,1);save();}
 
 // BUSCAR
 function buscar(t){
@@ -402,7 +438,7 @@ function buscar(t){
   });
 }
 
-// DETALLE PRODUCTO
+// VENTANA DETALLE
 function abrirDetalle(btn){
   const p = btn.closest(".producto");
   currentProducto = p;
@@ -412,9 +448,7 @@ function abrirDetalle(btn){
   document.getElementById("detalle").style.display="block";
   overlay.classList.add("activo");
 }
-function closeDetalle(){
-  document.getElementById("detalle").style.display="none";
-}
+function closeDetalle(){document.getElementById("detalle").style.display="none";}
 
 // AÑADIR AL CARRITO DESDE DETALLE
 function addDetalle(){
@@ -427,40 +461,8 @@ function addDetalle(){
   abrir();
 }
 
-// AÑADIR DIRECTO DESDE BOTÓN (sin talla)
-function add(btn){
- const p=btn.closest(".producto");
- const n=p.dataset.nombre;
- const pr=+p.dataset.precio;
- carrito.push({n,pr,talla:"M",c:1});
- save();
- abrir();
-}
-
-// GUARDAR Y RENDERIZAR
-function save(){
- localStorage.setItem("carrito",JSON.stringify(carrito));
- render();
-}
-
-function render(){
- lista.innerHTML="";
- let t=0;
- carrito.forEach((i,idx)=>{
-  t+=i.pr*i.c;
-  lista.innerHTML+=`
-   <div class="item">
-    <span>${i.n} (${i.talla}) x${i.c}</span>
-    <span>${i.pr*i.c}€</span>
-   </div>`;
- });
- total.textContent=t;
- pedido.value=JSON.stringify(carrito);
-}
-
 render();
 </script>
-
 </body>
 </html>
 
