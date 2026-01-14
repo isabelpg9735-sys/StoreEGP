@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Store EGP</title>
+  <title>Mi Tienda Online</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
     header { background: #111; color: white; padding: 20px; text-align: center; }
@@ -19,57 +19,43 @@
     .contacto form { max-width: 500px; margin: 0 auto; }
     .contacto input, .contacto textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
     .contacto button { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    .carrito { position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
+    .carrito h3 { margin: 0 0 10px; }
+    .carrito ul { list-style: none; padding: 0; margin: 0; }
+    .carrito ul li { margin-bottom: 5px; }
+    .carrito .total { font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Store EGP</h1>
+    <h1>Mi Tienda Online</h1>
     <p>Encuentra los mejores productos aquí</p>
   </header>
 
   <section class="productos">
-    <div class="producto">
+    <div class="producto" data-nombre="Camiseta Alejense" data-precio="12">
       <img src="camiseta-clash.jpg" alt="Camiseta Clash">
       <h3>Alejense Gordas</h3>
       <p>Precio: 12 €</p>
-      <button onclick="comprar('Camiseta Alejense', 12)">Comprar</button>
+      <button onclick="agregarAlCarrito(this)">Comprar</button>
     </div>
 
-    <div class="producto">
+    <div class="producto" data-nombre="Camiseta South Things" data-precio="17">
       <img src="camiseta-south-things.jpg" alt="Camiseta South Things">
       <h3>South Things</h3>
       <p>Precio: 17 €</p>
-      <button onclick="comprar('Camiseta South Things', 17)">Comprar</button>
+      <button onclick="agregarAlCarrito(this)">Comprar</button>
     </div>
 
-    <div class="producto">
+    <div class="producto" data-nombre="Camiseta Pork" data-precio="16">
       <img src="camiseta-pork.jpg" alt="Camiseta Jhon Pork">
       <h3>Jhon Pork</h3>
       <p>Precio: 16 €</p>
-      <button onclick="comprar('Camiseta Pork', 16)">Comprar</button>
+      <button onclick="agregarAlCarrito(this)">Comprar</button>
     </div>
 
-    <div class="producto">
+    <div class="producto" data-nombre="Camiseta Steve" data-precio="16">
       <img src="camiseta-steve.jpg" alt="Camiseta Steve Harrington">
       <h3>Steve Harrington</h3>
-      <p>Precio: 16 €</p>
-      <button onclick="comprar('Camiseta Steve', 16)">Comprar</button>
-    </div>
-  </section>
+      <p>Precio:
 
-  <section class="contacto">
-    <h2>Contacto</h2>
-    <form>
-      <input type="text" name="nombre" placeholder="Tu nombre" required />
-      <input type="email" name="email" placeholder="Tu email" required />
-      <textarea name="mensaje" placeholder="Tu mensaje" rows="4" required></textarea>
-      <button type="submit">Enviar</button>
-    </form>
-  </section>
-
-  <footer>
-    <p>© 2026 Mi Tienda Online</p>
-  </footer>
-
-  <script>
-    function
