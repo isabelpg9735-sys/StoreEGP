@@ -6,171 +6,237 @@
 <title>Store EGP</title>
 
 <style>
+:root{
+  --dark:#111;
+  --light:#f4f4f4;
+  --primary:#2563eb;
+  --success:#22c55e;
+  --radius:12px;
+}
+
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:#f4f4f4;
+  background:var(--light);
+  color:#111;
 }
 
 /* HEADER */
 header{
-  background:#111;
+  background:linear-gradient(135deg,#000,#222);
   color:white;
-  padding:30px 20px;
+  padding:40px 20px;
   text-align:center;
 }
+header h1{margin:0;font-size:36px}
+header p{opacity:.85}
 header input{
-  margin-top:15px;
-  padding:12px;
+  margin-top:20px;
+  padding:14px;
   width:100%;
-  max-width:400px;
-  border-radius:6px;
+  max-width:420px;
+  border-radius:var(--radius);
   border:none;
+  font-size:16px;
+}
+
+/* SECCIONES */
+section{
+  max-width:1400px;
+  margin:auto;
+  padding:40px 20px;
 }
 
 /* GRID */
 .productos{
-  max-width:1400px;
-  margin:auto;
-  padding:30px 20px;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-  gap:25px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:30px;
 }
 
 /* CARD */
 .producto{
   background:white;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  border-radius:var(--radius);
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
   display:flex;
   flex-direction:column;
   transition:.3s;
 }
-.producto:hover{transform:translateY(-6px)}
+.producto:hover{
+  transform:translateY(-6px);
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+}
 
 .producto img{
   width:100%;
-  height:220px;
+  height:240px;
   object-fit:contain;
   background:#fafafa;
-  padding:15px;
+  padding:20px;
 }
 
 .info{
-  padding:15px;
+  padding:18px;
   display:flex;
   flex-direction:column;
   flex:1;
 }
 
-.info h3{margin:5px 0}
-.precio{
-  font-size:18px;
-  font-weight:bold;
+.badge{
+  background:gold;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  width:max-content;
+  margin-bottom:8px;
+}
+
+.info h3{margin:0 0 6px}
+.descripcion{
+  font-size:14px;
+  opacity:.8;
   margin-bottom:10px;
 }
 
-.badge{
-  background:gold;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:12px;
-  width:max-content;
-  margin-bottom:6px;
+.precio{
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:14px;
 }
 
 .info button{
   margin-top:auto;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:6px;
-  background:#007bff;
+  border-radius:10px;
+  background:var(--primary);
   color:white;
   cursor:pointer;
+  font-size:15px;
 }
-.info button:hover{background:#0056b3}
+.info button:hover{opacity:.9}
 
 /* PLACEHOLDER */
 .placeholder{
-  background:#ddd;
+  background:#e5e5e5;
   border:3px dashed #aaa;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   text-align:center;
   font-weight:bold;
 }
 
-/* CARRITO */
+/* BOTÓN CARRITO */
 #btnCarrito{
   position:fixed;
-  bottom:20px;
-  right:20px;
-  width:60px;
-  height:60px;
+  bottom:25px;
+  right:25px;
+  width:65px;
+  height:65px;
   border-radius:50%;
-  background:#28a745;
+  background:var(--success);
   color:white;
-  font-size:26px;
+  font-size:28px;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
+  z-index:1000;
 }
 
+/* OVERLAY */
 #overlay{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.5);
   display:none;
+  z-index:998;
 }
 
+/* CARRITO */
 #carrito{
   position:fixed;
-  right:-350px;
+  right:-420px;
   top:0;
-  width:350px;
+  width:420px;
   height:100%;
   background:white;
-  padding:20px;
+  padding:25px;
+  z-index:999;
+  display:flex;
+  flex-direction:column;
   transition:.4s;
 }
 #carrito.abierto{right:0}
 #overlay.activo{display:block}
 
+#lista{
+  flex:1;
+  overflow:auto;
+  margin:15px 0;
+}
+
 .item{
   display:flex;
   justify-content:space-between;
-  margin-bottom:8px;
+  align-items:center;
+  margin-bottom:10px;
   font-size:14px;
+}
+
+.item button{
+  background:red;
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
 }
 
 .total{
   font-weight:bold;
-  margin:15px 0;
+  font-size:18px;
+  margin-bottom:15px;
+}
+
+#carrito button.finalizar{
+  padding:16px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:white;
+  font-size:16px;
+}
+
+/* INFO */
+.info-extra{
+  background:white;
+  border-radius:var(--radius);
+  padding:30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.info-box{
+  text-align:center;
+  padding:20px;
 }
 
 /* CONTACTO */
 .contacto{
   background:white;
+  border-radius:var(--radius);
   padding:30px;
-  margin:40px auto;
-  max-width:500px;
-  border-radius:10px;
+  max-width:600px;
+  margin:auto;
 }
 .contacto input,.contacto textarea{
   width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-.contacto button{
   padding:12px;
-  width:100%;
-  border:none;
-  background:#28a745;
-  color:white;
-  border-radius:6px;
+  margin:8px 0;
 }
 
 /* MOBILE */
@@ -184,7 +250,7 @@ header input{
 
 <header>
 <h1>Store EGP</h1>
-<p>Encuentra los mejores productos</p>
+<p>Ropa y productos exclusivos</p>
 <input placeholder="Buscar productos..." oninput="buscar(this.value)">
 </header>
 
@@ -193,12 +259,13 @@ header input{
 
 <section class="productos">
 
-<!-- PRODUCTOS ORIGINALES -->
+<!-- PRODUCTOS EXISTENTES -->
 <div class="producto" data-nombre="Alejense Gordas" data-precio="12">
 <img src="camiseta-clash.jpg">
 <div class="info">
 <span class="badge">DESTACADO</span>
 <h3>Alejense Gordas</h3>
+<p class="descripcion">Camiseta cómoda y resistente</p>
 <div class="precio">12 €</div>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
@@ -208,6 +275,7 @@ header input{
 <img src="camiseta-south-things.jpg">
 <div class="info">
 <h3>South Things</h3>
+<p class="descripcion">Diseño urbano moderno</p>
 <div class="precio">17 €</div>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
@@ -217,6 +285,7 @@ header input{
 <img src="camiseta-pork.jpg">
 <div class="info">
 <h3>Jhon Pork</h3>
+<p class="descripcion">Edición especial</p>
 <div class="precio">16 €</div>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
@@ -226,72 +295,92 @@ header input{
 <img src="camiseta-steve.jpg">
 <div class="info">
 <h3>Steve Harrington</h3>
+<p class="descripcion">Inspirada en Stranger Things</p>
 <div class="precio">16 €</div>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
 </div>
 
-<!-- HUECOS EXTRA -->
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
-<div class="producto placeholder">Producto futuro</div>
+<!-- HUECOS -->
+<div class="producto placeholder">Nuevo producto</div>
+<div class="producto placeholder">Nuevo producto</div>
+<div class="producto placeholder">Nuevo producto</div>
+<div class="producto placeholder">Nuevo producto</div>
+<div class="producto placeholder">Nuevo producto</div>
+<div class="producto placeholder">Nuevo producto</div>
 
+</section>
+
+<section class="info-extra">
+<div class="info-box">🚚 Envíos rápidos</div>
+<div class="info-box">🔒 Pago seguro</div>
+<div class="info-box">⭐ Calidad garantizada</div>
+<div class="info-box">📦 Devoluciones fáciles</div>
 </section>
 
 <!-- CARRITO -->
 <div id="carrito">
-<h3>Carrito</h3>
+<h2>Tu carrito</h2>
 <div id="lista"></div>
 <div class="total">Total: <span id="total">0</span> €</div>
 
 <form action="https://formspree.io/f/TU_ID_AQUI" method="POST">
 <input type="hidden" name="pedido" id="pedido">
-<button>Finalizar compra</button>
+<button class="finalizar">Finalizar compra</button>
 </form>
 </div>
 
-<!-- CONTACTO -->
-<div class="contacto">
+<section class="contacto">
 <h2>Contacto</h2>
 <form action="https://formspree.io/f/TU_ID_AQUI" method="POST">
 <input name="nombre" placeholder="Nombre" required>
 <input type="email" name="email" placeholder="Email" required>
 <textarea name="mensaje" placeholder="Mensaje" required></textarea>
-<button>Enviar</button>
+<button class="finalizar">Enviar</button>
 </form>
-</div>
+</section>
 
 <script>
-let carrito=[];
+let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
+
 const lista=document.getElementById("lista");
 const total=document.getElementById("total");
 const pedido=document.getElementById("pedido");
 const carritoDiv=document.getElementById("carrito");
 const overlay=document.getElementById("overlay");
 
-function add(b){
- const p=b.closest(".producto");
+function add(btn){
+ const p=btn.closest(".producto");
  const n=p.dataset.nombre;
  const pr=+p.dataset.precio;
  const it=carrito.find(i=>i.n===n);
  it?it.c++:carrito.push({n,pr,c:1});
- render(); abrir();
+ save(); abrir();
+}
+
+function save(){
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ render();
 }
 
 function render(){
  lista.innerHTML="";
  let t=0;
- carrito.forEach(i=>{
+ carrito.forEach((i,idx)=>{
   t+=i.pr*i.c;
-  lista.innerHTML+=`<div class="item"><span>${i.n} x${i.c}</span><span>${i.pr*i.c}€</span></div>`;
+  lista.innerHTML+=`
+   <div class="item">
+    <span>${i.n} x${i.c}</span>
+    <span>${i.pr*i.c} € <button onclick="del(${idx})">✕</button></span>
+   </div>`;
  });
  total.textContent=t;
  pedido.value=JSON.stringify(carrito);
+}
+
+function del(i){
+ carrito.splice(i,1);
+ save();
 }
 
 function abrir(){carritoDiv.classList.add("abierto");overlay.classList.add("activo")}
@@ -304,6 +393,8 @@ function buscar(t){
   p.style.display=n.includes(t)||p.classList.contains("placeholder")?"flex":"none";
  });
 }
+
+render();
 </script>
 
 </body>
