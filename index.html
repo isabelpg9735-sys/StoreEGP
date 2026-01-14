@@ -61,6 +61,7 @@ header input{
   flex-direction:column;
   overflow:hidden;
   transition:.35s;
+  cursor:pointer;
 }
 .producto:hover{
   transform:translateY(-10px);
@@ -160,13 +161,13 @@ header input{
   display:flex;
   flex-direction:column;
   transition:.5s;
+  overflow-y:auto;
 }
 #carrito.abierto{right:0}
 #overlay.activo{display:block}
 
 #lista{
   flex:1;
-  overflow:auto;
   margin:20px 0;
 }
 
@@ -190,11 +191,47 @@ header input{
   background:var(--primary);
   color:white;
   font-size:16px;
+  cursor:pointer;
+}
+
+/* VENTANA DETALLE */
+#detalle{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:300px;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 5px 25px rgba(0,0,0,.3);
+  z-index:1001;
+  display:none;
+}
+#detalle h3{margin-top:0;}
+#detalle button{margin-top:10px;padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;cursor:pointer;}
+#detalle select{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #ccc;}
+
+/* FORMULARIO CONSULTA */
+#consulta{
+  max-width:400px;
+  margin:40px auto;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 5px 25px rgba(0,0,0,.2);
+}
+#consulta input,#consulta textarea{
+  width:100%;padding:10px;margin:5px 0;border:1px solid #ccc;border-radius:10px;
+}
+#consulta button{
+  width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;cursor:pointer;
 }
 
 /* MOBILE */
 @media(max-width:650px){
   #carrito{width:100%}
+  #detalle{width:90%}
 }
 </style>
 </head>
@@ -212,114 +249,140 @@ header input{
 
 <section class="productos">
 
-<!-- EXISTENTES -->
-<div class="producto" data-nombre="Alejense Gordas" data-precio="12">
+<!-- PRODUCTOS EXISTENTES -->
+<div class="producto" data-nombre="Alejense Gordas" data-precio="12" data-desc="Lo necesario para que no se acerquen 🔥" data-img="camiseta-clash.jpg">
 <img src="camiseta-clash.jpg">
 <div class="info">
 <span class="badge">DESTACADO</span>
 <h3>Alejense Gordas</h3>
 <p class="descripcion">Lo necesario para que no se acerquen 🔥</p>
 <div class="precio">12 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="South Things" data-precio="17">
+<div class="producto" data-nombre="South Things" data-precio="17" data-desc="UHHHH referencia 🗣️" data-img="camiseta-south-things.jpg">
 <img src="camiseta-south-things.jpg">
 <div class="info">
 <h3>South Things</h3>
 <p class="descripcion">UHHHH referencia 🗣️</p>
 <div class="precio">17 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Jhon Pork" data-precio="16">
+<div class="producto" data-nombre="Jhon Pork" data-precio="16" data-desc="¿Alguien me coje el teléfono?" data-img="camiseta-pork.jpg">
 <img src="camiseta-pork.jpg">
 <div class="info">
 <h3>Jhon Pork</h3>
 <p class="descripcion">¿Alguien me coje el teléfono?</p>
 <div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Steve Harrington" data-precio="16">
+<div class="producto" data-nombre="Steve Harrington" data-precio="16" data-desc="El tremendo Stranger Things" data-img="camiseta-steve.jpg">
 <img src="camiseta-steve.jpg">
 <div class="info">
 <h3>Steve Harrington</h3>
 <p class="descripcion">El tremendo Stranger Things</p>
 <div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<!-- NUEVOS -->
-<div class="producto" data-nombre="Baby" data-precio="12">
+<div class="producto" data-nombre="Baby" data-precio="12" data-desc="La niñera de los nenes" data-img="camiseta-baby.jpg">
 <img src="camiseta-baby.jpg">
 <div class="info">
 <h3>Baby</h3>
 <p class="descripcion">La niñera de los nenes</p>
 <div class="precio">12 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Asco" data-precio="16">
+<div class="producto" data-nombre="Asco" data-precio="16" data-desc="Mensaje directo" data-img="camiseta-asco.jpg">
 <img src="camiseta-asco.jpg">
 <div class="info">
 <h3>Dais Asco</h3>
 <p class="descripcion">Mensaje directo</p>
 <div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Drunk" data-precio="15">
+<div class="producto" data-nombre="Drunk" data-precio="15" data-desc="No estarás borracho ¿No?" data-img="camiseta-drunk.jpg">
 <img src="camiseta-drunk.jpg">
 <div class="info">
 <h3>Drunk</h3>
 <p class="descripcion">No estarás borracho ¿No?</p>
 <div class="precio">15 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Fuerte" data-precio="10">
+<div class="producto" data-nombre="Fuerte" data-precio="10" data-desc="Diseño potentemente fuerte" data-img="camiseta-fuerte.jpg">
 <img src="camiseta-fuerte.jpg">
 <div class="info">
 <h3>Fuerte</h3>
 <p class="descripcion">Diseño potentemente fuerte</p>
 <div class="precio">10 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
-<div class="producto" data-nombre="Raro" data-precio="14">
+<div class="producto" data-nombre="Raro" data-precio="14" data-desc="Vaya facto" data-img="camiseta-raro.jpg">
 <img src="camiseta-raro.jpg">
 <div class="info">
 <h3>Raro</h3>
 <p class="descripcion">Vaya facto</p>
 <div class="precio">14 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
+<button onclick="abrirDetalle(this)">Ver detalles</button>
 </div>
 </div>
 
 </section>
 
+<!-- VENTANA DETALLE -->
+<div id="detalle">
+<h3 id="dNombre"></h3>
+<p id="dDesc"></p>
+<div class="precio" id="dPrecio"></div>
+<label for="talla">Selecciona talla:</label>
+<select id="talla">
+<option value="XS">XS</option>
+<option value="S">S</option>
+<option value="M">M</option>
+<option value="L">L</option>
+<option value="XL">XL</option>
+</select>
+<button onclick="addDetalle()">Añadir al carrito</button>
+</div>
+
+<!-- CARRITO -->
 <div id="carrito">
 <h2>Tu carrito</h2>
 <div id="lista"></div>
 <div class="total">Total: <span id="total">0</span> €</div>
 
-<form action="https://formspree.io/f/mzddzekk" method="POST">
+<form action="https://formspree.io/f/xbddlgvr" method="POST">
 <input type="hidden" name="pedido" id="pedido">
 <button class="finalizar">Finalizar compra</button>
 </form>
 </div>
 
+<!-- FORMULARIO CONSULTA -->
+<form id="consulta" action="https://formspree.io/f/xbddlgvr" method="POST">
+<h3>Consulta / Dudas</h3>
+<input type="text" name="name" placeholder="Tu nombre" required>
+<input type="email" name="email" placeholder="Tu correo" required>
+<textarea name="message" placeholder="Escribe tu consulta" required></textarea>
+<button type="submit">Enviar</button>
+</form>
+
 <script>
-let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
+let carrito = JSON.parse(localStorage.getItem("carrito"))||[];
+let currentProducto=null;
 
 const lista=document.getElementById("lista");
 const total=document.getElementById("total");
@@ -327,15 +390,54 @@ const pedido=document.getElementById("pedido");
 const carritoDiv=document.getElementById("carrito");
 const overlay=document.getElementById("overlay");
 
+function abrir(){carritoDiv.classList.add("abierto"); overlay.classList.add("activo")}
+function cerrar(){carritoDiv.classList.remove("abierto"); overlay.classList.remove("activo"); closeDetalle();}
+
+// BUSCAR
+function buscar(t){
+  t=t.toLowerCase();
+  document.querySelectorAll(".producto").forEach(p=>{
+    const n=p.dataset.nombre.toLowerCase();
+    p.style.display=n.includes(t)?"flex":"none";
+  });
+}
+
+// DETALLE PRODUCTO
+function abrirDetalle(btn){
+  const p = btn.closest(".producto");
+  currentProducto = p;
+  document.getElementById("dNombre").textContent=p.dataset.nombre;
+  document.getElementById("dDesc").textContent=p.dataset.desc;
+  document.getElementById("dPrecio").textContent=p.dataset.precio + " €";
+  document.getElementById("detalle").style.display="block";
+  overlay.classList.add("activo");
+}
+function closeDetalle(){
+  document.getElementById("detalle").style.display="none";
+}
+
+// AÑADIR AL CARRITO DESDE DETALLE
+function addDetalle(){
+  const n=currentProducto.dataset.nombre;
+  const pr=+currentProducto.dataset.precio;
+  const talla=document.getElementById("talla").value;
+  carrito.push({n,pr,talla,c:1});
+  save();
+  closeDetalle();
+  abrir();
+}
+
+// AÑADIR DIRECTO DESDE BOTÓN (sin talla)
 function add(btn){
  const p=btn.closest(".producto");
  const n=p.dataset.nombre;
  const pr=+p.dataset.precio;
- const it=carrito.find(i=>i.n===n);
- it?it.c++:carrito.push({n,pr,c:1});
- save(); abrir();
+ carrito.push({n,pr,talla:"M",c:1});
+ save();
+ abrir();
 }
 
+// GUARDAR Y RENDERIZAR
 function save(){
  localStorage.setItem("carrito",JSON.stringify(carrito));
  render();
@@ -348,23 +450,12 @@ function render(){
   t+=i.pr*i.c;
   lista.innerHTML+=`
    <div class="item">
-    <span>${i.n} x${i.c}</span>
+    <span>${i.n} (${i.talla}) x${i.c}</span>
     <span>${i.pr*i.c}€</span>
    </div>`;
  });
  total.textContent=t;
  pedido.value=JSON.stringify(carrito);
-}
-
-function abrir(){carritoDiv.classList.add("abierto");overlay.classList.add("activo")}
-function cerrar(){carritoDiv.classList.remove("abierto");overlay.classList.remove("activo")}
-
-function buscar(t){
- t=t.toLowerCase();
- document.querySelectorAll(".producto").forEach(p=>{
-  const n=p.dataset.nombre.toLowerCase();
-  p.style.display=n.includes(t)?"flex":"none";
- });
 }
 
 render();
