@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store EGP Profesional - Pago Real</title>
-
+<title>Store EGP Profesional</title>
 <style>
 :root{
   --dark:#0f0f0f;
@@ -131,6 +130,7 @@ header input{
 #checkout{
   max-width:450px;margin:50px auto;background:white;padding:25px;border-radius:16px;
   box-shadow:0 5px 25px rgba(0,0,0,.2);
+  display:none;
 }
 #checkout input, #checkout select{
   width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:12px;font-size:15px;
@@ -159,7 +159,6 @@ footer p{
   .productos{padding:30px 15px; gap:20px;}
 }
 </style>
-
 </head>
 <body>
 
@@ -175,9 +174,7 @@ footer p{
 <div id="overlay" onclick="cerrar()"></div>
 
 <section class="productos">
-
-<!-- Aquí irían los 9 productos como en la versión anterior -->
-
+<!-- Añade aquí los 9 productos con data-nombre, data-precio, data-desc, data-img como antes -->
 </section>
 
 <!-- VENTANA DETALLE -->
@@ -206,7 +203,7 @@ footer p{
 </div>
 
 <!-- CHECKOUT -->
-<div id="checkout" style="display:none;">
+<div id="checkout">
 <h3>Checkout</h3>
 <input type="text" id="nombre" placeholder="Nombre completo" required>
 <input type="email" id="email" placeholder="Correo electrónico" required>
@@ -216,19 +213,18 @@ footer p{
   <option value="Europa">Europa</option>
   <option value="Resto">Resto del mundo</option>
 </select>
-<p>Gastos de envío: <span id="precioEnvio">0</span> €</p>
+<p>Gastos de envío estimados: <span id="precioEnvio">0</span> €</p>
 <p>Total final: <span id="totalFinal">0</span> €</p>
 <div id="paypal-button-container"></div>
 <button onclick="cerrarCheckout()">Cancelar</button>
 </div>
 
 <footer>
-<p>Envíos a casi todo el mundo. Los gastos de envío se calcularán al finalizar la compra.</p>
+<p>Envíos a casi todo el mundo. El coste exacto se calcula en plataformas profesionales con Correos Express.</p>
 </footer>
 
 <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=EUR"></script>
 <script>
-// ---------------- CARRO ----------------
 let carrito = JSON.parse(localStorage.getItem("carrito"))||[];
 let currentProducto=null;
 const lista=document.getElementById("lista");
@@ -236,8 +232,15 @@ const total=document.getElementById("total");
 const cantidadCarrito=document.getElementById("cantidadCarrito");
 let envio=0;
 
+// ABRIR/CERRAR
 function abrir(){document.getElementById("carrito").classList.add("abierto");document.getElementById("overlay").classList.add("activo");}
-function cerrar(){document.getElementById("carrito").classList.remove("abierto");document.getElementById("overlay").classList.remove("activo");closeDetalle();closeCheckout();}
+function cerrar(){
+  document.getElementById("carrito").classList.remove("abierto");
+  document.getElementById("overlay").classList.remove("activo");
+  closeDetalle(); cerrarCheckout();
+}
+
+// RENDER CARRITO
 function save(){localStorage.setItem("carrito",JSON.stringify(carrito)); render();}
 function render(){
  lista.innerHTML="";
@@ -255,9 +258,11 @@ function render(){
  total.textContent=t;
  cantidadCarrito.textContent=carrito.length;
 }
+
+// ELIMINAR ITEM
 function eliminar(idx){carrito.splice(idx,1); save();}
 
-// ---------------- BUSCAR ----------------
+// BUSCAR
 function buscar(t){
   t=t.toLowerCase();
   document.querySelectorAll(".producto").forEach(p=>{
@@ -266,7 +271,7 @@ function buscar(t){
   });
 }
 
-// ---------------- DETALLE ----------------
+// DETALLE
 function abrirDetalle(btn){
   const p=btn.closest(".producto");
   currentProducto = p;
@@ -288,7 +293,7 @@ function addDetalle(){
   abrir();
 }
 
-// ---------------- CHECKOUT ----------------
+// CHECKOUT
 function mostrarCheckout(){
   document.getElementById("checkout").style.display="block";
   document.getElementById("carrito").classList.remove("abierto");
@@ -300,7 +305,7 @@ function cerrarCheckout(){
   document.getElementById("overlay").classList.remove("activo");
 }
 
-// Calcular envío según país
+// CALCULAR ENVIO ESTIMADO
 function calcularEnvio(){
   const pais=document.getElementById("pais").value;
   if(pais==="España") envio=5;
@@ -311,7 +316,7 @@ function calcularEnvio(){
   document.getElementById("totalFinal").textContent=totalProductos+envio;
 }
 
-// ---------------- PAYPAL ----------------
+// PAYPAL
 paypal.Buttons({
   createOrder: function(data, actions) {
     let totalProductos = carrito.reduce((sum,i)=>sum+i.pr*i.c,0);
@@ -334,5 +339,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
