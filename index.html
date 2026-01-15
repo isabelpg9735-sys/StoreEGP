@@ -7,160 +7,176 @@
 
 <style>
 :root{
---bg:#f3f3f3;--card:#fff;--primary:#1d4ed8;--accent:#22c55e;--radius:16px
+  --dark:#0f0f0f;
+  --bg:#f3f3f3;
+  --card:#ffffff;
+  --primary:#1d4ed8;
+  --accent:#22c55e;
+  --radius:14px;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:var(--bg)}
-header{background:#000;color:#fff;padding:35px 20px;text-align:center}
-header p{opacity:.85}
-header input{margin-top:15px;padding:14px;width:100%;max-width:420px;border-radius:999px;border:none}
-.productos{max-width:1500px;margin:auto;padding:40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:30px}
-.producto{background:var(--card);border-radius:var(--radius);box-shadow:0 15px 35px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden}
-.producto img{height:260px;object-fit:contain;background:#fafafa;padding:20px}
-.info{padding:20px;display:flex;flex-direction:column;flex:1}
-.info h3{margin:0 0 5px}
-.descripcion{font-size:14px;opacity:.8}
-.precio{font-size:22px;font-weight:bold;margin:10px 0}
-select,button,input{padding:12px;border-radius:10px;border:1px solid #ddd;font-size:15px}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:var(--bg)}
+header{
+  background:#111;color:#fff;padding:30px;text-align:center
+}
+header p{margin:8px 0 0}
+.productos{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+  padding:30px;
+}
+.producto{
+  background:#fff;border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.1);
+  display:flex;flex-direction:column
+}
+.producto img{
+  height:220px;object-fit:contain;padding:20px;background:#fafafa
+}
+.info{padding:16px;display:flex;flex-direction:column;flex:1}
+.info h3{margin:0 0 6px}
+.precio{font-weight:bold;font-size:18px}
+select,button,input{
+  padding:10px;border-radius:8px;border:1px solid #ccc;margin-top:8px
+}
 button{background:var(--primary);color:#fff;border:none;cursor:pointer}
-#btnCarrito{position:fixed;bottom:20px;right:20px;width:65px;height:65px;border-radius:50%;background:var(--accent);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none}
-#carrito{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff;padding:25px;transition:.4s;display:flex;flex-direction:column}
-#carrito.abierto{right:0} #overlay.activo{display:block}
-#lista{flex:1;overflow:auto}
-.item{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
-.total{font-size:18px;font-weight:bold}
-.cerrar{align-self:flex-end;font-size:22px;cursor:pointer}
-@media(max-width:500px){#carrito{width:100%}}
+#btnCarrito{
+  position:fixed;right:20px;bottom:20px;
+  width:60px;height:60px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:26px;
+  display:flex;align-items:center;justify-content:center
+}
+#overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  display:none
+}
+#carrito{
+  position:fixed;right:-100%;top:0;width:100%;
+  max-width:420px;height:100%;
+  background:#fff;padding:20px;
+  transition:.3s;overflow:auto
+}
+#carrito.abierto{right:0}
+.item{display:flex;justify-content:space-between;margin-bottom:8px}
+.total{font-weight:bold;margin-top:10px}
+@media(max-width:600px){.productos{padding:15px}}
 </style>
-
-<script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID_REAL&currency=EUR"></script>
 </head>
 
 <body>
 
 <header>
 <h1>Store EGP</h1>
-<p>Ropa con personalidad propia · Cualquier duda: sstoreegp@gmail.com</p>
-<input placeholder="Buscar productos..." oninput="buscar(this.value)">
+<p>Cualquier duda: sstoreegp@gmail.com</p>
+<p>@sstoreegp</p>
 </header>
 
-<div id="btnCarrito" onclick="abrir()">🛒</div>
-<div id="overlay" onclick="cerrar()"></div>
+<div id="btnCarrito" onclick="abrirCarrito()">🛒</div>
+<div id="overlay" onclick="cerrarCarrito()"></div>
 
-<section class="productos">
-
-<div class="producto" data-nombre="Alejense Gordas" data-precio="12">
-<img src="camiseta-clash.jpg">
-<div class="info">
-<h3>Alejense Gordas</h3>
-<p class="descripcion">Camiseta cómoda y resistente</p>
-<select class="talla">
-<option>S</option><option>M</option><option>L</option><option>XL</option>
-</select>
-<div class="precio">12 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div></div>
-
-<div class="producto" data-nombre="Pedrito" data-precio="15">
-<img src="camiseta-pedrito.jpg">
-<div class="info">
-<h3>Pedrito</h3>
-<p class="descripcion">El mítico Pedrito</p>
-<select class="talla"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-<div class="precio">15 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div></div>
-
-<!-- (PUEDES AÑADIR MÁS PRODUCTOS IGUAL QUE ESTOS, NO SE BORRA NINGUNO) -->
-
-</section>
+<section class="productos" id="productos"></section>
 
 <div id="carrito">
-<div class="cerrar" onclick="cerrar()">❌</div>
-<h2>Tu carrito</h2>
+<button onclick="cerrarCarrito()">❌</button>
+<h2>Carrito</h2>
 <div id="lista"></div>
-
-<label>País de envío</label>
-<select id="pais" onchange="render()">
-<option value="es">España (5€)</option>
-<option value="eu">Europa cercana (12€)</option>
-<option value="otro">Otro país (20€)</option>
-</select>
-
-<p id="descuento" style="color:green;font-weight:bold"></p>
-<p id="envio"></p>
-<div class="total">Total final: <span id="total">0</span> €</div>
+<div id="resumen"></div>
 
 <h3>Datos de envío</h3>
 <input placeholder="Nombre completo" required>
-<input placeholder="Dirección" required>
-<input placeholder="Ciudad" required>
-<input placeholder="Código postal" required>
-<input placeholder="Email" required>
+<input placeholder="Dirección completa" required>
+<select id="pais" onchange="calcular()">
+  <option value="5">España</option>
+  <option value="12">Europa cercana</option>
+  <option value="20">Resto del mundo</option>
+</select>
 
-<label>
-<input type="checkbox" id="legalCheck"> Acepto condiciones legales y envíos
-</label>
+<div class="total" id="totalFinal"></div>
 
+<!-- PAYPAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=EUR"></script>
 <div id="paypal-button-container"></div>
-
-<p style="margin-top:20px;opacity:.7">Envíos a casi todo el mundo</p>
 </div>
 
+<footer style="text-align:center;padding:20px">
+<p>Envíos a casi todo el mundo</p>
+</footer>
+
 <script>
-let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
-const lista=document.getElementById("lista");
-const total=document.getElementById("total");
+const productosData=[
+["Alejense Gordas",12,"camiseta-clash.jpg"],
+["South Things",17,"camiseta-south-things.jpg"],
+["Jhon Pork",16,"camiseta-pork.jpg"],
+["Steve Harrington",16,"camiseta-steve.jpg"],
+["Dais Asco",16,"camiseta-asco.jpg"],
+["Drunk",15,"camiseta-drunk.jpg"],
+["Fuerte",10,"camiseta-fuerte.jpg"],
+["Raro",16,"camiseta-raro.jpg"],
+["Pedrito",15,"camiseta-pedrito.jpg"],
+["Razón",15,"camiseta-razon.jpg"],
+["Olla",15,"camiseta-olla.jpg"],
+["Crock",15,"camiseta-crock.jpg"],
+["Cervecita",12,"camiseta-cerveza.jpg"],
+["Spiderman",10,"camiseta-spiderman.jpg"]
+];
 
-function add(btn){
- const p=btn.closest(".producto");
- carrito.push({
-  n:p.dataset.nombre,
-  pr:+p.dataset.precio,
-  talla:p.querySelector(".talla").value
- });
- save(); abrir();
-}
+let carrito=[];
 
-function calcular(){
- let subtotal=carrito.reduce((s,i)=>s+i.pr,0);
- let desc=Math.max(0,(carrito.length-1)*2);
- let envio=document.getElementById("pais").value=="es"?5:
-            document.getElementById("pais").value=="eu"?12:20;
- document.getElementById("descuento").textContent=
-  desc?`Descuento aplicado: -${desc}€`:"";
- document.getElementById("envio").textContent=`Envío: ${envio}€`;
- return subtotal-desc+envio;
+const cont=document.getElementById("productos");
+productosData.forEach(p=>{
+  cont.innerHTML+=`
+  <div class="producto">
+    <img src="${p[2]}">
+    <div class="info">
+      <h3>${p[0]}</h3>
+      <div class="precio">${p[1]} €</div>
+      <select>
+        <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+      </select>
+      <button onclick="add('${p[0]}',${p[1]},this)">Añadir</button>
+    </div>
+  </div>`;
+});
+
+function add(n,pr,btn){
+ const talla=btn.previousElementSibling.value;
+ carrito.push({n,pr,talla});
+ render();
+ abrirCarrito();
 }
 
 function render(){
- lista.innerHTML="";
- carrito.forEach(i=>{
-  lista.innerHTML+=`<div class="item"><span>${i.n} (${i.talla})</span><span>${i.pr}€</span></div>`;
+ const l=document.getElementById("lista");
+ l.innerHTML="";
+ let subtotal=0;
+ carrito.forEach((i,idx)=>{
+  subtotal+=i.pr;
+  l.innerHTML+=`<div class="item">${i.n} (${i.talla}) <button onclick="del(${idx})">X</button></div>`;
  });
- total.textContent=calcular();
- localStorage.setItem("carrito",JSON.stringify(carrito));
+ const desc=Math.max(0,(carrito.length-1)*2);
+ document.getElementById("resumen").innerHTML=
+  `Subtotal: ${subtotal}€<br>Descuento: -${desc}€`;
+ calcular();
 }
 
-function abrir(){document.getElementById("carrito").classList.add("abierto");overlay.classList.add("activo")}
-function cerrar(){document.getElementById("carrito").classList.remove("abierto");overlay.classList.remove("activo")}
-function buscar(t){document.querySelectorAll(".producto").forEach(p=>p.style.display=p.dataset.nombre.toLowerCase().includes(t.toLowerCase())?"flex":"none")}
+function calcular(){
+ const envio=+document.getElementById("pais").value;
+ const subtotal=carrito.reduce((s,i)=>s+i.pr,0);
+ const desc=Math.max(0,(carrito.length-1)*2);
+ document.getElementById("totalFinal").innerText=
+  `Total: ${subtotal-desc+envio} € (producto + envío)`;
+}
 
-paypal.Buttons({
-createOrder:(d,a)=>{
- if(!document.getElementById("legalCheck").checked){
-  alert("Debes aceptar las condiciones");throw"";
- }
- return a.order.create({purchase_units:[{amount:{value:calcular().toString()}}]});
-},
-onApprove:(d,a)=>a.order.capture().then(()=>{
- alert("Pago realizado correctamente");
- carrito=[];render();cerrar();
-})
-}).render('#paypal-button-container');
-
-render();
+function del(i){carrito.splice(i,1);render()}
+function abrirCarrito(){
+ document.getElementById("carrito").classList.add("abierto");
+ document.getElementById("overlay").style.display="block";
+}
+function cerrarCarrito(){
+ document.getElementById("carrito").classList.remove("abierto");
+ document.getElementById("overlay").style.display="none";
+}
 </script>
 
 </body>
