@@ -7,194 +7,193 @@
 
 <style>
 :root{
-  --dark:#0f0f0f;
-  --bg:#f3f3f3;
-  --card:#ffffff;
-  --primary:#1d4ed8;
-  --accent:#22c55e;
-  --radius:16px;
+ --dark:#0f0f0f;
+ --bg:#f3f3f3;
+ --card:#ffffff;
+ --primary:#1d4ed8;
+ --accent:#22c55e;
+ --danger:#ef4444;
+ --radius:16px;
 }
 
 *{box-sizing:border-box}
 
 body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:var(--bg);
+ margin:0;
+ font-family:Arial, Helvetica, sans-serif;
+ background:var(--bg);
 }
 
 /* HEADER */
 header{
-  background:linear-gradient(135deg,#000,#222);
-  color:white;
-  padding:50px 20px;
-  text-align:center;
+ background:linear-gradient(135deg,#000,#222);
+ color:white;
+ padding:50px 20px;
+ text-align:center;
 }
 header h1{margin:0;font-size:40px}
 header p{opacity:.85;margin-top:6px}
 header input{
-  margin-top:25px;
-  padding:14px 18px;
-  width:100%;
-  max-width:450px;
-  border-radius:999px;
-  border:none;
-  font-size:16px;
+ margin-top:25px;
+ padding:14px 18px;
+ width:100%;
+ max-width:450px;
+ border-radius:999px;
+ border:none;
+ font-size:16px;
 }
 
 /* GRID */
 .productos{
-  max-width:1500px;
-  margin:auto;
-  padding:50px 25px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:35px;
+ max-width:1500px;
+ margin:auto;
+ padding:50px 25px;
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+ gap:35px;
 }
 
 /* CARD */
 .producto{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:0 15px 35px rgba(0,0,0,.1);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  transition:.35s;
+ background:var(--card);
+ border-radius:var(--radius);
+ box-shadow:0 15px 35px rgba(0,0,0,.1);
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+ transition:.35s;
 }
 .producto:hover{
-  transform:translateY(-10px);
-  box-shadow:0 30px 60px rgba(0,0,0,.2);
+ transform:translateY(-10px);
+ box-shadow:0 30px 60px rgba(0,0,0,.2);
 }
 
 .producto img{
-  width:100%;
-  height:280px;
-  object-fit:contain;
-  background:#fafafa;
-  padding:25px;
+ width:100%;
+ height:260px;
+ object-fit:contain;
+ background:#fafafa;
+ padding:20px;
 }
 
 .info{
-  padding:22px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
+ padding:22px;
+ display:flex;
+ flex-direction:column;
+ flex:1;
 }
 
 .badge{
-  background:gold;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  width:max-content;
-  margin-bottom:10px;
+ background:gold;
+ padding:6px 12px;
+ border-radius:999px;
+ font-size:12px;
+ width:max-content;
+ margin-bottom:10px;
 }
 
-.info h3{
-  margin:0 0 6px;
-  font-size:20px;
+.info h3{margin:0 0 6px;font-size:20px}
+.descripcion{font-size:14px;opacity:.8;margin-bottom:10px}
+.precio{font-size:22px;font-weight:700;margin-bottom:12px}
+
+select{
+ padding:10px;
+ border-radius:8px;
+ margin-bottom:10px;
 }
 
-.descripcion{
-  font-size:14px;
-  opacity:.8;
-  margin-bottom:12px;
+button{
+ padding:14px;
+ border:none;
+ border-radius:12px;
+ background:var(--primary);
+ color:white;
+ font-size:16px;
+ cursor:pointer;
 }
+button:hover{opacity:.9}
 
-.precio{
-  font-size:22px;
-  font-weight:700;
-  margin-bottom:18px;
-}
-
-.info button{
-  margin-top:auto;
-  padding:16px;
-  border:none;
-  border-radius:12px;
-  background:var(--primary);
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-.info button:hover{opacity:.9}
-
-/* BOTÓN CARRITO */
+/* CARRITO BOTÓN */
 #btnCarrito{
-  position:fixed;
-  bottom:25px;
-  right:25px;
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:var(--accent);
-  color:white;
-  font-size:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:1000;
+ position:fixed;
+ bottom:25px;
+ right:25px;
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ background:var(--accent);
+ color:white;
+ font-size:30px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ cursor:pointer;
+ z-index:1000;
 }
 
 /* OVERLAY */
 #overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  z-index:998;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.55);
+ display:none;
+ z-index:998;
 }
 
 /* CARRITO */
 #carrito{
-  position:fixed;
-  right:-440px;
-  top:0;
-  width:440px;
-  height:100%;
-  background:white;
-  padding:30px;
-  z-index:999;
-  display:flex;
-  flex-direction:column;
-  transition:.5s;
+ position:fixed;
+ right:-420px;
+ top:0;
+ width:420px;
+ height:100%;
+ background:white;
+ padding:30px;
+ z-index:999;
+ display:flex;
+ flex-direction:column;
+ transition:.4s;
 }
 #carrito.abierto{right:0}
 #overlay.activo{display:block}
 
 #lista{
-  flex:1;
-  overflow:auto;
-  margin:20px 0;
+ flex:1;
+ overflow:auto;
+ margin:20px 0;
 }
 
 .item{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-  font-size:14px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:10px;
+ font-size:14px;
+}
+
+.item button{
+ padding:6px 10px;
+ font-size:14px;
+ margin-left:5px;
 }
 
 .total{
-  font-size:20px;
-  font-weight:bold;
-  margin-bottom:20px;
+ font-size:20px;
+ font-weight:bold;
+ margin-top:10px;
 }
 
+.envio{font-size:14px;margin-top:6px}
+
 .finalizar{
-  padding:18px;
-  border:none;
-  border-radius:14px;
-  background:var(--primary);
-  color:white;
-  font-size:16px;
+ margin-top:20px;
+ background:var(--primary);
+ padding:18px;
 }
 
 /* MOBILE */
 @media(max-width:650px){
-  #carrito{width:100%}
+ #carrito{width:100%}
 }
 </style>
 </head>
@@ -212,193 +211,59 @@ header input{
 
 <section class="productos">
 
-<!-- EXISTENTES -->
-<div class="producto" data-nombre="South Things" data-precio="17">
-<img src="camiseta-south-things.jpg">
+<!-- PRODUCTOS (14) -->
+<script>
+const productos=[
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg"},
+ {n:"Jhon Pork",p:16,img:"camiseta-pork.jpg"},
+ {n:"Steve Harrington",p:16,img:"camiseta-steve.jpg"},
+ {n:"Dais Asco",p:16,img:"camiseta-asco.jpg"},
+ {n:"Drunk",p:15,img:"camiseta-drunk.jpg"},
+ {n:"Fuerte",p:10,img:"camiseta-fuerte.jpg"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg"},
+ {n:"Razón la que tengo",p:15,img:"camiseta-razon.jpg"},
+ {n:"Ollita",p:15,img:"camiseta-olla.jpg"},
+ {n:"(C)Rock",p:15,img:"camiseta-crock.jpg"},
+ {n:"¿Cervecita?",p:15,img:"camiseta-cerveza.jpg"},
+ {n:"Alejense Gordas",p:12,img:"camiseta-clash.jpg"},
+ {n:"Kill humans 🙏",p:12,img:"camiseta-future.jpg"},
+ {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg"}
+];
+
+document.write(productos.map((p,i)=>`
+<div class="producto" data-nombre="${p.n}" data-precio="${p.p}">
+<img src="${p.img}">
 <div class="info">
-<h3>South Things</h3>
-<p class="descripcion">Diseño urbano moderno</p>
-<div class="precio">17 €</div>
+${i===7?'<span class="badge">DESTACADO</span>':''}
+<h3>${p.n}</h3>
+<p class="descripcion">Camiseta premium edición limitada</p>
+<div class="precio">${p.p} €</div>
+<select>
+ <option>Talla S</option>
+ <option>Talla M</option>
+ <option>Talla L</option>
+ <option>Talla XL</option>
+</select>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
-</div>
-
-<div class="producto" data-nombre="Jhon Pork" data-precio="16">
-<img src="camiseta-pork.jpg">
-<div class="info">
-<h3>Jhon Pork</h3>
-<p class="descripcion">Edición meme clásica</p>
-<div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<div class="producto" data-nombre="Steve Harrington" data-precio="16">
-<img src="camiseta-steve.jpg">
-<div class="info">
-<h3>Steve Harrington</h3>
-<p class="descripcion">Inspirada en Stranger Things</p>
-<div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<!-- NUEVOS -->
-<div class="producto" data-nombre="Asco" data-precio="16">
-<img src="camiseta-asco.jpg">
-<div class="info">
-<h3>Dais Asco</h3>
-<p class="descripcion">Mensaje directo</p>
-<div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<div class="producto" data-nombre="Drunk" data-precio="15">
-<img src="camiseta-drunk.jpg">
-<div class="info">
-<h3>Drunk</h3>
-<p class="descripcion">Estilo atrevido</p>
-<div class="precio">15 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<div class="producto" data-nombre="Fuerte" data-precio="10">
-<img src="camiseta-fuerte.jpg">
-<div class="info">
-<h3>Fuerte</h3>
-<p class="descripcion">Diseño potente</p>
-<div class="precio">10 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<div class="producto" data-nombre="Alejense Gordas" data-precio="12">
-<img src="camiseta-clash.jpg">
-<div class="info">
-<h3>Alejense Gordas</h3>
-<p class="descripcion">Camiseta cómoda y resistente</p>
-<div class="precio">12 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-
-<div class="producto" data-nombre="Raro" data-precio="16">
-<img src="camiseta-raro.jpg">
-<div class="info">
-<h3>Raro</h3>
-<span class="badge">DESTACADO</span>
-<p class="descripcion">Para destacar</p>
-<div class="precio">16 €</div>
-<button onclick="add(this)">Añadir al carrito</button>
-</div>
-</div>
-
-<div class="producto" data-nombre="Pedrito" data-precio="15"
-data-desc="El mítico Pedrito" data-img="camiseta-pedrito.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-pedrito.jpg" alt="">
-  <div class="info">
-    <h3>Pedrito</h3>
-    <div class="descripcion">El mítico Pedrito</div>
-    <div class="precio">15 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="Razón" data-precio="15"
-data-desc="Porque sí, porque razón" data-img="camiseta-razon.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-razon.jpg" alt="">
-  <div class="info">
-    <h3>Razón la que tengo</h3>
-    <div class="descripcion">Porque sí, porque razón</div>
-    <div class="precio">15 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="Olla" data-precio="15"
-data-desc="Que se me pira eh" data-img="camiseta-olla.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-olla.jpg" alt="">
-  <div class="info">
-    <h3>Ollita</h3>
-    <div class="descripcion">Que se me pira eh</div>
-    <div class="precio">13 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="Crock" data-precio="15"
-data-desc="El drip del crock" data-img="camiseta-crock.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-crock.jpg" alt="">
-  <div class="info">
-    <h3>(C)Rock</h3>
-    <div class="descripcion">El drip del crock</div>
-    <div class="precio">10 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="¿Cervecita?" data-precio="15"
-data-desc="Que llegue ya pm" data-img="camiseta-cerveza.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-cerveza.jpg" alt="">
-  <div class="info">
-    <h3>¿Cervecita?</h3>
-    <div class="descripcion">Que llegue ya pm</div>
-    <div class="precio">12 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="Kill humans" data-precio="12"
-data-desc="Se podria probar" data-img="camiseta-future.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-future.jpg" alt="">
-  <div class="info">
-    <h3>Kill humans 🙏</h3>
-    <div class="descripcion">Se podria probar</div>
-    <div class="precio">12 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
-
-<div class="producto" data-nombre="Spiderman" data-precio="10"
-data-desc="Sentido arácnido" data-img="camiseta-crock.jpg"
-onclick="abrirDetalle(this)">
-  <img src="camiseta-spiderman.jpg" alt="">
-  <div class="info">
-    <h3>Spiderman</h3>
-    <div class="descripcion">Sentido arácnido</div>
-    <div class="precio">10 €</div>
-    <button onclick="abrirDetalle(this)">Ver detalle</button>
-  </div>
-</div>
+</div>`).join(""));
+</script>
 
 </section>
 
 <div id="carrito">
 <h2>Tu carrito</h2>
 <div id="lista"></div>
+<div class="envio">Envío: <span id="envio">0</span> €</div>
 <div class="total">Total: <span id="total">0</span> €</div>
-
-<form action="https://formspree.io/f/TU_ID_AQUI" method="POST">
-<input type="hidden" name="pedido" id="pedido">
 <button class="finalizar">Finalizar compra</button>
-</form>
 </div>
 
 <script>
 let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
-
 const lista=document.getElementById("lista");
 const total=document.getElementById("total");
-const pedido=document.getElementById("pedido");
+const envio=document.getElementById("envio");
 const carritoDiv=document.getElementById("carrito");
 const overlay=document.getElementById("overlay");
 
@@ -408,13 +273,13 @@ function add(btn){
  const pr=+p.dataset.precio;
  const it=carrito.find(i=>i.n===n);
  it?it.c++:carrito.push({n,pr,c:1});
- save(); abrir();
+ save();abrir();
 }
 
-function save(){
- localStorage.setItem("carrito",JSON.stringify(carrito));
- render();
-}
+function quitar(i){carrito[i].c--;if(carrito[i].c<=0)carrito.splice(i,1);save();}
+function eliminar(i){carrito.splice(i,1);save();}
+
+function save(){localStorage.setItem("carrito",JSON.stringify(carrito));render();}
 
 function render(){
  lista.innerHTML="";
@@ -422,13 +287,18 @@ function render(){
  carrito.forEach((i,idx)=>{
   t+=i.pr*i.c;
   lista.innerHTML+=`
-   <div class="item">
-    <span>${i.n} x${i.c}</span>
-    <span>${i.pr*i.c}€</span>
-   </div>`;
+  <div class="item">
+   <span>${i.n} x${i.c}</span>
+   <span>
+    <button onclick="quitar(${idx})">➖</button>
+    <button onclick="eliminar(${idx})">❌</button>
+    ${i.pr*i.c}€
+   </span>
+  </div>`;
  });
- total.textContent=t;
- pedido.value=JSON.stringify(carrito);
+ let env=t>50?0:5;
+ envio.textContent=env;
+ total.textContent=t+env;
 }
 
 function abrir(){carritoDiv.classList.add("abierto");overlay.classList.add("activo")}
@@ -437,8 +307,7 @@ function cerrar(){carritoDiv.classList.remove("abierto");overlay.classList.remov
 function buscar(t){
  t=t.toLowerCase();
  document.querySelectorAll(".producto").forEach(p=>{
-  const n=p.dataset.nombre.toLowerCase();
-  p.style.display=n.includes(t)?"flex":"none";
+  p.style.display=p.dataset.nombre.toLowerCase().includes(t)?"flex":"none";
  });
 }
 
@@ -447,4 +316,3 @@ render();
 
 </body>
 </html>
-
