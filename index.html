@@ -48,17 +48,8 @@ header small{display:block;margin-top:5px;color:#ccc}
   background:#fafafa;
 }
 
-.producto h3{
-  margin:12px 0 5px;
-}
-
-.producto p{
-  margin:4px 0;
-}
-
-.producto select{
-  margin-top:10px;
-}
+.producto h3{margin:12px 0 5px}
+.producto p{margin:4px 0}
 
 .producto button{
   margin-top:auto;
@@ -80,7 +71,7 @@ button{
 }
 button:hover{opacity:.9}
 
-/* Carrito */
+/* BOTÓN CARRITO */
 #carritoBtn{
   position:fixed;
   bottom:20px;
@@ -91,8 +82,13 @@ button:hover{opacity:.9}
   border-radius:50%;
   font-size:26px;
   border:none;
+  transition:transform .3s;
+}
+#carritoBtn.animar{
+  transform:scale(1.2);
 }
 
+/* CARRITO */
 #carrito{
   position:fixed;
   top:0;
@@ -117,6 +113,20 @@ button:hover{opacity:.9}
 .item{
   border-bottom:1px solid #ddd;
   padding:8px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.item button{
+  background:red;
+  border:none;
+  color:#fff;
+  border-radius:50%;
+  width:26px;
+  height:26px;
+  cursor:pointer;
+  font-size:14px;
 }
 
 .descuento{
@@ -133,7 +143,6 @@ button:hover{opacity:.9}
   margin-bottom:8px;
 }
 
-/* Móvil */
 @media(max-width:600px){
   .producto img{height:220px}
 }
@@ -218,12 +227,23 @@ cargar();
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
  carrito.push({n,p,talla});
+
+ abrirCarrito();
+
+ const btnCarrito=document.getElementById("carritoBtn");
+ btnCarrito.classList.add("animar");
+ setTimeout(()=>btnCarrito.classList.remove("animar"),300);
+
+ actualizarTotales();
+}
+
+function eliminar(i){
+ carrito.splice(i,1);
  actualizarTotales();
 }
 
 function abrirCarrito(){
  document.getElementById("carrito").classList.add("abierto");
- actualizarTotales();
 }
 function cerrarCarrito(){
  document.getElementById("carrito").classList.remove("abierto");
@@ -234,9 +254,13 @@ function actualizarTotales(){
  div.innerHTML="";
  let total=0;
 
- carrito.forEach(i=>{
+ carrito.forEach((i,idx)=>{
   total+=i.p;
-  div.innerHTML+=`<div class="item">${i.n} (${i.talla}) - ${i.p}€</div>`;
+  div.innerHTML+=`
+   <div class="item">
+     <span>${i.n} (${i.talla}) - ${i.p}€</span>
+     <button onclick="eliminar(${idx})">✖</button>
+   </div>`;
  });
 
  let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
@@ -266,4 +290,5 @@ function actualizarTotales(){
 
 </body>
 </html>
+
 
