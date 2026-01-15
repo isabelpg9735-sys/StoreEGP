@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<!-- PAYPAL (sandbox, funcional) -->
 <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
 
 <style>
@@ -25,30 +24,54 @@ header small{display:block;margin-top:5px;color:#ccc}
 
 .productos{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  padding:20px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+  padding:25px;
 }
+
 .producto{
   background:#fff;
-  border-radius:12px;
+  border-radius:15px;
   padding:15px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
   display:flex;
   flex-direction:column;
+  height:100%;
+  text-align:center;
 }
+
 .producto img{
   width:100%;
+  height:260px;
+  object-fit:contain;
+  border-radius:10px;
+  background:#fafafa;
+}
+
+.producto h3{
+  margin:12px 0 5px;
+}
+
+.producto p{
+  margin:4px 0;
+}
+
+.producto select{
+  margin-top:10px;
+}
+
+.producto button{
+  margin-top:auto;
+  padding:12px;
   border-radius:10px;
 }
-.producto h3{margin:10px 0 5px}
-.producto p{margin:4px 0}
+
 select,button,input{
   padding:10px;
-  margin-top:8px;
   border-radius:8px;
   border:1px solid #ccc;
 }
+
 button{
   background:#1e4ddb;
   color:#fff;
@@ -63,11 +86,13 @@ button:hover{opacity:.9}
   bottom:20px;
   right:20px;
   background:#2ecc71;
-  width:60px;
-  height:60px;
+  width:65px;
+  height:65px;
   border-radius:50%;
-  font-size:24px;
+  font-size:26px;
+  border:none;
 }
+
 #carrito{
   position:fixed;
   top:0;
@@ -76,20 +101,22 @@ button:hover{opacity:.9}
   max-width:420px;
   height:100%;
   background:#fff;
-  box-shadow:-5px 0 15px rgba(0,0,0,.2);
+  box-shadow:-5px 0 15px rgba(0,0,0,.25);
   padding:20px;
   overflow:auto;
   transition:.3s;
 }
 #carrito.abierto{right:0}
+
 .cerrar{
   float:right;
   font-size:22px;
   cursor:pointer;
 }
+
 .item{
   border-bottom:1px solid #ddd;
-  padding:10px 0;
+  padding:8px 0;
 }
 
 .descuento{
@@ -103,11 +130,12 @@ button:hover{opacity:.9}
 }
 #checkout input, #checkout select{
   width:100%;
+  margin-bottom:8px;
 }
 
 /* Móvil */
 @media(max-width:600px){
-  header h1{font-size:22px}
+  .producto img{height:220px}
 }
 </style>
 </head>
@@ -150,7 +178,6 @@ button:hover{opacity:.9}
 
 <script>
 const productos = [
-
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
@@ -161,13 +188,14 @@ const productos = [
  {n:"Rarete",p:16,img:"camiseta-raro.jpg",d:"Rarete rarete things"},
  {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
  {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Esta es tu camiseta si siempre tienes la razón"},
- {n:"Ollita",p:12,img:"camiseta-olla.jpg",d:"jaja 😐 "},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño gracioso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"AM PM"},
+ {n:"Ollita",p:12,img:"camiseta-olla.jpg",d:"jaja 😐"},
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
  {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla, lo sabes"}
 ];
 
 const carrito=[];
+let paypalRenderizado=false;
 
 function cargar(){
  const cont=document.getElementById("listaProductos");
@@ -205,30 +233,37 @@ function actualizarTotales(){
  const div=document.getElementById("items");
  div.innerHTML="";
  let total=0;
+
  carrito.forEach(i=>{
   total+=i.p;
   div.innerHTML+=`<div class="item">${i.n} (${i.talla}) - ${i.p}€</div>`;
  });
 
  let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
- let envio= document.getElementById("pais").value=="ES"?5:
+ let envio=document.getElementById("pais").value=="ES"?5:
             document.getElementById("pais").value=="EU"?12:20;
 
  let final=total-descuento+envio;
+
  document.getElementById("resumen").innerHTML=
   `Productos: ${total}€<br>
    <span class="descuento">Descuento: -${descuento}€</span><br>
    Envío: ${envio}€<br>
    <b>Precio final: ${final}€</b>`;
 
- paypal.Buttons({
-   createOrder:(d,a)=>a.order.create({
-     purchase_units:[{amount:{value:final.toFixed(2)}}]
-   }),
-   onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
- }).render("#paypal-button-container");
+ if(!paypalRenderizado){
+   document.getElementById("paypal-button-container").innerHTML="";
+   paypal.Buttons({
+     createOrder:(d,a)=>a.order.create({
+       purchase_units:[{amount:{value:final.toFixed(2)}}]
+     }),
+     onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+   }).render("#paypal-button-container");
+   paypalRenderizado=true;
+ }
 }
 </script>
 
 </body>
 </html>
+
