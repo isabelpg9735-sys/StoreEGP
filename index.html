@@ -7,193 +7,165 @@
 
 <style>
 :root{
- --dark:#0f0f0f;
- --bg:#f3f3f3;
- --card:#ffffff;
- --primary:#1d4ed8;
- --accent:#22c55e;
- --danger:#ef4444;
- --radius:16px;
+  --dark:#0f0f0f;
+  --bg:#f3f3f3;
+  --card:#ffffff;
+  --primary:#1d4ed8;
+  --accent:#22c55e;
+  --radius:16px;
 }
 
 *{box-sizing:border-box}
 
 body{
- margin:0;
- font-family:Arial, Helvetica, sans-serif;
- background:var(--bg);
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
 }
 
 /* HEADER */
 header{
- background:linear-gradient(135deg,#000,#222);
- color:white;
- padding:50px 20px;
- text-align:center;
+  background:linear-gradient(135deg,#000,#222);
+  color:white;
+  padding:50px 20px;
+  text-align:center;
 }
 header h1{margin:0;font-size:40px}
 header p{opacity:.85;margin-top:6px}
 header input{
- margin-top:25px;
- padding:14px 18px;
- width:100%;
- max-width:450px;
- border-radius:999px;
- border:none;
- font-size:16px;
+  margin-top:25px;
+  padding:14px 18px;
+  width:100%;
+  max-width:450px;
+  border-radius:999px;
+  border:none;
+  font-size:16px;
 }
+
+/* SOCIAL */
+.social{
+  margin-top:15px;
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  align-items:center;
+}
+.social span{opacity:.9}
+.social img{width:26px;height:26px}
 
 /* GRID */
 .productos{
- max-width:1500px;
- margin:auto;
- padding:50px 25px;
- display:grid;
- grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
- gap:35px;
+  max-width:1500px;
+  margin:auto;
+  padding:50px 25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:30px;
 }
 
 /* CARD */
 .producto{
- background:var(--card);
- border-radius:var(--radius);
- box-shadow:0 15px 35px rgba(0,0,0,.1);
- display:flex;
- flex-direction:column;
- overflow:hidden;
- transition:.35s;
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:0 15px 35px rgba(0,0,0,.1);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
-.producto:hover{
- transform:translateY(-10px);
- box-shadow:0 30px 60px rgba(0,0,0,.2);
-}
-
 .producto img{
- width:100%;
- height:260px;
- object-fit:contain;
- background:#fafafa;
- padding:20px;
+  width:100%;
+  height:260px;
+  object-fit:contain;
+  background:#fafafa;
+  padding:20px;
 }
-
 .info{
- padding:22px;
- display:flex;
- flex-direction:column;
- flex:1;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
 }
-
-.badge{
- background:gold;
- padding:6px 12px;
- border-radius:999px;
- font-size:12px;
- width:max-content;
- margin-bottom:10px;
+.info h3{margin:0 0 6px}
+.descripcion{font-size:14px;opacity:.8}
+.precio{font-size:20px;font-weight:700;margin:10px 0}
+select,button{
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
 }
-
-.info h3{margin:0 0 6px;font-size:20px}
-.descripcion{font-size:14px;opacity:.8;margin-bottom:10px}
-.precio{font-size:22px;font-weight:700;margin-bottom:12px}
-
-select{
- padding:10px;
- border-radius:8px;
- margin-bottom:10px;
-}
-
 button{
- padding:14px;
- border:none;
- border-radius:12px;
- background:var(--primary);
- color:white;
- font-size:16px;
- cursor:pointer;
+  background:var(--primary);
+  color:white;
+  border:none;
+  cursor:pointer;
 }
-button:hover{opacity:.9}
 
-/* CARRITO BOTÓN */
+/* CART */
 #btnCarrito{
- position:fixed;
- bottom:25px;
- right:25px;
- width:70px;
- height:70px;
- border-radius:50%;
- background:var(--accent);
- color:white;
- font-size:30px;
- display:flex;
- align-items:center;
- justify-content:center;
- cursor:pointer;
- z-index:1000;
+  position:fixed;
+  right:25px;
+  bottom:25px;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:var(--accent);
+  color:white;
+  font-size:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
-
-/* OVERLAY */
 #overlay{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.55);
- display:none;
- z-index:998;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
 }
-
-/* CARRITO */
 #carrito{
- position:fixed;
- right:-420px;
- top:0;
- width:420px;
- height:100%;
- background:white;
- padding:30px;
- z-index:999;
- display:flex;
- flex-direction:column;
- transition:.4s;
+  position:fixed;
+  right:-420px;
+  top:0;
+  width:420px;
+  height:100%;
+  background:white;
+  padding:25px;
+  transition:.4s;
+  display:flex;
+  flex-direction:column;
 }
 #carrito.abierto{right:0}
-#overlay.activo{display:block}
 
-#lista{
- flex:1;
- overflow:auto;
- margin:20px 0;
-}
-
-.item{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:10px;
- font-size:14px;
-}
-
+.item{font-size:14px;margin-bottom:8px}
 .item button{
- padding:6px 10px;
- font-size:14px;
- margin-left:5px;
+  background:#e11;
+  margin-left:10px;
+  padding:4px 8px;
 }
 
-.total{
- font-size:20px;
- font-weight:bold;
- margin-top:10px;
+.descuento{color:#e11;font-weight:bold;margin-top:8px}
+.total{font-size:18px;font-weight:bold;margin-top:10px}
+
+/* CHECKOUT */
+#checkout{
+  max-width:800px;
+  margin:40px auto;
+  background:white;
+  padding:30px;
+  border-radius:16px;
+  display:none;
 }
-
-.envio{font-size:14px;margin-top:6px}
-
-.finalizar{
- margin-top:20px;
- background:var(--primary);
- padding:18px;
+#checkout input,#checkout select{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
 }
+#paypal-button-container{margin-top:15px}
 
-/* MOBILE */
-@media(max-width:650px){
- #carrito{width:100%}
+footer{
+  text-align:center;
+  padding:40px;
+  opacity:.7;
 }
 </style>
 </head>
@@ -204,6 +176,11 @@ button:hover{opacity:.9}
 <h1>Store EGP</h1>
 <p>Ropa con personalidad propia</p>
 <input placeholder="Buscar productos..." oninput="buscar(this.value)">
+<div class="social">
+<span>@sstoreegp</span>
+<img src="instagram.png">
+<img src="tiktok.png">
+</div>
 </header>
 
 <div id="btnCarrito" onclick="abrir()">🛒</div>
@@ -211,38 +188,33 @@ button:hover{opacity:.9}
 
 <section class="productos">
 
-<!-- PRODUCTOS (14) -->
+<!-- 14 PRODUCTOS -->
 <script>
 const productos=[
- {n:"South Things",p:17,img:"camiseta-south-things.jpg"},
- {n:"Jhon Pork",p:16,img:"camiseta-pork.jpg"},
- {n:"Steve Harrington",p:16,img:"camiseta-steve.jpg"},
- {n:"Dais Asco",p:16,img:"camiseta-asco.jpg"},
- {n:"Drunk",p:15,img:"camiseta-drunk.jpg"},
- {n:"Fuerte",p:10,img:"camiseta-fuerte.jpg"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg"},
- {n:"Razón la que tengo",p:15,img:"camiseta-razon.jpg"},
- {n:"Ollita",p:15,img:"camiseta-olla.jpg"},
- {n:"(C)Rock",p:15,img:"camiseta-crock.jpg"},
- {n:"¿Cervecita?",p:15,img:"camiseta-cerveza.jpg"},
- {n:"Alejense Gordas",p:12,img:"camiseta-clash.jpg"},
- {n:"Kill humans 🙏",p:12,img:"camiseta-future.jpg"},
- {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg"}
+["South Things",17,"camiseta-south-things.jpg"],
+["Jhon Pork",16,"camiseta-pork.jpg"],
+["Steve Harrington",16,"camiseta-steve.jpg"],
+["Dais Asco",16,"camiseta-asco.jpg"],
+["Drunk",15,"camiseta-drunk.jpg"],
+["Fuerte",10,"camiseta-fuerte.jpg"],
+["Alejense Gordas",12,"camiseta-clash.jpg"],
+["Raro",16,"camiseta-raro.jpg"],
+["Pedrito",15,"camiseta-pedrito.jpg"],
+["Razón",15,"camiseta-razon.jpg"],
+["Ollita",15,"camiseta-olla.jpg"],
+["(C)Rock",15,"camiseta-crock.jpg"],
+["¿Cervecita?",12,"camiseta-cerveza.jpg"],
+["Kill humans 🙏",12,"camiseta-future.jpg"]
 ];
 
-document.write(productos.map((p,i)=>`
-<div class="producto" data-nombre="${p.n}" data-precio="${p.p}">
-<img src="${p.img}">
+document.write(productos.map(p=>`
+<div class="producto" data-nombre="${p[0]}" data-precio="${p[1]}">
+<img src="${p[2]}">
 <div class="info">
-${i===7?'<span class="badge">DESTACADO</span>':''}
-<h3>${p.n}</h3>
-<p class="descripcion">Camiseta premium edición limitada</p>
-<div class="precio">${p.p} €</div>
+<h3>${p[0]}</h3>
+<div class="precio">${p[1]} €</div>
 <select>
- <option>Talla S</option>
- <option>Talla M</option>
- <option>Talla L</option>
- <option>Talla XL</option>
+<option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
 </select>
 <button onclick="add(this)">Añadir al carrito</button>
 </div>
@@ -252,57 +224,99 @@ ${i===7?'<span class="badge">DESTACADO</span>':''}
 </section>
 
 <div id="carrito">
-<h2>Tu carrito</h2>
+<h2>Carrito</h2>
 <div id="lista"></div>
-<div class="envio">Envío: <span id="envio">0</span> €</div>
+<div class="descuento" id="descuento"></div>
 <div class="total">Total: <span id="total">0</span> €</div>
-<button class="finalizar">Finalizar compra</button>
+<button onclick="mostrarCheckout()">Finalizar compra</button>
 </div>
+
+<div id="checkout">
+<h2>Datos de envío</h2>
+<input placeholder="Nombre completo" required>
+<input type="email" placeholder="Email" required>
+<input placeholder="Dirección completa" required>
+
+<select id="pais" onchange="calcular()">
+<option>España</option>
+<option>Alemania</option><option>Francia</option><option>Italia</option>
+<option>Reino Unido</option><option>Polonia</option><option>Países Bajos</option>
+<option>Grecia</option><option>Portugal</option><option>Suiza</option><option>Suecia</option>
+<option>Otro país</option>
+</select>
+
+<div class="total">Total final: <span id="final">0</span> €</div>
+<div id="paypal-button-container"></div>
+</div>
+
+<footer>
+Envíos a casi todo el mundo
+</footer>
+
+<!-- PAYPAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID_AQUI&currency=EUR"></script>
 
 <script>
 let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
-const lista=document.getElementById("lista");
-const total=document.getElementById("total");
-const envio=document.getElementById("envio");
-const carritoDiv=document.getElementById("carrito");
-const overlay=document.getElementById("overlay");
 
 function add(btn){
  const p=btn.closest(".producto");
- const n=p.dataset.nombre;
- const pr=+p.dataset.precio;
- const it=carrito.find(i=>i.n===n);
- it?it.c++:carrito.push({n,pr,c:1});
- save();abrir();
+ carrito.push({
+  n:p.dataset.nombre,
+  pr:+p.dataset.precio,
+  talla:p.querySelector("select").value
+ });
+ save(); abrir();
 }
 
-function quitar(i){carrito[i].c--;if(carrito[i].c<=0)carrito.splice(i,1);save();}
-function eliminar(i){carrito.splice(i,1);save();}
-
-function save(){localStorage.setItem("carrito",JSON.stringify(carrito));render();}
+function save(){
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ render();
+}
 
 function render(){
+ const lista=document.getElementById("lista");
+ let suma=0;
  lista.innerHTML="";
- let t=0;
  carrito.forEach((i,idx)=>{
-  t+=i.pr*i.c;
+  suma+=i.pr;
   lista.innerHTML+=`
-  <div class="item">
-   <span>${i.n} x${i.c}</span>
-   <span>
-    <button onclick="quitar(${idx})">➖</button>
-    <button onclick="eliminar(${idx})">❌</button>
-    ${i.pr*i.c}€
-   </span>
-  </div>`;
+   <div class="item">
+    ${i.n} (${i.talla}) - ${i.pr}€
+    <button onclick="del(${idx})">X</button>
+   </div>`;
  });
- let env=t>50?0:5;
- envio.textContent=env;
- total.textContent=t+env;
+ let desc=Math.max(0,(carrito.length-1)*2);
+ document.getElementById("descuento").textContent=
+  desc?`Descuento aplicado: -${desc} €`:"";
+ document.getElementById("total").textContent=suma-desc;
+ calcular();
 }
 
-function abrir(){carritoDiv.classList.add("abierto");overlay.classList.add("activo")}
-function cerrar(){carritoDiv.classList.remove("abierto");overlay.classList.remove("activo")}
+function del(i){carrito.splice(i,1);save()}
+
+function calcular(){
+ let envio=5;
+ const p=document.getElementById("pais").value;
+ if(["Alemania","Francia","Italia","Reino Unido","Polonia","Países Bajos","Grecia","Portugal","Suiza","Suecia"].includes(p))envio=12;
+ if(p==="Otro país")envio=20;
+ document.getElementById("final").textContent=
+  +document.getElementById("total").textContent+envio;
+}
+
+function abrir(){
+ document.getElementById("carrito").classList.add("abierto");
+ document.getElementById("overlay").style.display="block";
+}
+function cerrar(){
+ document.getElementById("carrito").classList.remove("abierto");
+ document.getElementById("overlay").style.display="none";
+}
+
+function mostrarCheckout(){
+ document.getElementById("checkout").style.display="block";
+ document.getElementById("checkout").scrollIntoView({behavior:"smooth"});
+}
 
 function buscar(t){
  t=t.toLowerCase();
@@ -311,8 +325,19 @@ function buscar(t){
  });
 }
 
+paypal.Buttons({
+ createOrder:(d,a)=>a.order.create({
+  purchase_units:[{amount:{value:document.getElementById("final").textContent}}]
+ }),
+ onApprove:(d,a)=>a.order.capture().then(()=>{
+  alert("Pago completado");
+  carrito=[];save();
+ })
+}).render("#paypal-button-container");
+
 render();
 </script>
 
 </body>
 </html>
+
