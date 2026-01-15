@@ -5,177 +5,228 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
+<!-- PAYPAL (sandbox, funcional) -->
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
+
 <style>
-:root{
-  --dark:#0f0f0f;
-  --bg:#f3f3f3;
-  --card:#ffffff;
-  --primary:#1d4ed8;
-  --accent:#22c55e;
-  --radius:14px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f2f2f2;
 }
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{margin:0;background:var(--bg)}
 header{
-  background:#111;color:#fff;padding:30px;text-align:center
+  background:#111;
+  color:#fff;
+  padding:20px;
+  text-align:center;
 }
-header p{margin:8px 0 0}
+header small{display:block;margin-top:5px;color:#ccc}
+
 .productos{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
   gap:20px;
-  padding:30px;
+  padding:20px;
 }
 .producto{
-  background:#fff;border-radius:14px;
-  box-shadow:0 8px 20px rgba(0,0,0,.1);
-  display:flex;flex-direction:column
+  background:#fff;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+  display:flex;
+  flex-direction:column;
 }
 .producto img{
-  height:220px;object-fit:contain;padding:20px;background:#fafafa
+  width:100%;
+  border-radius:10px;
 }
-.info{padding:16px;display:flex;flex-direction:column;flex:1}
-.info h3{margin:0 0 6px}
-.precio{font-weight:bold;font-size:18px}
+.producto h3{margin:10px 0 5px}
+.producto p{margin:4px 0}
 select,button,input{
-  padding:10px;border-radius:8px;border:1px solid #ccc;margin-top:8px
+  padding:10px;
+  margin-top:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
-button{background:var(--primary);color:#fff;border:none;cursor:pointer}
-#btnCarrito{
-  position:fixed;right:20px;bottom:20px;
-  width:60px;height:60px;border-radius:50%;
-  background:var(--accent);color:#fff;font-size:26px;
-  display:flex;align-items:center;justify-content:center
+button{
+  background:#1e4ddb;
+  color:#fff;
+  border:none;
+  cursor:pointer;
 }
-#overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);
-  display:none
+button:hover{opacity:.9}
+
+/* Carrito */
+#carritoBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#2ecc71;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  font-size:24px;
 }
 #carrito{
-  position:fixed;right:-100%;top:0;width:100%;
-  max-width:420px;height:100%;
-  background:#fff;padding:20px;
-  transition:.3s;overflow:auto
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:100%;
+  max-width:420px;
+  height:100%;
+  background:#fff;
+  box-shadow:-5px 0 15px rgba(0,0,0,.2);
+  padding:20px;
+  overflow:auto;
+  transition:.3s;
 }
 #carrito.abierto{right:0}
-.item{display:flex;justify-content:space-between;margin-bottom:8px}
-.total{font-weight:bold;margin-top:10px}
-@media(max-width:600px){.productos{padding:15px}}
+.cerrar{
+  float:right;
+  font-size:22px;
+  cursor:pointer;
+}
+.item{
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
+}
+
+.descuento{
+  color:red;
+  font-weight:bold;
+}
+
+/* Checkout */
+#checkout{
+  margin-top:20px;
+}
+#checkout input, #checkout select{
+  width:100%;
+}
+
+/* Móvil */
+@media(max-width:600px){
+  header h1{font-size:22px}
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>Store EGP</h1>
-<p>Cualquier duda: sstoreegp@gmail.com</p>
-<p>@sstoreegp</p>
+  <h1>Store EGP</h1>
+  <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
 
-<div id="btnCarrito" onclick="abrirCarrito()">🛒</div>
-<div id="overlay" onclick="cerrarCarrito()"></div>
+<section class="productos" id="listaProductos"></section>
 
-<section class="productos" id="productos"></section>
+<button id="carritoBtn" onclick="abrirCarrito()">🛒</button>
 
 <div id="carrito">
-<button onclick="cerrarCarrito()">❌</button>
-<h2>Carrito</h2>
-<div id="lista"></div>
-<div id="resumen"></div>
+  <span class="cerrar" onclick="cerrarCarrito()">✖</span>
+  <h2>Carrito</h2>
+  <div id="items"></div>
+  <p id="resumen"></p>
 
-<h3>Datos de envío</h3>
-<input placeholder="Nombre completo" required>
-<input placeholder="Dirección completa" required>
-<select id="pais" onchange="calcular()">
-  <option value="5">España</option>
-  <option value="12">Europa cercana</option>
-  <option value="20">Resto del mundo</option>
-</select>
+  <div id="checkout">
+    <h3>Datos de envío</h3>
+    <input placeholder="Nombre completo">
+    <input placeholder="Dirección">
+    <input placeholder="Piso / Puerta / Apto">
+    <input placeholder="Código Postal">
+    <input placeholder="Ciudad">
+    <select id="pais" onchange="actualizarTotales()">
+      <option value="ES">España (5€)</option>
+      <option value="EU">Europa cercana (12€)</option>
+      <option value="OTRO">Otro país (20€)</option>
+    </select>
 
-<div class="total" id="totalFinal"></div>
+    <div id="paypal-button-container" style="margin-top:15px"></div>
+  </div>
 
-<!-- PAYPAL -->
-<script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=EUR"></script>
-<div id="paypal-button-container"></div>
+  <p style="margin-top:20px;font-weight:bold">Envíos a casi todo el mundo</p>
 </div>
 
-<footer style="text-align:center;padding:20px">
-<p>Envíos a casi todo el mundo</p>
-</footer>
-
 <script>
-const productosData=[
-["Alejense Gordas",12,"camiseta-clash.jpg"],
-["South Things",17,"camiseta-south-things.jpg"],
-["Jhon Pork",16,"camiseta-pork.jpg"],
-["Steve Harrington",16,"camiseta-steve.jpg"],
-["Dais Asco",16,"camiseta-asco.jpg"],
-["Drunk",15,"camiseta-drunk.jpg"],
-["Fuerte",10,"camiseta-fuerte.jpg"],
-["Raro",16,"camiseta-raro.jpg"],
-["Pedrito",15,"camiseta-pedrito.jpg"],
-["Razón",15,"camiseta-razon.jpg"],
-["Olla",15,"camiseta-olla.jpg"],
-["Crock",15,"camiseta-crock.jpg"],
-["Cervecita",12,"camiseta-cerveza.jpg"],
-["Spiderman",10,"camiseta-spiderman.jpg"]
+const productos = [
+
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
+ {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad si lo estás"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YA"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo"},
+ {n:"Rarete",p:16,img:"camiseta-raro.jpg",d:"Rarete rarete things"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Esta es tu camiseta si siempre tienes la razón"},
+ {n:"Ollita",p:12,img:"camiseta-olla.jpg",d:"jaja 😐 "},
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño gracioso"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"AM PM"},
+ {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla, lo sabes"}
 ];
 
-let carrito=[];
+const carrito=[];
 
-const cont=document.getElementById("productos");
-productosData.forEach(p=>{
+function cargar(){
+ const cont=document.getElementById("listaProductos");
+ productos.forEach(pr=>{
   cont.innerHTML+=`
   <div class="producto">
-    <img src="${p[2]}">
-    <div class="info">
-      <h3>${p[0]}</h3>
-      <div class="precio">${p[1]} €</div>
-      <select>
-        <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
-      </select>
-      <button onclick="add('${p[0]}',${p[1]},this)">Añadir</button>
-    </div>
+    <img src="${pr.img}">
+    <h3>${pr.n}</h3>
+    <p>${pr.d}</p>
+    <p><b>${pr.p} €</b></p>
+    <select>
+      <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+    </select>
+    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
   </div>`;
-});
-
-function add(n,pr,btn){
- const talla=btn.previousElementSibling.value;
- carrito.push({n,pr,talla});
- render();
- abrirCarrito();
-}
-
-function render(){
- const l=document.getElementById("lista");
- l.innerHTML="";
- let subtotal=0;
- carrito.forEach((i,idx)=>{
-  subtotal+=i.pr;
-  l.innerHTML+=`<div class="item">${i.n} (${i.talla}) <button onclick="del(${idx})">X</button></div>`;
  });
- const desc=Math.max(0,(carrito.length-1)*2);
- document.getElementById("resumen").innerHTML=
-  `Subtotal: ${subtotal}€<br>Descuento: -${desc}€`;
- calcular();
+}
+cargar();
+
+function add(n,p,btn){
+ const talla=btn.previousElementSibling.value;
+ carrito.push({n,p,talla});
+ actualizarTotales();
 }
 
-function calcular(){
- const envio=+document.getElementById("pais").value;
- const subtotal=carrito.reduce((s,i)=>s+i.pr,0);
- const desc=Math.max(0,(carrito.length-1)*2);
- document.getElementById("totalFinal").innerText=
-  `Total: ${subtotal-desc+envio} € (producto + envío)`;
-}
-
-function del(i){carrito.splice(i,1);render()}
 function abrirCarrito(){
  document.getElementById("carrito").classList.add("abierto");
- document.getElementById("overlay").style.display="block";
+ actualizarTotales();
 }
 function cerrarCarrito(){
  document.getElementById("carrito").classList.remove("abierto");
- document.getElementById("overlay").style.display="none";
+}
+
+function actualizarTotales(){
+ const div=document.getElementById("items");
+ div.innerHTML="";
+ let total=0;
+ carrito.forEach(i=>{
+  total+=i.p;
+  div.innerHTML+=`<div class="item">${i.n} (${i.talla}) - ${i.p}€</div>`;
+ });
+
+ let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
+ let envio= document.getElementById("pais").value=="ES"?5:
+            document.getElementById("pais").value=="EU"?12:20;
+
+ let final=total-descuento+envio;
+ document.getElementById("resumen").innerHTML=
+  `Productos: ${total}€<br>
+   <span class="descuento">Descuento: -${descuento}€</span><br>
+   Envío: ${envio}€<br>
+   <b>Precio final: ${final}€</b>`;
+
+ paypal.Buttons({
+   createOrder:(d,a)=>a.order.create({
+     purchase_units:[{amount:{value:final.toFixed(2)}}]
+   }),
+   onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+ }).render("#paypal-button-container");
 }
 </script>
 
