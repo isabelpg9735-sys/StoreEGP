@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
+<!-- PAYPAL -->
 <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
 
 <style>
@@ -15,7 +16,6 @@ body{
   background:#f2f2f2;
 }
 
-/* HEADER */
 header{
   background:#111;
   color:#fff;
@@ -39,6 +39,7 @@ header small{display:block;margin-top:5px;color:#ccc}
   box-shadow:0 5px 15px rgba(0,0,0,.1);
   display:flex;
   flex-direction:column;
+  height:100%;
 }
 
 .producto img{
@@ -49,29 +50,19 @@ header small{display:block;margin-top:5px;color:#ccc}
 .producto h3{margin:10px 0 5px}
 .producto p{margin:4px 0}
 
-/* 👉 AQUÍ LA MEJORA DE ESPACIADO (ORDENADOR) */
-.producto select{
-  margin-top:14px;
-  margin-bottom:14px;
+select,button,input{
+  padding:10px;
+  margin-top:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 
 .producto button{
-  margin-top:0;
-}
-
-/* INPUTS / BUTTONS */
-select,button,input{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  width:100%;
-}
-
-button{
   background:#1e4ddb;
   color:#fff;
   border:none;
   cursor:pointer;
+  margin-top:auto;
 }
 button:hover{opacity:.9}
 
@@ -85,9 +76,36 @@ button:hover{opacity:.9}
   height:60px;
   border-radius:50%;
   font-size:24px;
+  cursor:pointer;
+  border:none;
+  animation:none;
+}
+
+#carritoBtn.animar{
+  animation:pop .4s;
+}
+
+@keyframes pop{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.2)}
+  100%{transform:scale(1)}
+}
+
+/* BADGE */
+#badge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  background:red;
+  color:white;
+  font-size:12px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-weight:bold;
 }
 
 /* CARRITO */
@@ -118,40 +136,27 @@ button:hover{opacity:.9}
   align-items:center;
   border-bottom:1px solid #ddd;
   padding:10px 0;
-  gap:10px;
 }
 
-/* 👉 X PERFECTAMENTE CENTRADA */
+.item span{flex:1}
+
 .item button{
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  background:#e74c3c;
-  color:#fff;
-  font-size:14px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  line-height:1;
+  background:none;
+  color:red;
+  font-size:18px;
+  border:none;
+  cursor:pointer;
 }
 
-/* RESUMEN */
 .descuento{
   color:red;
   font-weight:bold;
 }
 
 /* CHECKOUT */
-#checkout{
-  margin-top:20px;
-}
-#checkout input, #checkout select{
-  width:100%;
-  margin-top:8px;
-}
+#checkout{margin-top:20px}
+#checkout input,#checkout select{width:100%}
 
-/* MÓVIL (SE QUEDA IGUAL) */
 @media(max-width:600px){
   header h1{font-size:22px}
 }
@@ -167,7 +172,9 @@ button:hover{opacity:.9}
 
 <section class="productos" id="listaProductos"></section>
 
-<button id="carritoBtn" onclick="abrirCarrito()">🛒</button>
+<button id="carritoBtn" onclick="abrirCarrito()">🛒
+  <div id="badge" style="display:none">0</div>
+</button>
 
 <div id="carrito">
   <span class="cerrar" onclick="cerrarCarrito()">✖</span>
@@ -182,6 +189,7 @@ button:hover{opacity:.9}
     <input placeholder="Piso / Puerta / Apto">
     <input placeholder="Código Postal">
     <input placeholder="Ciudad">
+
     <select id="pais" onchange="actualizarTotales()">
       <option value="ES">España (5€)</option>
       <option value="EU">Europa cercana (12€)</option>
@@ -209,15 +217,15 @@ const productos=[
  {n:"Ollita",p:12,img:"camiseta-olla.jpg",d:"jaja 😐"},
  {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
  {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
- {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla, lo sabes"}
+ {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla"}
 ];
 
 const carrito=[];
 
 function cargar(){
- const cont=document.getElementById("listaProductos");
+ const c=document.getElementById("listaProductos");
  productos.forEach(pr=>{
-  cont.innerHTML+=`
+  c.innerHTML+=`
   <div class="producto">
     <img src="${pr.img}">
     <h3>${pr.n}</h3>
@@ -235,13 +243,19 @@ cargar();
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
  carrito.push({n,p,talla});
+ abrirCarrito();
+ animarCarrito();
  actualizarTotales();
- document.getElementById("carrito").classList.add("abierto");
+}
+
+function animarCarrito(){
+ const btn=document.getElementById("carritoBtn");
+ btn.classList.add("animar");
+ setTimeout(()=>btn.classList.remove("animar"),400);
 }
 
 function abrirCarrito(){
  document.getElementById("carrito").classList.add("abierto");
- actualizarTotales();
 }
 function cerrarCarrito(){
  document.getElementById("carrito").classList.remove("abierto");
@@ -260,30 +274,34 @@ function actualizarTotales(){
  carrito.forEach((it,i)=>{
   total+=it.p;
   div.innerHTML+=`
-   <div class="item">
-     ${it.n} (${it.talla}) - ${it.p}€
-     <button onclick="quitar(${i})">✖</button>
-   </div>`;
+  <div class="item">
+    <span>${it.n} (${it.talla}) - ${it.p}€</span>
+    <button onclick="quitar(${i})">✖</button>
+  </div>`;
  });
+
+ const badge=document.getElementById("badge");
+ badge.style.display=carrito.length?"flex":"none";
+ badge.textContent=carrito.length;
 
  let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
  let envio=document.getElementById("pais").value=="ES"?5:
-            document.getElementById("pais").value=="EU"?12:20;
+           document.getElementById("pais").value=="EU"?12:20;
 
  let final=total-descuento+envio;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
-  <span class="descuento">Descuento: -${descuento}€</span><br>
-  Envío: ${envio}€<br>
-  <b>Precio final: ${final}€</b>`;
+ <span class="descuento">Descuento: -${descuento}€</span><br>
+ Envío: ${envio}€<br>
+ <b>Precio final: ${final}€</b>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
-   createOrder:(d,a)=>a.order.create({
-     purchase_units:[{amount:{value:final.toFixed(2)}}]
-   }),
-   onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+  createOrder:(d,a)=>a.order.create({
+    purchase_units:[{amount:{value:final.toFixed(2)}}]
+  }),
+  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
  }).render("#paypal-button-container");
 }
 </script>
