@@ -14,6 +14,8 @@ body{
   font-family:Arial,Helvetica,sans-serif;
   background:#f2f2f2;
 }
+
+/* HEADER */
 header{
   background:#111;
   color:#fff;
@@ -22,45 +24,47 @@ header{
 }
 header small{display:block;margin-top:5px;color:#ccc}
 
+/* PRODUCTOS */
 .productos{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:25px;
-  padding:25px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  padding:20px;
 }
 
 .producto{
   background:#fff;
-  border-radius:15px;
+  border-radius:12px;
   padding:15px;
-  box-shadow:0 6px 18px rgba(0,0,0,.12);
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
   display:flex;
   flex-direction:column;
-  height:100%;
-  text-align:center;
 }
 
 .producto img{
   width:100%;
-  height:260px;
-  object-fit:contain;
   border-radius:10px;
-  background:#fafafa;
 }
 
-.producto h3{margin:12px 0 5px}
+.producto h3{margin:10px 0 5px}
 .producto p{margin:4px 0}
 
-.producto button{
-  margin-top:auto;
-  padding:12px;
-  border-radius:10px;
+/* 👉 AQUÍ LA MEJORA DE ESPACIADO (ORDENADOR) */
+.producto select{
+  margin-top:14px;
+  margin-bottom:14px;
 }
 
+.producto button{
+  margin-top:0;
+}
+
+/* INPUTS / BUTTONS */
 select,button,input{
   padding:10px;
   border-radius:8px;
   border:1px solid #ccc;
+  width:100%;
 }
 
 button{
@@ -77,15 +81,13 @@ button:hover{opacity:.9}
   bottom:20px;
   right:20px;
   background:#2ecc71;
-  width:65px;
-  height:65px;
+  width:60px;
+  height:60px;
   border-radius:50%;
-  font-size:26px;
-  border:none;
-  transition:transform .3s;
-}
-#carritoBtn.animar{
-  transform:scale(1.2);
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 /* CARRITO */
@@ -97,7 +99,7 @@ button:hover{opacity:.9}
   max-width:420px;
   height:100%;
   background:#fff;
-  box-shadow:-5px 0 15px rgba(0,0,0,.25);
+  box-shadow:-5px 0 15px rgba(0,0,0,.2);
   padding:20px;
   overflow:auto;
   transition:.3s;
@@ -111,40 +113,47 @@ button:hover{opacity:.9}
 }
 
 .item{
-  border-bottom:1px solid #ddd;
-  padding:8px 0;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  border-bottom:1px solid #ddd;
+  padding:10px 0;
+  gap:10px;
 }
 
+/* 👉 X PERFECTAMENTE CENTRADA */
 .item button{
-  background:red;
-  border:none;
-  color:#fff;
-  border-radius:50%;
   width:26px;
   height:26px;
-  cursor:pointer;
+  border-radius:50%;
+  background:#e74c3c;
+  color:#fff;
   font-size:14px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
 }
 
+/* RESUMEN */
 .descuento{
   color:red;
   font-weight:bold;
 }
 
-/* Checkout */
+/* CHECKOUT */
 #checkout{
   margin-top:20px;
 }
 #checkout input, #checkout select{
   width:100%;
-  margin-bottom:8px;
+  margin-top:8px;
 }
 
+/* MÓVIL (SE QUEDA IGUAL) */
 @media(max-width:600px){
-  .producto img{height:220px}
+  header h1{font-size:22px}
 }
 </style>
 </head>
@@ -186,7 +195,7 @@ button:hover{opacity:.9}
 </div>
 
 <script>
-const productos = [
+const productos=[
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
@@ -204,7 +213,6 @@ const productos = [
 ];
 
 const carrito=[];
-let paypalRenderizado=false;
 
 function cargar(){
  const cont=document.getElementById("listaProductos");
@@ -227,26 +235,21 @@ cargar();
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
  carrito.push({n,p,talla});
-
- abrirCarrito();
-
- const btnCarrito=document.getElementById("carritoBtn");
- btnCarrito.classList.add("animar");
- setTimeout(()=>btnCarrito.classList.remove("animar"),300);
-
  actualizarTotales();
-}
-
-function eliminar(i){
- carrito.splice(i,1);
- actualizarTotales();
+ document.getElementById("carrito").classList.add("abierto");
 }
 
 function abrirCarrito(){
  document.getElementById("carrito").classList.add("abierto");
+ actualizarTotales();
 }
 function cerrarCarrito(){
  document.getElementById("carrito").classList.remove("abierto");
+}
+
+function quitar(i){
+ carrito.splice(i,1);
+ actualizarTotales();
 }
 
 function actualizarTotales(){
@@ -254,12 +257,12 @@ function actualizarTotales(){
  div.innerHTML="";
  let total=0;
 
- carrito.forEach((i,idx)=>{
-  total+=i.p;
+ carrito.forEach((it,i)=>{
+  total+=it.p;
   div.innerHTML+=`
    <div class="item">
-     <span>${i.n} (${i.talla}) - ${i.p}€</span>
-     <button onclick="eliminar(${idx})">✖</button>
+     ${it.n} (${it.talla}) - ${it.p}€
+     <button onclick="quitar(${i})">✖</button>
    </div>`;
  });
 
@@ -270,25 +273,21 @@ function actualizarTotales(){
  let final=total-descuento+envio;
 
  document.getElementById("resumen").innerHTML=
-  `Productos: ${total}€<br>
-   <span class="descuento">Descuento: -${descuento}€</span><br>
-   Envío: ${envio}€<br>
-   <b>Precio final: ${final}€</b>`;
+ `Productos: ${total}€<br>
+  <span class="descuento">Descuento: -${descuento}€</span><br>
+  Envío: ${envio}€<br>
+  <b>Precio final: ${final}€</b>`;
 
- if(!paypalRenderizado){
-   document.getElementById("paypal-button-container").innerHTML="";
-   paypal.Buttons({
-     createOrder:(d,a)=>a.order.create({
-       purchase_units:[{amount:{value:final.toFixed(2)}}]
-     }),
-     onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
-   }).render("#paypal-button-container");
-   paypalRenderizado=true;
- }
+ document.getElementById("paypal-button-container").innerHTML="";
+ paypal.Buttons({
+   createOrder:(d,a)=>a.order.create({
+     purchase_units:[{amount:{value:final.toFixed(2)}}]
+   }),
+   onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+ }).render("#paypal-button-container");
 }
 </script>
 
 </body>
 </html>
-
 
