@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
+<subtitle>Aquí encuentras lo que no sabias que necesitabas 🔥</subtitle>
 
 <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
 
@@ -49,6 +50,20 @@ header small{display:block;margin-top:5px;color:#ccc}
 .producto h3{margin:10px 0 5px}
 .producto p{margin:4px 0}
 
+.precio{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+}
+
+.oferta{
+  font-weight:bold;
+}
+.oferta del{
+  color:red;
+  margin-right:6px;
+}
+
 .acciones{
   margin-top:auto;
   display:flex;
@@ -69,14 +84,6 @@ select,button,input{
   cursor:pointer;
 }
 button:hover{opacity:.9}
-
-.oferta{
-  font-weight:bold;
-}
-.oferta del{
-  color:red;
-  margin-right:6px;
-}
 
 /* BOTÓN CARRITO */
 #carritoBtn{
@@ -157,6 +164,19 @@ button:hover{opacity:.9}
 
 #checkout{margin-top:20px}
 #checkout input,#checkout select{width:100%}
+
+/* FOOTER LEGAL */
+footer{
+  text-align:center;
+  padding:20px;
+  font-size:14px;
+}
+footer a{
+  margin:0 10px;
+  color:#1e4ddb;
+  text-decoration:none;
+}
+footer a:hover{text-decoration:underline}
 </style>
 </head>
 
@@ -199,6 +219,11 @@ button:hover{opacity:.9}
   <p style="margin-top:20px;font-weight:bold">Envíos a casi todo el mundo</p>
 </div>
 
+<footer>
+  <a href="#">Terms of Service</a>
+  <a href="#">Privacy Policy</a>
+</footer>
+
 <script>
 const productos=[
  {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla",oferta:"<span class='oferta'><del>15€</del> AHORA 10€</span>"},
@@ -212,10 +237,10 @@ const productos=[
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
  {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
  {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Esta es tu camiseta si siempre tienes la razón"},
- {n:"Ollita",p:12,img:"camiseta-olla.jpg",d:"jaja 😐"},
+ {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
  {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
  {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
- {n:"Kill humans",p:13,img:"camiseta-future",d:"Te la compras o te la compras, tu elijes"}
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas en tu armario"}
 ];
 
 const carrito=[];
@@ -228,7 +253,9 @@ function cargar(){
     ${pr.img?`<img src="${pr.img}">`:""}
     <h3>${pr.n}</h3>
     <p>${pr.d}</p>
-    <p>${pr.oferta?pr.oferta:`<b>${pr.p} €</b>`}</p>
+    <div class="precio">
+      ${pr.oferta?pr.oferta:`<b>${pr.p} €</b>`}
+    </div>
     <div class="acciones">
       <select>
         <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
