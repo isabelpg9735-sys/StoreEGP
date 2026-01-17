@@ -28,7 +28,15 @@ select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
 .item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #ddd}
 .descuento{color:red;font-weight:bold}
 #checkout input{width:100%;margin-bottom:8px}
-#paypal-button-container{margin-top:20px; min-height:150px}
+
+/* ESTE ES EL CONTENEDOR DONDE OCURRE LA MAGIA */
+#paypal-button-container { 
+    margin-top: 20px; 
+    min-height: 150px; 
+    position: relative; 
+    z-index: 10;
+}
+
 footer{text-align:center;padding:20px;font-size:14px;display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
 footer a{color:#1e4ddb;text-decoration:none}
 .legal-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
@@ -61,7 +69,7 @@ footer a{color:#1e4ddb;text-decoration:none}
     <input id="inputDireccion" placeholder="Dirección completa">
     <input id="inputCP" placeholder="Código Postal">
     <input id="inputCiudad" placeholder="Ciudad">
-    <p style="font-weight:bold; font-size:12px">Envío: España Peninsular (8€ - En prueba 0€)</p>
+    <p style="font-weight:bold; font-size:12px; color:#333">Envío: España Peninsular (8,00 €)</p>
     
     <div id="paypal-button-container"></div>
   </div>
@@ -129,35 +137,37 @@ function actualizarTotales(){
   badge.textContent=carrito.length;
   
   let desc = (carrito.length > 1) ? (carrito.length-1)*2 : 0;
-  precioFinalGlobal = total - desc; 
-  if(precioFinalGlobal < 1) precioFinalGlobal = 1;
+  let envio = 8; // COSTO DE ENVÍO ACTUALIZADO
+  precioFinalGlobal = total - desc + envio; 
 
-  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: 0€<br><b>Total: ${precioFinalGlobal.toFixed(2)}€</b>`;
+  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: ${envio}€<br><b>Total: ${precioFinalGlobal.toFixed(2)}€</b>`;
   
-  // Limpiamos el botón actual para forzar el refresco del precio cuando se abra
+  // Limpiamos el contenedor para refrescar el botón con el nuevo precio
   document.getElementById("paypal-button-container").innerHTML = "";
 }
 
 function abrirCarrito(){
     document.getElementById("carrito").classList.add("abierto");
-    // Cargamos los botones de pago con TODA su funcionalidad
-    if(carrito.length > 0) {
-        renderBotonCompleto();
-    }
+    // Esperamos a que la animación de la derecha termine para cargar PayPal
+    setTimeout(() => {
+        if(carrito.length > 0) {
+            renderPayPal();
+        }
+    }, 500);
 }
 
-function renderBotonCompleto() {
+function renderPayPal() {
     const container = document.getElementById("paypal-button-container");
-    container.innerHTML = ""; // Limpieza de seguridad
+    if(!container) return;
+    container.innerHTML = ""; // Limpieza absoluta
 
     paypal.Buttons({
         style: {
             layout: 'vertical',
-            color:  'gold',
+            color:  'blue',
             shape:  'rect',
-            label:  'checkout'
+            label:  'pay'
         },
-        // 1. CREACIÓN DEL PEDIDO
         createOrder: function(data, actions) {
             return actions.order.create({
                 purchase_units: [{
@@ -168,23 +178,18 @@ function renderBotonCompleto() {
                 }]
             });
         },
-        // 2. CAPTURA DEL PAGO TRAS ÉXITO
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                // Aquí llamamos a la función que envía el email
                 enviarEmails(details, precioFinalGlobal);
             });
-        },
-        // 3. GESTIÓN DE ERRORES
-        onError: function(err) {
-            alert("Hubo un error con la pasarela de pago. Inténtalo de nuevo.");
-            console.error(err);
         }
-    }).render('#paypal-button-container');
+    }).render('#paypal-button-container').catch(err => {
+        console.error("Error cargando botones: ", err);
+    });
 }
 
 function enviarEmails(details, total){
-    const nombre = document.getElementById("inputNombre").value || details.payer.name.given_name;
+    const nombre = document.getElementById("inputNombre").value || details.payer.name.full_name;
     const emailC = document.getElementById("inputEmail").value;
     const dir = document.getElementById("inputDireccion").value;
     let items = "";
@@ -193,7 +198,7 @@ function enviarEmails(details, total){
     emailjs.send("service_qltdw7m", "template_y9fr06m", {
         to_name: nombre, to_email: emailC, message: items, total_price: total + "€", address: dir
     }).then(() => {
-        alert("¡Pago realizado con éxito! Gracias por tu compra.");
+        alert("¡Pago realizado! Recibirás un correo.");
         carrito = [];
         actualizarTotales();
         cerrarCarrito();
@@ -204,13 +209,13 @@ function abrirLegal(tipo){
   const t=document.getElementById("legalTitulo");
   const p=document.getElementById("legalTexto");
   if(tipo==='envios'){ t.textContent="Envíos"; p.textContent="España Península: 8€. Plazo: 3-5 días hábiles."; }
-  else if(tipo==='devoluciones'){ t.textContent="Devoluciones"; p.textContent="14 días para devoluciones. El producto debe estar nuevo."; }
-  else if(tipo==='terms'){ t.textContent="Términos"; p.textContent="Condiciones de venta de Store EGP."; }
-  else { t.textContent="Privacidad"; p.textContent="Datos protegidos."; }
+  else if(tipo==='devoluciones'){ t.textContent="Devoluciones"; p.textContent="14 días para devoluciones. Producto sin usar."; }
+  else if(tipo==='terms'){ t.textContent="Términos"; p.textContent="Aceptas las condiciones de Store EGP."; }
+  else { t.textContent="Privacidad"; p.textContent="Tus datos están seguros."; }
   document.getElementById("legalModal").style.display="flex";
 }
 
-function quitar(i){ carrito.splice(i,1); actualizarTotales(); if(carrito.length > 0) renderBotonCompleto(); }
+function quitar(i){ carrito.splice(i,1); actualizarTotales(); if(carrito.length > 0) renderPayPal(); }
 function cerrarCarrito(){ document.getElementById("carrito").classList.remove("abierto"); }
 function cerrarLegal(){ document.getElementById("legalModal").style.display="none"; }
 </script>
