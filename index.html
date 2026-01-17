@@ -4,423 +4,171 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
- 
+
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
- 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
- 
+
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
- font-family:Arial,Helvetica,sans-serif;
- background:#f2f2f2;
-}
- 
-header{
- background:#111;
-  color:#fff;
-  padding:20px;
- text-align:center;
-}
-header small{display:block;margin-top:5px;color:#ccc}
-header .subtitulo{
- font-size:14px;
-  color:#aaa;
- margin-top:6px;
-}
- 
-/* PRODUCTOS */
-.productos{
-  display:grid;
- grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  padding:20px;
-}
- 
-.producto{
- background:#fff;
- border-radius:12px;
-  padding:15px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
-  display:flex;
- flex-direction:column;
-  height:100%;
-}
- 
-.producto img{
-  width:100%;
- border-radius:10px;
-}
- 
-.producto h3{margin:10px 0 5px;min-height:48px}
-.producto p{margin:4px 0;min-height:44px}
- 
-.precio{
- min-height:42px;
-  display:flex;
- align-items:center;
-}
- 
-.oferta{
- font-weight:bold;
-}
-.oferta del{
-  color:red;
-  margin-right:6px;
-}
- 
-.acciones{
-  margin-top:auto;
-  display:flex;
- flex-direction:column;
-  gap:10px;
-}
- 
-select,button,input{
-  padding:10px;
- border-radius:8px;
-  border:1px solid #ccc;
-}
- 
-.producto button{
- background:#1e4ddb;
-  color:#fff;
-  border:none;
- cursor:pointer;
-}
-button:hover{opacity:.9}
- 
-/* BOTÓN CARRITO */
-#carritoBtn{
- position:fixed;
-  bottom:20px;
-  right:20px;
- background:#2ecc71;
-  width:60px;
-  height:60px;
- border-radius:50%;
- font-size:24px;
- cursor:pointer;
-  border:none;
-  z-index: 999;
-}
- 
-#carritoBtn.animar{animation:pop .4s}
-@keyframes pop{
- 0%{transform:scale(1)}
- 50%{transform:scale(1.2)}
- 100%{transform:scale(1)}
-}
- 
-#badge{
- position:absolute;
-  top:-6px;
-  right:-6px;
- background:red;
-  color:white;
- font-size:12px;
-  width:22px;
-  height:22px;
- border-radius:50%;
-  display:flex;
- align-items:center;
- justify-content:center;
- font-weight:bold;
-}
- 
-/* CARRITO */
-#carrito{
- position:fixed;
-  top:0;
-  right:-100%;
-  width:100%;
- max-width:420px;
-  height:100%;
- background:#fff;
- box-shadow:-5px 0 15px rgba(0,0,0,.2);
-  padding:20px;
-  overflow:auto;
- transition:.3s;
-  z-index: 1000;
-}
-#carrito.abierto{right:0}
- 
-.cerrar{
-  float:right;
- font-size:22px;
- cursor:pointer;
-}
- 
-.item{
-  display:flex;
- justify-content:space-between;
- align-items:center;
- border-bottom:1px solid #ddd;
-  padding:10px 0;
-}
- 
-.item button{
- background:none;
-  color:red;
- font-size:18px;
-  border:none;
- cursor:pointer;
-}
- 
-.descuento{color:red;font-weight:bold}
- 
-#checkout{margin-top:20px}
-#checkout input,#checkout select{width:100%; margin-bottom: 8px;}
- 
-/* FOOTER */
-footer{
- text-align:center;
-  padding:20px;
- font-size:14px;
- display: flex;
- flex-wrap: wrap;
- justify-content: center;
- gap: 15px;
-}
-footer a{
-  color:#1e4ddb;
- text-decoration:none;
-}
-footer a:hover{text-decoration:underline}
- 
-/* MODAL LEGAL */
-.legal-modal{
- position:fixed;
-  inset:0;
- background:rgba(0,0,0,.6);
-  display:none;
- align-items:center;
- justify-content:center;
-  z-index:9999;
-}
-.legal-box{
- background:#fff;
- max-width:500px;
-  width:90%;
-  padding:20px;
- border-radius:12px;
-}
-.legal-box h2{margin-top:0}
-.legal-box button{
- margin-top:15px;
-  width:100%;
-}
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f2f2f2; }
+    header { background: #111; color: #fff; padding: 20px; text-align: center; }
+    header small { display: block; margin-top: 5px; color: #ccc; }
+    header .subtitulo { font-size: 14px; color: #aaa; margin-top: 6px; }
+
+    .productos { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+    .producto { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,.1); display: flex; flex-direction: column; height: 100%; }
+    .producto img { width: 100%; border-radius: 10px; }
+    .producto h3 { margin: 10px 0 5px; min-height: 48px; }
+    .producto p { margin: 4px 0; min-height: 44px; }
+    .precio { min-height: 42px; display: flex; align-items: center; }
+    .oferta { font-weight: bold; }
+    .oferta del { color: red; margin-right: 6px; }
+
+    .acciones { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+    select, button, input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .producto button { background: #1e4ddb; color: #fff; border: none; cursor: pointer; }
+
+    #carritoBtn { position: fixed; bottom: 20px; right: 20px; background: #2ecc71; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; cursor: pointer; border: none; z-index: 999; }
+    #badge { position: absolute; top: -6px; right: -6px; background: red; color: white; font-size: 12px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+    #carrito { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100%; background: #fff; box-shadow: -5px 0 15px rgba(0,0,0,.2); padding: 20px; overflow: auto; transition: .3s; z-index: 1000; }
+    #carrito.abierto { right: 0; }
+    .cerrar { float: right; font-size: 22px; cursor: pointer; }
+    .item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .item button { background: none; color: red; font-size: 18px; border: none; cursor: pointer; }
+    .descuento { color: red; font-weight: bold; }
+
+    #checkout { margin-top: 20px; }
+    #checkout input { width: 100%; margin-bottom: 8px; }
+    
+    /* CAJA PARA LOS BOTONES DE PAYPAL */
+    #paypal-button-container { margin-top: 20px; min-height: 150px; }
+
+    footer { text-align: center; padding: 20px; font-size: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+    footer a { color: #1e4ddb; text-decoration: none; }
+
+    .legal-modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .legal-box { background: #fff; max-width: 500px; width: 90%; padding: 20px; border-radius: 12px; }
 </style>
 </head>
- 
 <body>
- 
+
 <header>
-  <h1>Store EGP</h1>
-  <div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
-  <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
+    <h1>Store EGP</h1>
+    <div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
+    <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
- 
+
 <section class="productos" id="listaProductos"></section>
- 
+
 <button id="carritoBtn" onclick="abrirCarrito()">🛒
-  <div id="badge" style="display:none">0</div>
+    <div id="badge" style="display:none">0</div>
 </button>
- 
+
 <div id="carrito">
-  <span class="cerrar" onclick="cerrarCarrito()">✖</span>
- <h2>Carrito</h2>
-  <div id="items"></div>
-  <p id="resumen"></p>
- 
-  <div id="checkout">
-    <h3>Datos de envío</h3>
-    <input id="inputNombre" placeholder="Nombre completo">
-    <input id="inputEmail" placeholder="Tu Email (para recibir confirmación)">
-    <input id="inputDireccion" placeholder="Dirección">
-    <input id="inputPiso" placeholder="Piso / Puerta / Apto">
-    <input id="inputCP" placeholder="Código Postal">
-    <input id="inputCiudad" placeholder="Ciudad">
- 
-    <select id="pais" onchange="actualizarTotales()">
-      <option value="ES">España Península (Prueba 0€)</option>
-    </select>
- 
-    <div id="paypal-button-container" style="margin-top:15px"></div>
-  </div>
- 
-  <p style="margin-top:20px;font-weight:bold; font-size:13px; color:#555">
-    * Envíos solo a península por costes logísticos.
-  </p>
-</div>
- 
-<footer>
-  <a href="#" onclick="abrirLegal('terms')">Terms of Service</a>
-  <a href="#" onclick="abrirLegal('privacy')">Privacy Policy</a>
-  <a href="#" onclick="abrirLegal('envios')">Posibilidades de envío</a>
-  <a href="#" onclick="abrirLegal('devoluciones')">Devoluciones</a>
-</footer>
- 
-<div class="legal-modal" id="legalModal">
-  <div class="legal-box">
-    <h2 id="legalTitulo"></h2>
-    <p id="legalTexto"></p>
-    <button onclick="cerrarLegal()">Cerrar</button>
-  </div>
-</div>
- 
-<script>
-const EMAILJS_PUBLIC_KEY = "WLyVJyhY2lgWl421L"; 
-const EMAILJS_SERVICE_ID = "service_qltdw7m"; 
-const EMAILJS_TEMPLATE_ID = "template_y9fr06m";
- 
-(function(){
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-})();
- 
-const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla",oferta:"<span class='oferta'><del>15€</del> AHORA 1€</span>"},
- {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
- {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad si lo estás"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YA"},
- {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Esta es tu camiseta si siempre tienes la razón"},
- {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"En verdad sabes que la necesitas"}
-];
- 
-const carrito=[];
- 
-function cargar(){
- const c=document.getElementById("listaProductos");
- productos.forEach(pr=>{
-  c.innerHTML+=`
-  <div class="producto">
-    <img src="${pr.img}">
-    <h3>${pr.n}</h3>
-    <p>${pr.d}</p>
-    <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p} €</b>`}</div>
-    <div class="acciones">
-     <select>
-       <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
-     </select>
-      <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
+    <span class="cerrar" onclick="cerrarCarrito()">✖</span>
+    <h2>Tu Carrito</h2>
+    <div id="items"></div>
+    <p id="resumen"></p>
+    <div id="checkout">
+        <h3>Datos de envío</h3>
+        <input id="inputNombre" placeholder="Nombre completo">
+        <input id="inputEmail" placeholder="Tu Email">
+        <input id="inputDireccion" placeholder="Dirección">
+        <input id="inputCP" placeholder="Código Postal">
+        <input id="inputCiudad" placeholder="Ciudad">
+        <div id="paypal-button-container"></div>
     </div>
-  </div>`;
- });
-}
-cargar();
- 
-function add(n,p,btn){
- const talla=btn.previousElementSibling.value;
- carrito.push({n,p,talla});
- abrirCarrito();
- animarCarrito();
- actualizarTotales();
-}
- 
-function animarCarrito(){
- const btn=document.getElementById("carritoBtn");
- btn.classList.add("animar");
- setTimeout(()=>btn.classList.remove("animar"),400);
-}
- 
-function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
-function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
- 
-function quitar(i){
- carrito.splice(i,1);
- actualizarTotales();
-}
- 
-function actualizarTotales(){
- const div=document.getElementById("items");
- div.innerHTML="";
- let total=0;
- 
- carrito.forEach((it,i)=>{
-  total+=it.p;
- div.innerHTML+=`
-  <div class="item">
-   <span>${it.n} (${it.talla}) - ${it.p}€</span>
-    <button onclick="quitar(${i})">✖</button>
-  </div>`;
- });
- 
- const badge=document.getElementById("badge");
- badge.style.display=carrito.length?"flex":"none";
- badge.textContent=carrito.length;
- 
- let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
- 
- // ENVÍO A 0 PARA LA PRUEBA
- let envio = 0;
- let final=total-descuento+envio;
- if(final < 0.01) final = 1.00; // Mínimo 1€ para que PayPal no falle
- 
- document.getElementById("resumen").innerHTML=
- `Productos: ${total}€<br>
- <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: ${envio}€<br>
- <b>Precio final: ${final.toFixed(2)}€</b>`;
- 
- document.getElementById("paypal-button-container").innerHTML="";
- if(carrito.length > 0){
-    paypal.Buttons({
-    createOrder:(d,a)=>a.order.create({
-     purchase_units:[{amount:{value:final.toFixed(2)}}]
-     }),
-    onApprove:(d,a)=>a.order.capture().then((details)=>{
-        enviarEmails(details, final);
-     })
-    }).render("#paypal-button-container");
- }
-}
- 
-function enviarEmails(details, total){
-    const nombre = document.getElementById("inputNombre").value || details.payer.name.given_name;
-    const emailCliente = document.getElementById("inputEmail").value;
-    const direccion = document.getElementById("inputDireccion").value;
-    let pedidoTexto = "";
-    carrito.forEach(it => { pedidoTexto += `${it.n} (Talla: ${it.talla}) - ${it.p}€\n` });
- 
-    const templateParams = {
-        to_name: nombre,
-        to_email: emailCliente,
-        message: pedidoTexto,
-        total_price: total + "€",
-        address: direccion
-    };
- 
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-    .then(function(response) {
-       alert("¡Pago realizado correctamente! Te hemos enviado un correo de confirmación.");
-       carrito.length = 0;
-       actualizarTotales();
-       cerrarCarrito();
-    }, function(error) {
-       alert("Pago realizado correctamente.");
-    });
-}
- 
-function abrirLegal(tipo){
- const t=document.getElementById("legalTitulo");
- const p=document.getElementById("legalTexto");
- if(tipo==="terms"){ t.textContent="Terms of Service"; p.textContent="Condiciones de venta..."; }
- else if(tipo==="privacy"){ t.textContent="Privacy Policy"; p.textContent="Uso de datos..."; }
- else if(tipo==="envios"){ t.textContent="Envíos"; p.textContent="Actualmente solo península ibérica..."; }
- else if(tipo==="devoluciones"){ t.textContent="Devoluciones"; p.textContent="Plazo de 14 días..."; }
- document.getElementById("legalModal").style.display="flex";
-}
-function cerrarLegal(){ document.getElementById("legalModal").style.display="none"; }
+</div>
+
+<footer>
+    <a href="#" onclick="abrirLegal('terms')">Terms</a>
+    <a href="#" onclick="abrirLegal('privacy')">Privacy</a>
+    <a href="#" onclick="abrirLegal('envios')">Envíos</a>
+    <a href="#" onclick="abrirLegal('devoluciones')">Devoluciones</a>
+</footer>
+
+<div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto"></p><button onclick="cerrarLegal()">Cerrar</button></div></div>
+
+<script>
+    emailjs.init("WLyVJyhY2lgWl421L");
+
+    const productos = [
+        {n:"Spiderman", p:1, img:"camiseta-spiderman.jpg", d:"Tu sentido arácnido te pide comprarla", oferta:"<span class='oferta'><del>15€</del> AHORA 1€</span>"},
+        {n:"South Things", p:17, img:"camiseta-south-things.jpg", d:"Stranger Things x South Park"},
+        {n:"Jhon Pork", p:12, img:"camiseta-pork.jpg", d:"Cojeme el teléfono, vaaaa"},
+        {n:"Steve Harrington", p:10, img:"camiseta-steve.jpg", d:"Stranger Thiiiiiings"},
+        {n:"Dais Asco", p:15, img:"camiseta-asco.jpg", d:"Tremendo facto"},
+        {n:"Drunk", p:14, img:"camiseta-drunk.jpg", d:"En verdad si lo estás"},
+        {n:"Alejense Gordas", p:14, img:"camiseta-clash.jpg", d:"TORRE INFERNAL YA"},
+        {n:"Fortachón", p:13, img:"camiseta-fuerte.jpg", d:"Darás pena pero con estilo"},
+        {n:"Rarete", p:18, img:"camiseta-raro.jpg", d:"Rarete rarete things", oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
+        {n:"Pedrito", p:15, img:"camiseta-pedrito.jpg", d:"Vaya presi eh"},
+        {n:"Llevo Razón", p:15, img:"camiseta-razon.jpg", d:"Siempre tienes la razón"},
+        {n:"Ollita", p:13, img:"camiseta-olla.jpg", d:"jaja😐"},
+        {n:"(C)Rock", p:10, img:"camiseta-crock.jpg", d:"Diseño rocoso"},
+        {n:"Cervecita", p:12, img:"camiseta-cerveza.jpg", d:"Eres un borracho"},
+        {n:"Kill humans", p:13, img:"camiseta-future.jpg", d:"Sabes que la necesitas"}
+    ];
+
+    let carrito = [];
+
+    function cargar() {
+        const c = document.getElementById("listaProductos");
+        productos.forEach(pr => {
+            c.innerHTML += `<div class="producto"><img src="${pr.img}"><h3>${pr.n}</h3><p>${pr.d}</p><div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p} €</b>`}</div><div class="acciones"><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select><button onclick="add('${pr.n}',${pr.p},this)">Añadir</button></div></div>`;
+        });
+    }
+    cargar();
+
+    function add(n, p, btn) {
+        const talla = btn.previousElementSibling.value;
+        carrito.push({n, p, talla});
+        actualizarTotales();
+        abrirCarrito();
+    }
+
+    function actualizarTotales() {
+        const div = document.getElementById("items");
+        div.innerHTML = "";
+        let total = 0;
+        carrito.forEach((it, i) => {
+            total += it.p;
+            div.innerHTML += `<div class="item"><span>${it.n} (${it.talla})</span><b>${it.p}€</b><button onclick="quitar(${i})">✖</button></div>`;
+        });
+
+        document.getElementById("badge").style.display = carrito.length ? "flex" : "none";
+        document.getElementById("badge").textContent = carrito.length;
+
+        let desc = carrito.length > 1 ? (carrito.length - 1) * 2 : 0;
+        let final = total - desc; 
+        if(final < 1) final = 1;
+
+        document.getElementById("resumen").innerHTML = `Subtotal: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: 0€<br><b>Total: ${final.toFixed(2)}€</b>`;
+
+        renderPayPal(final);
+    }
+
+    function renderPayPal(monto) {
+        document.getElementById("paypal-button-container").innerHTML = "";
+        if (carrito.length > 0) {
+            paypal.Buttons({
+                createOrder: (data, actions) => actions.order.create({ purchase_units: [{ amount: { value: monto.toFixed(2) } }] }),
+                onApprove: (data, actions) => actions.order.capture().then(details => {
+                    alert("Pago realizado por " + details.payer.name.given_name);
+                    carrito = [];
+                    actualizarTotales();
+                    cerrarCarrito();
+                })
+            }).render('#paypal-button-container');
+        }
+    }
+
+    function quitar(i) { carrito.splice(i, 1); actualizarTotales(); }
+    function abrirCarrito() { document.getElementById("carrito").classList.add("abierto"); }
+    function cerrarCarrito() { document.getElementById("carrito").classList.remove("abierto"); }
+    function abrirLegal(t) { document.getElementById("legalTitulo").textContent = t; document.getElementById("legalModal").style.display = "flex"; }
+    function cerrarLegal() { document.getElementById("legalModal").style.display = "none"; }
 </script>
 </body>
 </html>
