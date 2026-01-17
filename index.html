@@ -20,8 +20,10 @@ header small{display:block;margin-top:5px;color:#ccc}
 .acciones{margin-top:auto;display:flex;flex-direction:column;gap:10px}
 select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
 .producto button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
+
 #carritoBtn{position:fixed;bottom:20px;right:20px;background:#2ecc71;width:60px;height:60px;border-radius:50%;font-size:24px;cursor:pointer;border:none;z-index:999}
 #badge{position:absolute;top:-6px;right:-6px;background:red;color:white;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
 #carrito{position:fixed;top:0;right:-100%;width:100%;max-width:420px;height:100%;background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);padding:20px;overflow:auto;transition:.3s;z-index:1000}
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
@@ -29,12 +31,13 @@ select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
 .descuento{color:red;font-weight:bold}
 #checkout input{width:100%;margin-bottom:8px}
 
-/* ESTE ES EL CONTENEDOR DONDE OCURRE LA MAGIA */
+/* CONTENEDOR CRÍTICO: Aseguramos visibilidad */
 #paypal-button-container { 
     margin-top: 20px; 
     min-height: 150px; 
-    position: relative; 
-    z-index: 10;
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
 }
 
 footer{text-align:center;padding:20px;font-size:14px;display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
@@ -69,7 +72,7 @@ footer a{color:#1e4ddb;text-decoration:none}
     <input id="inputDireccion" placeholder="Dirección completa">
     <input id="inputCP" placeholder="Código Postal">
     <input id="inputCiudad" placeholder="Ciudad">
-    <p style="font-weight:bold; font-size:12px; color:#333">Envío: España Peninsular (8,00 €)</p>
+    <p id="infoEnvio" style="font-weight:bold; font-size:12px; color:#333">Envío: España Peninsular (8,00 €)</p>
     
     <div id="paypal-button-container"></div>
   </div>
@@ -137,34 +140,34 @@ function actualizarTotales(){
   badge.textContent=carrito.length;
   
   let desc = (carrito.length > 1) ? (carrito.length-1)*2 : 0;
-  let envio = 8; // COSTO DE ENVÍO ACTUALIZADO
+  let envio = 8; // ENVÍO FIJADO EN 8€
   precioFinalGlobal = total - desc + envio; 
 
   document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: ${envio}€<br><b>Total: ${precioFinalGlobal.toFixed(2)}€</b>`;
   
-  // Limpiamos el contenedor para refrescar el botón con el nuevo precio
+  // Limpiamos siempre para que el botón no se duplique
   document.getElementById("paypal-button-container").innerHTML = "";
 }
 
 function abrirCarrito(){
     document.getElementById("carrito").classList.add("abierto");
-    // Esperamos a que la animación de la derecha termine para cargar PayPal
+    // CRÍTICO: Esperamos a que la transición del carrito termine (300ms) 
+    // antes de pedirle a PayPal que se dibuje.
     setTimeout(() => {
         if(carrito.length > 0) {
             renderPayPal();
         }
-    }, 500);
+    }, 400);
 }
 
 function renderPayPal() {
     const container = document.getElementById("paypal-button-container");
-    if(!container) return;
-    container.innerHTML = ""; // Limpieza absoluta
+    container.innerHTML = ""; 
 
     paypal.Buttons({
         style: {
             layout: 'vertical',
-            color:  'blue',
+            color:  'blue', // Botón azul de PayPal y abajo el de Tarjeta
             shape:  'rect',
             label:  'pay'
         },
@@ -182,10 +185,11 @@ function renderPayPal() {
             return actions.order.capture().then(function(details) {
                 enviarEmails(details, precioFinalGlobal);
             });
+        },
+        onError: function(err) {
+            console.error("Error PayPal:", err);
         }
-    }).render('#paypal-button-container').catch(err => {
-        console.error("Error cargando botones: ", err);
-    });
+    }).render('#paypal-button-container');
 }
 
 function enviarEmails(details, total){
@@ -198,26 +202,23 @@ function enviarEmails(details, total){
     emailjs.send("service_qltdw7m", "template_y9fr06m", {
         to_name: nombre, to_email: emailC, message: items, total_price: total + "€", address: dir
     }).then(() => {
-        alert("¡Pago realizado! Recibirás un correo.");
+        alert("¡Pago realizado con éxito!");
         carrito = [];
         actualizarTotales();
         cerrarCarrito();
     });
 }
 
-function abrirLegal(tipo){
-  const t=document.getElementById("legalTitulo");
-  const p=document.getElementById("legalTexto");
-  if(tipo==='envios'){ t.textContent="Envíos"; p.textContent="España Península: 8€. Plazo: 3-5 días hábiles."; }
-  else if(tipo==='devoluciones'){ t.textContent="Devoluciones"; p.textContent="14 días para devoluciones. Producto sin usar."; }
-  else if(tipo==='terms'){ t.textContent="Términos"; p.textContent="Aceptas las condiciones de Store EGP."; }
-  else { t.textContent="Privacidad"; p.textContent="Tus datos están seguros."; }
-  document.getElementById("legalModal").style.display="flex";
+function quitar(i){ 
+    carrito.splice(i,1); 
+    actualizarTotales(); 
+    if(carrito.length > 0) renderPayPal(); 
 }
-
-function quitar(i){ carrito.splice(i,1); actualizarTotales(); if(carrito.length > 0) renderPayPal(); }
 function cerrarCarrito(){ document.getElementById("carrito").classList.remove("abierto"); }
 function cerrarLegal(){ document.getElementById("legalModal").style.display="none"; }
+function abrirLegal(tipo){
+  document.getElementById("legalModal").style.display="flex";
+}
 </script>
 </body>
 </html>
