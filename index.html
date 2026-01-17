@@ -5,22 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
+<!-- PAYPAL -->
 <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
+
+<!-- EMAILJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+ emailjs.init("WLyVJyhY2lgWl421L"); // PUBLIC KEY
+})();
+</script>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f2f2f2}
+
 header{background:#111;color:#fff;padding:20px;text-align:center}
 header small{color:#ccc}
-.productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px}
-.producto{background:#fff;border-radius:12px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.1);display:flex;flex-direction:column}
+.subtitulo{font-size:14px;color:#aaa;margin-top:6px}
+
+/* PRODUCTOS */
+.productos{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+ gap:20px;padding:20px
+}
+.producto{
+ background:#fff;border-radius:12px;padding:15px;
+ box-shadow:0 5px 15px rgba(0,0,0,.1);
+ display:flex;flex-direction:column
+}
 .producto img{width:100%;border-radius:10px}
 .precio{margin:8px 0}
 .oferta del{color:red;margin-right:6px}
 .acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
-select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
-.producto button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
+select,button,input{
+ padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
+}
+.producto button{
+ background:#1e4ddb;color:#fff;border:none;cursor:pointer
+}
 
+/* CARRITO */
 #carritoBtn{
  position:fixed;bottom:20px;right:20px;
  background:#2ecc71;width:60px;height:60px;
@@ -29,9 +55,9 @@ select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
 #badge{
  position:absolute;top:-6px;right:-6px;
  background:red;color:#fff;width:22px;height:22px;
- border-radius:50%;display:none;align-items:center;justify-content:center
+ border-radius:50%;display:none;
+ align-items:center;justify-content:center
 }
-
 #carrito{
  position:fixed;top:0;right:-100%;
  width:100%;max-width:420px;height:100%;
@@ -45,19 +71,25 @@ select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
  display:flex;justify-content:space-between;
  border-bottom:1px solid #ddd;padding:10px 0
 }
-
 .descuento{color:red;font-weight:bold}
 
-footer{text-align:center;padding:20px}
-footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
+/* DATOS ENVÍO */
+.form-envio{
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+ margin-top:10px;
+}
 
 .btn-tarjeta{
- margin-top:10px;
- background:#000;color:#fff;
- width:100%;border:none;
- padding:12px;border-radius:8px;
- cursor:pointer
+ margin-top:10px;background:#000;color:#fff;
+ width:100%;border:none;padding:12px;
+ border-radius:8px;cursor:pointer
 }
+
+footer{text-align:center;padding:20px;font-size:14px}
+footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
+footer a:hover{text-decoration:underline}
 </style>
 </head>
 
@@ -65,7 +97,8 @@ footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
 
 <header>
 <h1>Store EGP</h1>
-<small>@sstoreegp · sstoreegp@gmail.com</small>
+<div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
+<small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
 
 <section class="productos" id="listaProductos"></section>
@@ -77,38 +110,59 @@ footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
 <div id="carrito">
 <span class="cerrar" onclick="cerrarCarrito()">✖</span>
 <h2>Carrito</h2>
+
 <div id="items"></div>
 <p id="resumen"></p>
 
 <h3>Datos de envío</h3>
-<input placeholder="Nombre completo">
-<input placeholder="Dirección">
-<input placeholder="Ciudad">
 
-<select id="pais" onchange="actualizarTotales()">
+<div class="form-envio">
+ <input id="nombre" placeholder="Nombre completo">
+ <input id="email" placeholder="Correo electrónico">
+ <input id="direccion" placeholder="Dirección">
+ <input id="cp" placeholder="Código postal">
+ <input id="ciudad" placeholder="Ciudad">
+</div>
+
+<select id="pais" onchange="actualizarTotales()" style="margin-top:10px">
  <option value="ES">España (5€)</option>
- <option value="EU">Europa (12€)</option>
+ <option value="EU">Europa cercana (12€)</option>
  <option value="OTRO">Otro país (20€)</option>
 </select>
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
+<button class="btn-tarjeta" onclick="pagoTarjeta()">💳 Pagar con tarjeta</button>
 
-<button class="btn-tarjeta" onclick="pagoTarjeta()">
- 💳 Pagar con tarjeta
-</button>
-
+<p style="margin-top:15px;font-size:13px">
+📦 Envíos a casi todo el mundo · ⏱️ 2–5 días laborables
+</p>
+<p style="font-size:13px">
+↩️ Devoluciones en 14 días si la prenda no ha sido usada ni lavada
+</p>
 </div>
 
 <footer>
-<a href="#" onclick="alert('Terms of Service')">Terms of Service</a>
-<a href="#" onclick="alert('Privacy Policy')">Privacy Policy</a>
+<a href="#">Terms of Service</a>
+<a href="#">Privacy Policy</a>
 </footer>
 
 <script>
 const productos=[
- {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Sentido arácnido"},
- {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger x South"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"}
+ {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe",oferta:"<span class='oferta'><del>15€</del> AHORA 10€</span>"},
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes"},
+ {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Con estilo"},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
+ {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
 ];
 
 const carrito=[];
@@ -121,7 +175,7 @@ function cargar(){
    <img src="${pr.img}">
    <h3>${pr.n}</h3>
    <p>${pr.d}</p>
-   <div class="precio"><b>${pr.p}€</b></div>
+   <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
    <div class="acciones">
     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
@@ -172,13 +226,29 @@ function actualizarTotales(){
   createOrder:(d,a)=>a.order.create({
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
-  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago PayPal realizado"))
+  onApprove:(d,a)=>a.order.capture().then(()=>{
+    enviarEmail(final);
+    alert("Pago realizado correctamente");
+  })
  }).render("#paypal-button-container");
 }
 
+function enviarEmail(total){
+ const datos={
+  nombre:document.getElementById("nombre").value,
+  email:document.getElementById("email").value,
+  direccion:document.getElementById("direccion").value,
+  cp:document.getElementById("cp").value,
+  ciudad:document.getElementById("ciudad").value,
+  pedido:carrito.map(p=>`${p.n} (${p.talla})`).join(", "),
+  total:total+"€"
+ };
+
+ emailjs.send("service_qltdw7m","template_y9fr06m",datos);
+}
+
 function pagoTarjeta(){
- if(!carrito.length){alert("Carrito vacío");return;}
- alert("Pago con tarjeta simulado (requiere Stripe backend)");
+ alert("Pago con tarjeta pendiente de Stripe (estructura lista)");
 }
 </script>
 
