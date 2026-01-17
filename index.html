@@ -5,137 +5,180 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<!-- PAYPAL SDK (REAL, TARJETA + PAYPAL) -->
-<script>
-  function loadPayPalSDK() {
-    const script = document.createElement("script");
-    script.src = "https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR&components=buttons";
-    script.onload = initPayPal;
-    document.head.appendChild(script);
-  }
-</script>
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f2f2f2}
+body{margin:0;font-family:Arial;background:#f2f2f2}
 header{background:#111;color:#fff;padding:20px;text-align:center}
+header small{color:#ccc}
 .productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px}
-.producto{background:#fff;border-radius:12px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+.producto{background:#fff;border-radius:12px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.1);display:flex;flex-direction:column}
 .producto img{width:100%;border-radius:10px}
-select,button{padding:10px;border-radius:8px}
-button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
+.precio{margin:8px 0}
+.oferta del{color:red;margin-right:6px}
+.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
+.producto button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
 
 #carritoBtn{
-  position:fixed;bottom:20px;right:20px;
-  background:#2ecc71;width:60px;height:60px;
-  border-radius:50%;font-size:24px;border:none;cursor:pointer;z-index:1000
+ position:fixed;bottom:20px;right:20px;
+ background:#2ecc71;width:60px;height:60px;
+ border-radius:50%;font-size:24px;border:none;cursor:pointer
+}
+#badge{
+ position:absolute;top:-6px;right:-6px;
+ background:red;color:#fff;width:22px;height:22px;
+ border-radius:50%;display:none;align-items:center;justify-content:center
 }
 
 #carrito{
-  position:fixed;top:0;right:-100%;
-  width:100%;max-width:420px;height:100%;
-  background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
-  padding:20px;transition:.3s;z-index:2000;overflow:auto
+ position:fixed;top:0;right:-100%;
+ width:100%;max-width:420px;height:100%;
+ background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
+ padding:20px;overflow:auto;transition:.3s
 }
 #carrito.abierto{right:0}
+.cerrar{float:right;font-size:22px;cursor:pointer}
 
-.item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ddd}
+.item{
+ display:flex;justify-content:space-between;
+ border-bottom:1px solid #ddd;padding:10px 0
+}
 
-#paypal-button-container{margin-top:20px}
+.descuento{color:red;font-weight:bold}
+
+footer{text-align:center;padding:20px}
+footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
+
+.btn-tarjeta{
+ margin-top:10px;
+ background:#000;color:#fff;
+ width:100%;border:none;
+ padding:12px;border-radius:8px;
+ cursor:pointer
+}
 </style>
 </head>
 
-<body onload="loadPayPalSDK()">
+<body>
 
 <header>
-  <h1>Store EGP</h1>
+<h1>Store EGP</h1>
+<small>@sstoreegp · sstoreegp@gmail.com</small>
 </header>
 
 <section class="productos" id="listaProductos"></section>
 
-<button id="carritoBtn" onclick="abrirCarrito()">🛒</button>
+<button id="carritoBtn" onclick="abrirCarrito()">🛒
+ <div id="badge">0</div>
+</button>
 
 <div id="carrito">
-  <button onclick="cerrarCarrito()">Cerrar</button>
-  <h2>Carrito</h2>
-  <div id="items"></div>
-  <p id="resumen"></p>
+<span class="cerrar" onclick="cerrarCarrito()">✖</span>
+<h2>Carrito</h2>
+<div id="items"></div>
+<p id="resumen"></p>
 
-  <!-- PAYPAL SIEMPRE VISIBLE -->
-  <div id="paypal-button-container"></div>
+<h3>Datos de envío</h3>
+<input placeholder="Nombre completo">
+<input placeholder="Dirección">
+<input placeholder="Ciudad">
+
+<select id="pais" onchange="actualizarTotales()">
+ <option value="ES">España (5€)</option>
+ <option value="EU">Europa (12€)</option>
+ <option value="OTRO">Otro país (20€)</option>
+</select>
+
+<div id="paypal-button-container" style="margin-top:15px"></div>
+
+<button class="btn-tarjeta" onclick="pagoTarjeta()">
+ 💳 Pagar con tarjeta
+</button>
+
 </div>
+
+<footer>
+<a href="#" onclick="alert('Terms of Service')">Terms of Service</a>
+<a href="#" onclick="alert('Privacy Policy')">Privacy Policy</a>
+</footer>
 
 <script>
 const productos=[
- {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg"},
- {n:"South Things",p:17,img:"camiseta-south-things.jpg"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg"},
- {n:"Dais Asco",p:15,img:"camiseta-asco.jpg"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg"},
- {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg"},
- {n:"Ollita",p:13,img:"camiseta-olla.jpg"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg"}
+ {n:"Spiderman",p:10,img:"camiseta-spiderman.jpg",d:"Sentido arácnido"},
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger x South"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"}
 ];
 
 const carrito=[];
-let paypalInicializado=false;
 
 function cargar(){
  const c=document.getElementById("listaProductos");
- productos.forEach(p=>{
+ productos.forEach(pr=>{
   c.innerHTML+=`
   <div class="producto">
-    <img src="${p.img}">
-    <h3>${p.n}</h3>
-    <p>${p.p} €</p>
-    <button onclick="add('${p.n}',${p.p})">Añadir</button>
+   <img src="${pr.img}">
+   <h3>${pr.n}</h3>
+   <p>${pr.d}</p>
+   <div class="precio"><b>${pr.p}€</b></div>
+   <div class="acciones">
+    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
+   </div>
   </div>`;
  });
 }
 cargar();
 
-function add(n,p){
- carrito.push({n,p});
- actualizar();
- abrirCarrito();
-}
-
-function actualizar(){
- const div=document.getElementById("items");
- div.innerHTML="";
- let total=0;
- carrito.forEach(it=>{
-  total+=it.p;
-  div.innerHTML+=`<div class="item"><span>${it.n}</span><span>${it.p}€</span></div>`;
- });
- document.getElementById("resumen").innerHTML=`<b>Total: ${total}€</b>`;
- if(paypalInicializado) actualizarPayPal(total);
+function add(n,p,btn){
+ carrito.push({n,p,talla:btn.previousElementSibling.value});
+ abrirCarrito();actualizarTotales();
 }
 
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
-function initPayPal(){
- paypalInicializado=true;
+function actualizarTotales(){
+ const div=document.getElementById("items");
+ div.innerHTML="";let total=0;
+
+ carrito.forEach((it,i)=>{
+  total+=it.p;
+  div.innerHTML+=`
+   <div class="item">
+    <span>${it.n} (${it.talla}) - ${it.p}€</span>
+    <button onclick="carrito.splice(${i},1);actualizarTotales()">✖</button>
+   </div>`;
+ });
+
+ const badge=document.getElementById("badge");
+ badge.style.display=carrito.length?"flex":"none";
+ badge.textContent=carrito.length;
+
+ let descuento=carrito.length>1?(carrito.length-1)*2:0;
+ let envio=document.getElementById("pais").value=="ES"?5:
+           document.getElementById("pais").value=="EU"?12:20;
+ let final=total-descuento+envio;
+
+ document.getElementById("resumen").innerHTML=
+ `Productos: ${total}€<br>
+ <span class="descuento">Descuento: -${descuento}€</span><br>
+ Envío: ${envio}€<br>
+ <b>Total: ${final}€</b>`;
+
+ document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
-   createOrder:(d,a)=>a.order.create({
-     purchase_units:[{amount:{value:"1.00"}}]
-   }),
-   onApprove:(d,a)=>a.order.capture().then(()=>{
-     alert("PAGO REALIZADO");
-   })
+  createOrder:(d,a)=>a.order.create({
+   purchase_units:[{amount:{value:final.toFixed(2)}}]
+  }),
+  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago PayPal realizado"))
  }).render("#paypal-button-container");
 }
 
-function actualizarPayPal(total){
- // PayPal actualiza solo el importe internamente
+function pagoTarjeta(){
+ if(!carrito.length){alert("Carrito vacío");return;}
+ alert("Pago con tarjeta simulado (requiere Stripe backend)");
 }
 </script>
 
