@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store EGP</title>
+<title>PRUEBA - Store EGP</title>
 
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
 
@@ -14,7 +14,7 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2}
 header{background:#111;color:#fff;padding:20px;text-align:center}
-header small{display:block;margin-top:5px;color:#ccc}
+header .subtitulo{font-size:14px;color:#aaa;margin-top:6px}
 .productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px}
 .producto{background:#fff;border-radius:12px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.1);display:flex;flex-direction:column;height:100%}
 .producto img{width:100%;border-radius:10px}
@@ -38,9 +38,8 @@ footer a{color:#1e4ddb;text-decoration:none}
 <body>
 
 <header>
-  <h1>Store EGP</h1>
-  <div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
-  <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
+  <h1>Store EGP (MODO PRUEBA)</h1>
+  <div class="subtitulo">Probando pagos reales a 1€</div>
 </header>
 
 <section class="productos" id="listaProductos"></section>
@@ -75,14 +74,13 @@ footer a{color:#1e4ddb;text-decoration:none}
 <div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto"></p><button onclick="cerrarLegal()">Cerrar</button></div></div>
 
 <script>
-// CONFIGURACIÓN EMAILJS
 const EMAILJS_PUBLIC_KEY = "WLyVJyhY2lgWl421L"; 
 const EMAILJS_SERVICE_ID = "service_qltdw7m"; 
 const EMAILJS_TEMPLATE_ID = "template_y9fr06m";
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 const productos=[
- {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla"},
+ {n:"Spiderman (PRUEBA)",p:1,img:"camiseta-spiderman.jpg",d:"PRUEBA REAL A 1€"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
@@ -127,9 +125,13 @@ function actualizarTotales(){
   const badge=document.getElementById("badge");
   badge.style.display=carrito.length?"flex":"none";
   badge.textContent=carrito.length;
-  let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
-  let final=total-descuento+8;
-  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${descuento}€</span><br>Envío: 8€<br><b>Precio final: ${final}€</b>`;
+  
+  // PARA LA PRUEBA: ENVIO 0
+  let envio = 0;
+  let descuento = 0; // Sin descuentos en la prueba para no liar
+  let final = total + envio;
+
+  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br>Envío: ${envio}€<br><b>Precio final: ${final}€</b>`;
   
   document.getElementById("paypal-button-container").innerHTML="";
   if(carrito.length > 0){
@@ -148,14 +150,14 @@ function enviarEmails(details, total){
     const nombre = document.getElementById("inputNombre").value || details.payer.name.given_name;
     const emailCliente = document.getElementById("inputEmail").value;
     const direccion = document.getElementById("inputDireccion").value;
-    let pedidoTexto = "";
+    let pedidoTexto = "PRUEBA DE PAGO REAL:\n";
     carrito.forEach(it => { pedidoTexto += `${it.n} (${it.talla}) - ${it.p}€\n` });
     
     const templateParams = { to_name: nombre, to_email: emailCliente, message: pedidoTexto, total_price: total + "€", address: direccion };
     
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
     .then(()=>{
-        alert("¡Gracias! Pago completado. Recibirás un email pronto.");
+        alert("¡PRUEBA EXITOSA! El pago se ha realizado y el email se ha enviado.");
         carrito.length = 0;
         actualizarTotales();
         cerrarCarrito();
@@ -165,16 +167,8 @@ function enviarEmails(details, total){
 function abrirLegal(tipo){
   const t=document.getElementById("legalTitulo");
   const p=document.getElementById("legalTexto");
-  if(tipo==='envios') {
-      t.textContent="Política de Envíos";
-      p.textContent="Envíos solo a España Península por 8€. Plazo estimado: 3-5 días hábiles.";
-  }
-  if(tipo==='devoluciones') {
-      t.textContent="Política de Devoluciones";
-      p.textContent="Si el producto no gusta o no es lo esperado, puede ser devuelto en un plazo de 14 días si la prenda no ha sido usada ni lavada. El precio del envío de vuelta corre a cargo del comprador. El dinero se reembolsará al comprobar el estado del producto.";
-  }
-  if(tipo==='privacy') { t.textContent="Privacidad"; p.textContent="Tus datos se usan solo para gestionar el envío."; }
-  if(tipo==='terms') { t.textContent="Términos"; p.textContent="Al comprar aceptas nuestras condiciones de venta."; }
+  if(tipo==='envios') { t.textContent="Envíos"; p.textContent="Envíos solo a España Península por 8€."; }
+  if(tipo==='devoluciones') { t.textContent="Devoluciones"; p.textContent="Plazo de 14 días si la prenda no ha sido usada ni lavada. El envío de vuelta corre a cargo del comprador."; }
   document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
