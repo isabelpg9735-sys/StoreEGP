@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
-
+ 
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
+ 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2}
@@ -32,22 +32,25 @@ footer{text-align:center;padding:20px;font-size:14px;display:flex;flex-wrap:wrap
 footer a{color:#1e4ddb;text-decoration:none}
 .legal-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
 .legal-box{background:#fff;max-width:500px;width:90%;padding:20px;border-radius:12px}
+
+/* Contenedor para asegurar que PayPal tenga espacio */
+#paypal-button-container { margin-top: 15px; min-height: 150px; }
 </style>
 </head>
 <body>
-
+ 
 <header>
-  <h1>Store EGP</h1>
+ <h1>Store EGP</h1>
   <div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
   <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
-
+ 
 <section class="productos" id="listaProductos"></section>
-
+ 
 <button id="carritoBtn" onclick="abrirCarrito()">🛒
   <div id="badge" style="display:none">0</div>
 </button>
-
+ 
 <div id="carrito">
   <span class="cerrar" onclick="cerrarCarrito()">✖</span>
   <h2>Tu Carrito</h2>
@@ -60,26 +63,25 @@ footer a{color:#1e4ddb;text-decoration:none}
     <input id="inputDireccion" placeholder="Dirección completa">
     <input id="inputCP" placeholder="Código Postal">
     <input id="inputCiudad" placeholder="Ciudad">
-    <div id="paypal-button-container" style="margin-top:15px"></div>
+    <div id="paypal-button-container"></div>
   </div>
 </div>
-
+ 
 <footer>
   <a href="#" onclick="abrirLegal('terms')">Terms</a>
   <a href="#" onclick="abrirLegal('privacy')">Privacy</a>
   <a href="#" onclick="abrirLegal('envios')">Envíos</a>
   <a href="#" onclick="abrirLegal('devoluciones')">Devoluciones</a>
 </footer>
-
+ 
 <div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto"></p><button onclick="cerrarLegal()">Cerrar</button></div></div>
-
+ 
 <script>
-// CONFIGURACIÓN EMAILJS
 const EMAILJS_PUBLIC_KEY = "WLyVJyhY2lgWl421L"; 
 const EMAILJS_SERVICE_ID = "service_qltdw7m"; 
 const EMAILJS_TEMPLATE_ID = "template_y9fr06m";
 emailjs.init(EMAILJS_PUBLIC_KEY);
-
+ 
 const productos=[
  {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
@@ -97,9 +99,9 @@ const productos=[
  {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
  {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"Sabes que la necesitas"}
 ];
-
+ 
 const carrito=[];
-
+ 
 function cargar(){
   const c=document.getElementById("listaProductos");
   productos.forEach(pr=>{
@@ -107,14 +109,14 @@ function cargar(){
   });
 }
 cargar();
-
+ 
 function add(n,p,btn){
   const talla=btn.previousElementSibling.value;
   carrito.push({n,p,talla});
   actualizarTotales();
   abrirCarrito();
 }
-
+ 
 function actualizarTotales(){
   const div=document.getElementById("items");
   div.innerHTML="";
@@ -127,22 +129,30 @@ function actualizarTotales(){
   badge.style.display=carrito.length?"flex":"none";
   badge.textContent=carrito.length;
   let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
-  let final=total-descuento+8;
-  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${descuento}€</span><br>Envío: 8€<br><b>Precio final: ${final}€</b>`;
   
-  document.getElementById("paypal-button-container").innerHTML="";
+  // ENVÍO CONFIGURADO A 0€ PARA TUS PRUEBAS
+  let envio = 0; 
+  let final=total-descuento+envio;
+  
+  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${descuento}€</span><br>Envío: ${envio}€<br><b>Precio final: ${final.toFixed(2)}€</b>`;
+  
+  // LÓGICA DE PAYPAL
+  const container = document.getElementById("paypal-button-container");
+  container.innerHTML = ""; // ESTO LIMPIA EL BOTÓN ANTERIOR PARA QUE APAREZCA EL NUEVO
+  
   if(carrito.length > 0){
       paypal.Buttons({
-        createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:final.toFixed(2)}}]}),
-        onApprove:(d,a)=>a.order.capture().then((details)=>{ enviarEmails(details, final); })
+        style: { layout: 'vertical', color: 'blue', shape: 'rect' },
+        createOrder: (d,a) => a.order.create({ purchase_units: [{ amount: { value: final.toFixed(2) } }] }),
+        onApprove: (d,a) => a.order.capture().then((details) => { enviarEmails(details, final); })
       }).render("#paypal-button-container");
   }
 }
-
+ 
 function quitar(i){carrito.splice(i,1);actualizarTotales()}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
-
+ 
 function enviarEmails(details, total){
     const nombre = document.getElementById("inputNombre").value || details.payer.name.given_name;
     const emailCliente = document.getElementById("inputEmail").value;
@@ -160,19 +170,19 @@ function enviarEmails(details, total){
         cerrarCarrito();
     });
 }
-
+ 
 function abrirLegal(tipo){
   const t=document.getElementById("legalTitulo");
   const p=document.getElementById("legalTexto");
   if(tipo==='envios') {
-      t.textContent="Envíos";
-      p.textContent="Envíos solo a España Península por razones de precio en envio. Pueden tardar unos 15 dias en llegar.";
+      t.textContent="Política de Envíos";
+      p.textContent="Envíos solo a España Península por 8€. Plazo estimado: 3-5 días hábiles.";
   }
   if(tipo==='devoluciones') {
       t.textContent="Política de Devoluciones";
-      p.textContent="Si el producto no gusta o no es lo esperado, puede ser devuelto en un plazo de 14 días si la prenda no ha sido usada ni lavada. El precio del envío de vuelta corre a cargo del comprador. El dinero se reembolsará al comprobar el estado del producto.";
+      p.textContent="14 días para devoluciones si la prenda no ha sido usada ni lavada. Envío a cargo del comprador.";
   }
-  if(tipo==='privacy') { t.textContent="Privacidad"; p.textContent="Tus datos se usan solo para gestionar el envío, no se compartirá información con terceros."; }
+  if(tipo==='privacy') { t.textContent="Privacidad"; p.textContent="Tus datos se usan solo para gestionar el envío."; }
   if(tipo==='terms') { t.textContent="Términos"; p.textContent="Al comprar aceptas nuestras condiciones de venta."; }
   document.getElementById("legalModal").style.display="flex";
 }
