@@ -5,127 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<!-- PAYPAL SDK -->
-<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR&components=buttons"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
 
 <style>
-*{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f2f2f2}
+header{background:#111;color:#fff;text-align:center;padding:20px}
+.productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:16px}
 
-header{background:#111;color:#fff;padding:20px;text-align:center}
-.subtitulo{color:#aaa;font-size:14px}
-header small{color:#ccc}
-
-.productos{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
- gap:16px;
- padding:16px;
-}
-
-.producto{
- background:#fff;
- padding:14px;
- border-radius:12px;
- box-shadow:0 5px 15px rgba(0,0,0,.1);
- display:flex;
- flex-direction:column;
-}
-
+.producto{background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column}
 .producto img{width:100%;border-radius:10px}
-.producto h3{margin:8px 0 4px}
-.producto p{font-size:14px;margin:4px 0}
+.producto h3{margin:6px 0}
+.producto p{margin:4px 0;font-size:14px}
 
-.oferta del{color:red;margin-right:6px}
-.oferta{font-weight:bold}
-
-.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
-
-select,button,input{
- padding:10px;
- border-radius:8px;
- border:1px solid #ccc;
- width:100%;
-}
-
+select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc;width:100%}
 button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
-button:hover{opacity:.9}
 
 #carritoBtn{
- position:fixed;
- bottom:20px;
- right:20px;
- width:60px;
- height:60px;
- border-radius:50%;
- background:#2ecc71;
- font-size:24px;
- border:none;
- cursor:pointer;
- z-index:999;
+ position:fixed;bottom:20px;right:20px;
+ width:60px;height:60px;border-radius:50%;
+ background:#2ecc71;font-size:24px;border:none
 }
 
 #badge{
- position:absolute;
- top:-6px;
- right:-6px;
- background:red;
- color:white;
- width:22px;
- height:22px;
- border-radius:50%;
- display:none;
- align-items:center;
- justify-content:center;
- font-size:12px;
+ position:absolute;top:-6px;right:-6px;
+ background:red;color:#fff;width:22px;height:22px;
+ border-radius:50%;display:none;align-items:center;justify-content:center
 }
 
 #carrito{
- position:fixed;
- top:0;
- right:-100%;
- width:100%;
- max-width:420px;
- height:100%;
- background:#fff;
- padding:20px;
- box-shadow:-5px 0 15px rgba(0,0,0,.2);
- overflow:auto;
- transition:.3s;
- z-index:1000;
+ position:fixed;top:0;right:-100%;
+ width:100%;max-width:420px;height:100%;
+ background:#fff;padding:20px;
+ transition:.3s;overflow:auto;z-index:999
 }
 #carrito.abierto{right:0}
-.cerrar{float:right;font-size:22px;cursor:pointer}
 
 .item{
- display:flex;
- justify-content:space-between;
+ display:grid;
+ grid-template-columns:1fr auto;
+ gap:6px;
  padding:8px 0;
  border-bottom:1px solid #ddd;
- font-size:14px;
+ font-size:14px
+}
+
+.item small{color:#555}
+.item button{
+ background:#e74c3c;
+ padding:4px 8px;
+ font-size:12px;
+ border-radius:6px
 }
 
 .descuento{color:red;font-weight:bold}
+#paypal-container{margin-top:15px}
 
 footer{text-align:center;padding:20px}
-footer a{margin:0 8px;color:#1e4ddb;text-decoration:none}
-
-.legal-modal{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.6);
- display:none;
- align-items:center;
- justify-content:center;
- z-index:9999;
-}
-.legal-box{
- background:#fff;
- padding:20px;
- border-radius:12px;
- max-width:500px;
- width:90%;
-}
+footer a{margin:0 6px;color:#1e4ddb;text-decoration:none}
 </style>
 </head>
 
@@ -133,54 +69,39 @@ footer a{margin:0 8px;color:#1e4ddb;text-decoration:none}
 
 <header>
 <h1>Store EGP</h1>
-<div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
-<small>@sstoreegp · sstoreegp@gmail.com</small>
+<p>Aquí encuentras lo que no sabías que buscabas</p>
 </header>
 
-<section class="productos" id="listaProductos"></section>
+<section class="productos" id="productos"></section>
 
 <button id="carritoBtn" onclick="abrirCarrito()">🛒
 <div id="badge">0</div>
 </button>
 
 <div id="carrito">
-<span class="cerrar" onclick="cerrarCarrito()">✖</span>
 <h2>Carrito</h2>
-
 <div id="items"></div>
 <p id="resumen"></p>
 
 <h3>Datos de envío</h3>
-<input placeholder="Nombre completo">
+<input placeholder="Nombre">
 <input placeholder="Email">
 <input placeholder="Dirección">
-<input placeholder="Código Postal">
 <input placeholder="Ciudad">
+<input placeholder="Código Postal">
 
-<p><b>Envío:</b> España peninsular · 0€ (prueba)</p>
+<p><b>Envío:</b> España peninsular · 0€</p>
 
-<!-- PAYPAL NO SE BORRA NUNCA -->
-<div id="paypal-button-container"></div>
+<div id="paypal-container"></div>
 </div>
 
 <footer>
-<a href="#" onclick="abrirLegal('terms')">Terms</a>
-<a href="#" onclick="abrirLegal('privacy')">Privacy</a>
-<a href="#" onclick="abrirLegal('returns')">Devoluciones</a>
-<a href="#" onclick="abrirLegal('shipping')">Envíos</a>
+<a>Terms</a> · <a>Privacy</a> · <a>Devoluciones</a> · <a>Envíos</a>
 </footer>
-
-<div class="legal-modal" id="legalModal">
-<div class="legal-box">
-<h2 id="legalTitulo"></h2>
-<p id="legalTexto"></p>
-<button onclick="cerrarLegal()">Cerrar</button>
-</div>
-</div>
 
 <script>
 const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido",oferta:"<span class='oferta'><del>15€</del> 1€</span>"},
+ {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things"},
@@ -188,7 +109,7 @@ const productos=[
  {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
  {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
  {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg",d:"Con estilo"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> 18€</span>"},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things"},
  {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
  {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"😐"},
@@ -198,90 +119,80 @@ const productos=[
 ];
 
 const carrito=[];
-let totalActual=0;
-let paypalInicializado=false;
+let paypalRendered=false;
 
-function cargar(){
- const c=document.getElementById("listaProductos");
- productos.forEach(p=>{
-  c.innerHTML+=`
-  <div class="producto">
-   <img src="${p.img}">
-   <h3>${p.n}</h3>
-   <p>${p.d}</p>
-   ${p.oferta?p.oferta:`<b>${p.p}€</b>`}
-   <div class="acciones">
-    <select><option>S</option><option>M</option><option>L</option></select>
-    <button onclick="add('${p.n}',${p.p})">Añadir</button>
-   </div>
-  </div>`;
- });
+const cont=document.getElementById("productos");
+productos.forEach(p=>{
+ cont.innerHTML+=`
+ <div class="producto">
+  <img src="${p.img}">
+  <h3>${p.n}</h3>
+  <p>${p.d}</p>
+  <b>${p.p}€</b>
+  <select id="talla-${p.n}">
+   <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+  </select>
+  <button onclick="add('${p.n}',${p.p})">Añadir</button>
+ </div>`;
+});
+
+function add(n,p){
+ const talla=document.getElementById("talla-"+n).value;
+ carrito.push({n,p,talla});
+ actualizar();
+ abrirCarrito();
 }
-cargar();
-
-function add(n,p){carrito.push({n,p});actualizar();abrirCarrito();}
-function quitar(i){carrito.splice(i,1);actualizar();}
 
 function actualizar(){
  const items=document.getElementById("items");
  items.innerHTML="";
  let total=0;
 
- carrito.forEach((it,i)=>{
-  total+=it.p;
+ carrito.forEach((i,idx)=>{
+  total+=i.p;
   items.innerHTML+=`
-  <div class="item">
-   <span>${it.n} – ${it.p}€</span>
-   <button onclick="quitar(${i})">✖</button>
-  </div>`;
+   <div class="item">
+    <div>
+     <b>${i.n}</b><br>
+     <small>Talla: ${i.talla} · ${i.p}€</small>
+    </div>
+    <button onclick="carrito.splice(${idx},1);actualizar()">✖</button>
+   </div>`;
  });
 
  let descuento=carrito.length>1?(carrito.length-1)*2:0;
- totalActual=total-descuento;
+ total-=descuento;
 
  document.getElementById("resumen").innerHTML=
- `Productos: ${total}€<br>
+ `Subtotal: ${total+descuento}€<br>
  <span class="descuento">Descuento: -${descuento}€</span><br>
- <b>Total: ${totalActual}€</b>`;
+ <b>Total: ${total}€</b>`;
 
  const badge=document.getElementById("badge");
  badge.style.display=carrito.length?"flex":"none";
  badge.textContent=carrito.length;
 
- if(!paypalInicializado && totalActual>0){
-   initPaypal();
-   paypalInicializado=true;
- }
+ renderPaypal(total);
 }
 
-function initPaypal(){
+function renderPaypal(total){
+ if(total<=0)return;
+ document.getElementById("paypal-container").innerHTML="";
  paypal.Buttons({
   createOrder:(d,a)=>a.order.create({
-   purchase_units:[{amount:{value:totalActual.toFixed(2)}}]
+   purchase_units:[{amount:{value:total.toFixed(2)}}]
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
-   alert("Pago realizado correctamente");
+   alert("Pago completado");
    carrito.length=0;
-   paypalInicializado=false;
    actualizar();
-   cerrarCarrito();
   })
- }).render("#paypal-button-container");
+ }).render("#paypal-container");
 }
 
-function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
-function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
-
-function abrirLegal(t){
- const T=document.getElementById("legalTitulo");
- const P=document.getElementById("legalTexto");
- if(t==="terms"){T.textContent="Terms";P.textContent="Condiciones de venta."}
- if(t==="privacy"){T.textContent="Privacy";P.textContent="Uso de datos."}
- if(t==="returns"){T.textContent="Devoluciones";P.textContent="14 días sin usar."}
- if(t==="shipping"){T.textContent="Envíos";P.textContent="Solo España peninsular."}
- document.getElementById("legalModal").style.display="flex";
+function abrirCarrito(){
+ document.getElementById("carrito").classList.add("abierto");
 }
-function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
 </script>
 
 </body>
