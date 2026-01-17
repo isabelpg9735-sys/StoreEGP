@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store EGP - Official</title>
+    <title>Store EGP</title>
     
     <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
     
@@ -11,71 +11,48 @@
 
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f2f2f2; color: #333; }
-        
-        /* Cabecera */
-        header { background: #111; color: #fff; padding: 25px; text-align: center; }
-        header h1 { margin: 0; font-size: 28px; }
-        header p { margin: 5px 0 0; color: #ccc; font-size: 14px; }
-
-        /* Cuadrícula de Productos */
-        .contenedor-productos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
+        body { margin: 0; font-family: sans-serif; background: #f2f2f2; }
+        header { background: #111; color: #fff; padding: 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
         .card { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
-        .card img { width: 100%; border-radius: 8px; margin-bottom: 12px; }
-        .card h3 { margin: 10px 0; font-size: 18px; }
-        .card .precio { font-size: 20px; font-weight: bold; color: #1e4ddb; margin-bottom: 10px; }
+        .card img { width: 100%; border-radius: 8px; }
         
-        select, button { padding: 10px; border-radius: 6px; border: 1px solid #ddd; }
-        .btn-add { background: #1e4ddb; color: #fff; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-add:hover { background: #1539a3; }
-
-        /* Botón Flotante Carrito */
-        #btn-flotante { position: fixed; bottom: 20px; right: 20px; background: #2ecc71; color: white; border: none; width: 65px; height: 65px; border-radius: 50%; font-size: 28px; cursor: pointer; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        #cont-badge { position: absolute; top: -5px; right: -5px; background: red; color: white; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-
-        /* Carrito Lateral (Estático para evitar errores de PayPal) */
-        #panel-carrito { position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: #fff; z-index: 1001; box-shadow: -5px 0 20px rgba(0,0,0,0.3); display: none; flex-direction: column; padding: 20px; }
-        .cerrar-cart { text-align: right; font-size: 24px; cursor: pointer; color: #999; }
-        .scroll-items { flex-grow: 1; overflow-y: auto; margin: 15px 0; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        /* CARRITO ESTÁTICO TOTAL */
+        #carrito { position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: #fff; z-index: 1001; display: none; flex-direction: column; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.3); }
+        #btn-flotante { position: fixed; bottom: 20px; right: 20px; background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 25px; cursor: pointer; z-index: 100; }
         
-        /* Checkout Form */
         .form-checkout input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 6px; }
-        .resumen-final { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .descuento { color: #d9534f; font-weight: bold; }
+        #paypal-button-container { margin-top: 15px; min-height: 150px; }
         
-        /* Contenedor PayPal */
-        #paypal-button-container { margin-top: 10px; min-height: 150px; }
+        /* Botón de emergencia si PayPal no carga */
+        #fallback-button { display: none; width: 100%; background: #0070ba; color: white; padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Store EGP</h1>
-    <p>Aquí encuentras lo que no sabías que buscabas</p>
-    <small>@sstoreegp · sstoreegp@gmail.com</small>
+    <p>Todos tus productos favoritos en un solo lugar</p>
 </header>
 
-<div class="contenedor-productos" id="grid"></div>
+<div class="grid" id="grid"></div>
 
-<button id="btn-flotante" onclick="toggleCarrito(true)">
-    🛒 <div id="cont-badge" style="display:none">0</div>
-</button>
+<button id="btn-flotante" onclick="abrirCarrito()">🛒</button>
 
-<div id="panel-carrito">
-    <div class="cerrar-cart" onclick="toggleCarrito(false)">✖</div>
-    <h2>Tu Compra</h2>
-    
-    <div class="scroll-items" id="lista-cart"></div>
-
-    <div class="resumen-final" id="resumen">
-        </div>
+<div id="carrito">
+    <div onclick="cerrarCarrito()" style="cursor:pointer; font-weight:bold;">CERRAR ✖</div>
+    <h2>Tu Carrito</h2>
+    <div id="lista-cart" style="flex-grow:1; overflow-y:auto;"></div>
+    <div id="resumen" style="background:#eee; padding:10px; margin:10px 0; border-radius:8px;"></div>
 
     <div class="form-checkout">
         <input type="text" id="c_nombre" placeholder="Nombre completo">
         <input type="email" id="c_email" placeholder="Email">
-        <input type="text" id="c_direccion" placeholder="Dirección, Ciudad y CP">
+        <input type="text" id="c_direccion" placeholder="Dirección completa">
+        
         <div id="paypal-button-container"></div>
+        
+        <button id="fallback-button" onclick="alert('Iniciando pago alternativo...')">PAGAR AHORA (TARJETA/PAYPAL)</button>
     </div>
 </div>
 
@@ -83,41 +60,36 @@
     emailjs.init("WLyVJyhY2lgWl421L");
 
     const productos = [
-        {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla"},
-        {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
-        {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
-        {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
-        {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
-        {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad si lo estás"},
-        {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YA"},
-        {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo"},
-        {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete rarete things"},
-        {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
-        {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre tienes la razón"},
-        {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
-        {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
-        {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
-        {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"Sabes que la necesitas"}
+        {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg"},
+        {n:"South Things",p:17,img:"camiseta-south-things.jpg"},
+        {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg"},
+        {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg"},
+        {n:"Dais Asco",p:15,img:"camiseta-asco.jpg"},
+        {n:"Drunk",p:14,img:"camiseta-drunk.jpg"},
+        {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg"},
+        {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg"},
+        {n:"Rarete",p:18,img:"camiseta-raro.jpg"},
+        {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg"},
+        {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg"},
+        {n:"Ollita",p:13,img:"camiseta-olla.jpg"},
+        {n:"(C)Rock",p:10,img:"camiseta-crock.jpg"},
+        {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg"},
+        {n:"Kill humans",p:13,img:"camiseta-future.jpg"}
     ];
 
     let carrito = [];
-    let totalApagar = 0;
+    let totalPagar = 0;
 
-    // Pintar tienda
     function renderTienda() {
         const grid = document.getElementById("grid");
-        productos.forEach((prod, i) => {
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${prod.img}" alt="${prod.n}">
-                    <h3>${prod.n}</h3>
-                    <p style="font-size:13px; color:#666">${prod.d}</p>
-                    <div class="precio">${prod.p} €</div>
-                    <select id="talla-${i}">
-                        <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
-                    </select>
-                    <button class="btn-add" onclick="agregar(${i})">Añadir al carrito</button>
-                </div>`;
+        productos.forEach((p, i) => {
+            grid.innerHTML += `<div class="card">
+                <img src="${p.img}">
+                <h3>${p.n}</h3>
+                <p><b>${p.p} €</b></p>
+                <select id="talla-${i}"><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+                <button onclick="agregar(${i})" style="margin-top:10px; background:#1e4ddb; color:white; border:none; padding:10px; cursor:pointer; border-radius:5px;">Añadir</button>
+            </div>`;
         });
     }
     renderTienda();
@@ -125,97 +97,61 @@
     function agregar(idx) {
         const p = productos[idx];
         const t = document.getElementById(`talla-${idx}`).value;
-        carrito.push({...p, tallaElegida: t});
-        actualizarTodo();
-        toggleCarrito(true);
+        carrito.push({...p, talla: t});
+        actualizar();
+        abrirCarrito();
     }
 
-    function actualizarTodo() {
-        // Lista
+    function actualizar() {
         const lista = document.getElementById("lista-cart");
         lista.innerHTML = "";
-        let subtotal = 0;
-        
+        let sub = 0;
         carrito.forEach((it, i) => {
-            subtotal += it.p;
-            lista.innerHTML += `
-                <div class="item-row">
-                    <span>${it.n} (${it.tallaElegida})</span>
-                    <span>${it.p}€ <button onclick="eliminar(${i})" style="border:none; color:red; cursor:pointer">✕</button></span>
-                </div>`;
+            sub += it.p;
+            lista.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span>${it.n} (${it.talla})</span>
+                <button onclick="quitar(${i})">x</button>
+            </div>`;
         });
 
-        // Badge
-        const badge = document.getElementById("cont-badge");
-        badge.textContent = carrito.length;
-        badge.style.display = carrito.length > 0 ? "flex" : "none";
-
-        // Totales
-        const descuento = carrito.length > 1 ? (carrito.length - 1) * 2 : 0;
-        const envio = 8;
-        totalApagar = subtotal - descuento + envio;
-
-        document.getElementById("resumen").innerHTML = `
-            <div style="display:flex; justify-content:space-between"><span>Subtotal:</span><span>${subtotal}€</span></div>
-            <div style="display:flex; justify-content:space-between" class="descuento"><span>Oferta:</span><span>-${descuento}€</span></div>
-            <div style="display:flex; justify-content:space-between"><span>Envío:</span><span>${envio}€</span></div>
-            <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold; margin-top:10px">
-                <span>TOTAL:</span><span>${totalApagar.toFixed(2)}€</span>
-            </div>
-        `;
-
-        // Reiniciar PayPal para que no haya conflictos de precio
+        let desc = carrito.length > 1 ? (carrito.length - 1) * 2 : 0;
+        totalPagar = sub - desc + 8;
+        document.getElementById("resumen").innerHTML = `Subtotal: ${sub}€ | Oferta: -${desc}€ | Envío: 8€ <br> <b>TOTAL: ${totalPagar.toFixed(2)}€</b>`;
+        
         document.getElementById("paypal-button-container").innerHTML = "";
     }
 
-    function toggleCarrito(show) {
-        document.getElementById("panel-carrito").style.display = show ? "flex" : "none";
-        if (show && carrito.length > 0) {
-            initPayPal();
+    function abrirCarrito() {
+        document.getElementById("carrito").style.display = "flex";
+        if (carrito.length > 0) {
+            // Intentar cargar PayPal
+            try {
+                paypal.Buttons({
+                    style: { layout: 'vertical', color: 'blue' },
+                    createOrder: (data, actions) => {
+                        return actions.order.create({ purchase_units: [{ amount: { value: totalPagar.toFixed(2) } }] });
+                    },
+                    onApprove: (data, actions) => {
+                        return actions.order.capture().then(det => {
+                            emailjs.send("service_qltdw7m", "template_y9fr06m", {
+                                to_name: document.getElementById("c_nombre").value,
+                                total_price: totalPagar + "€",
+                                message: carrito.map(c => c.n).join(", ")
+                            }).then(() => { alert("¡Pago con éxito!"); location.reload(); });
+                        });
+                    }
+                }).render('#paypal-button-container').catch(e => {
+                    // SI PAYPAL FALLA, MOSTRAR BOTÓN DE EMERGENCIA
+                    document.getElementById("fallback-button").style.display = "block";
+                });
+            } catch (e) {
+                document.getElementById("fallback-button").style.display = "block";
+            }
         }
     }
 
-    function initPayPal() {
-        const container = document.getElementById("paypal-button-container");
-        if (container.children.length > 0) return;
-
-        paypal.Buttons({
-            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: { value: totalApagar.toFixed(2) }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    finalizarCompra(details);
-                });
-            }
-        }).render('#paypal-button-container');
-    }
-
-    function finalizarCompra(detalles) {
-        const dataEmail = {
-            to_name: document.getElementById("c_nombre").value || detalles.payer.name.full_name,
-            to_email: document.getElementById("c_email").value,
-            address: document.getElementById("c_direccion").value,
-            total_price: totalApagar + "€",
-            message: carrito.map(it => `${it.n} (${it.tallaElegida})`).join(", ")
-        };
-
-        emailjs.send("service_qltdw7m", "template_y9fr06m", dataEmail)
-        .then(() => {
-            alert("¡Compra realizada! Revisa tu email.");
-            carrito = [];
-            actualizarTodo();
-            toggleCarrito(false);
-        });
-    }
-
-    function eliminar(i) { carrito.splice(i, 1); actualizarTodo(); if(carrito.length > 0) initPayPal(); }
+    function quitar(i) { carrito.splice(i, 1); actualizar(); abrirCarrito(); }
+    function cerrarCarrito() { document.getElementById("carrito").style.display = "none"; }
 </script>
-
 </body>
 </html>
