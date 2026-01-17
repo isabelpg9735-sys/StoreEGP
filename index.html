@@ -14,37 +14,21 @@
 body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2}
 header{background:#111;color:#fff;padding:20px;text-align:center}
 header small{display:block;margin-top:5px;color:#ccc}
-header .subtitulo{font-size:14px;color:#aaa;margin-top:6px}
-
 .productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px}
 .producto{background:#fff;border-radius:12px;padding:15px;box-shadow:0 5px 15px rgba(0,0,0,.1);display:flex;flex-direction:column;height:100%}
 .producto img{width:100%;border-radius:10px}
-.producto h3{margin:10px 0 5px;min-height:48px}
-.producto p{margin:4px 0;min-height:44px}
-.precio{min-height:42px;display:flex;align-items:center}
-.oferta{font-weight:bold}
-.oferta del{color:red;margin-right:6px}
-
 .acciones{margin-top:auto;display:flex;flex-direction:column;gap:10px}
 select,button,input{padding:10px;border-radius:8px;border:1px solid #ccc}
 .producto button{background:#1e4ddb;color:#fff;border:none;cursor:pointer}
-
 #carritoBtn{position:fixed;bottom:20px;right:20px;background:#2ecc71;width:60px;height:60px;border-radius:50%;font-size:24px;cursor:pointer;border:none;z-index:999}
-#badge{position:absolute;top:-6px;right:-6px;background:red;color:white;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
-
+#badge{position:absolute;top:-6px;right:-6px;background:red;color:white;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 #carrito{position:fixed;top:0;right:-100%;width:100%;max-width:420px;height:100%;background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);padding:20px;overflow:auto;transition:.3s;z-index:1000}
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
-.item{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;padding:10px 0}
-.item button{background:none;color:red;font-size:18px;border:none;cursor:pointer}
+.item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #ddd}
 .descuento{color:red;font-weight:bold}
-
-#checkout{margin-top:20px}
-#checkout input{width:100%; margin-bottom: 8px;}
-
-/* IMPORTANTE: Espacio mínimo para que PayPal no se colapse */
-#paypal-button-container { margin-top: 15px; min-height: 150px; }
-
+#checkout input{width:100%;margin-bottom:8px}
+#paypal-button-container{margin-top:20px; min-height:150px}
 footer{text-align:center;padding:20px;font-size:14px;display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
 footer a{color:#1e4ddb;text-decoration:none}
 .legal-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
@@ -52,54 +36,51 @@ footer a{color:#1e4ddb;text-decoration:none}
 </style>
 </head>
 <body>
-
+ 
 <header>
-  <h1>Store EGP</h1>
+ <h1>Store EGP</h1>
   <div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
   <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
-
+ 
 <section class="productos" id="listaProductos"></section>
-
+ 
 <button id="carritoBtn" onclick="abrirCarrito()">🛒
   <div id="badge" style="display:none">0</div>
 </button>
-
+ 
 <div id="carrito">
   <span class="cerrar" onclick="cerrarCarrito()">✖</span>
-  <h2>Carrito</h2>
+  <h2>Tu Carrito</h2>
   <div id="items"></div>
   <p id="resumen"></p>
-  
   <div id="checkout">
     <h3>Datos de envío</h3>
     <input id="inputNombre" placeholder="Nombre completo">
-    <input id="inputEmail" placeholder="Tu Email (confirmación)">
+    <input id="inputEmail" placeholder="Tu Email">
     <input id="inputDireccion" placeholder="Dirección completa">
     <input id="inputCP" placeholder="Código Postal">
     <input id="inputCiudad" placeholder="Ciudad">
-    
-    <p style="font-size:12px; color:#666; margin: 10px 0;">Envío: España Peninsular (8€ - Ahora 0€ para prueba)</p>
+    <p style="font-weight:bold; font-size:12px">Envío: España Peninsular (8€ - En prueba 0€)</p>
     
     <div id="paypal-button-container"></div>
   </div>
 </div>
-
+ 
 <footer>
   <a href="#" onclick="abrirLegal('terms')">Terms</a>
   <a href="#" onclick="abrirLegal('privacy')">Privacy</a>
   <a href="#" onclick="abrirLegal('envios')">Envíos</a>
   <a href="#" onclick="abrirLegal('devoluciones')">Devoluciones</a>
 </footer>
-
-<div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto" style="white-space: pre-line;"></p><button onclick="cerrarLegal()" style="width:100%">Cerrar</button></div></div>
-
+ 
+<div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto" style="white-space:pre-line"></p><button onclick="cerrarLegal()">Cerrar</button></div></div>
+ 
 <script>
-// CONFIGURACIÓN EMAILJS
 emailjs.init("WLyVJyhY2lgWl421L");
-
+ 
 const productos=[
- {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla",oferta:"<span class='oferta'><del>15€</del> AHORA 9€</span>"},
+ {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cojeme el teléfono, vaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Thiiiiiings"},
@@ -107,7 +88,7 @@ const productos=[
  {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad si lo estás"},
  {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YA"},
  {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete rarete things"},
  {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
  {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre tienes la razón"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
@@ -115,24 +96,25 @@ const productos=[
  {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
  {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"Sabes que la necesitas"}
 ];
-
+ 
 let carrito=[];
+let precioFinalGlobal = 0;
 
 function cargar(){
   const c=document.getElementById("listaProductos");
   productos.forEach(pr=>{
-    c.innerHTML+=`<div class="producto"><img src="${pr.img}"><h3>${pr.n}</h3><p>${pr.d}</p><div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p} €</b>`}</div><div class="acciones"><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select><button onclick="add('${pr.n}',${pr.p},this)">Añadir</button></div></div>`;
+    c.innerHTML+=`<div class="producto"><img src="${pr.img}"><h3>${pr.n}</h3><p>${pr.d}</p><div class="precio"><b>${pr.p} €</b></div><div class="acciones"><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select><button onclick="add('${pr.n}',${pr.p},this)">Añadir</button></div></div>`;
   });
 }
 cargar();
-
+ 
 function add(n,p,btn){
   const talla=btn.previousElementSibling.value;
   carrito.push({n,p,talla});
   actualizarTotales();
   abrirCarrito();
 }
-
+ 
 function actualizarTotales(){
   const div=document.getElementById("items");
   div.innerHTML="";
@@ -147,43 +129,62 @@ function actualizarTotales(){
   badge.textContent=carrito.length;
   
   let desc = (carrito.length > 1) ? (carrito.length-1)*2 : 0;
-  let final = total - desc; // Envío 0 para la prueba (cambiar por +8 luego)
-  if(final < 1) final = 1;
+  precioFinalGlobal = total - desc; 
+  if(precioFinalGlobal < 1) precioFinalGlobal = 1;
 
-  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: 0€<br><b>Total: ${final.toFixed(2)}€</b>`;
-
-  // LIMPIEZA Y CARGA DE BOTONES
-  const container = document.getElementById("paypal-button-container");
-  container.innerHTML = ""; 
+  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${desc}€</span><br>Envío: 0€<br><b>Total: ${precioFinalGlobal.toFixed(2)}€</b>`;
   
-  if(carrito.length > 0) {
-    paypal.Buttons({
-      style: { layout: 'vertical', color: 'blue', shape: 'rect' },
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{ amount: { value: final.toFixed(2) } }]
-        });
-      },
-      onApprove: (data, actions) => {
-        return actions.order.capture().then(details => {
-          enviarEmails(details, final);
-        });
-      }
-    }).render('#paypal-button-container');
-  }
- document.getElementById("paypal-button-container").innerHTML="";
- paypal.Buttons({
-  createOrder:(d,a)=>a.order.create({
-    purchase_units:[{amount:{value:final.toFixed(2)}}]
-  }),
-  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
- }).render("#paypal-button-container");
+  // Limpiamos el botón actual para forzar el refresco del precio cuando se abra
+  document.getElementById("paypal-button-container").innerHTML = "";
 }
 
+function abrirCarrito(){
+    document.getElementById("carrito").classList.add("abierto");
+    // Cargamos los botones de pago con TODA su funcionalidad
+    if(carrito.length > 0) {
+        renderBotonCompleto();
+    }
+}
+
+function renderBotonCompleto() {
+    const container = document.getElementById("paypal-button-container");
+    container.innerHTML = ""; // Limpieza de seguridad
+
+    paypal.Buttons({
+        style: {
+            layout: 'vertical',
+            color:  'gold',
+            shape:  'rect',
+            label:  'checkout'
+        },
+        // 1. CREACIÓN DEL PEDIDO
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: "EUR",
+                        value: precioFinalGlobal.toFixed(2)
+                    }
+                }]
+            });
+        },
+        // 2. CAPTURA DEL PAGO TRAS ÉXITO
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Aquí llamamos a la función que envía el email
+                enviarEmails(details, precioFinalGlobal);
+            });
+        },
+        // 3. GESTIÓN DE ERRORES
+        onError: function(err) {
+            alert("Hubo un error con la pasarela de pago. Inténtalo de nuevo.");
+            console.error(err);
+        }
+    }).render('#paypal-button-container');
 }
 
 function enviarEmails(details, total){
-    const nombre = document.getElementById("inputNombre").value || details.payer.name.full_name;
+    const nombre = document.getElementById("inputNombre").value || details.payer.name.given_name;
     const emailC = document.getElementById("inputEmail").value;
     const dir = document.getElementById("inputDireccion").value;
     let items = "";
@@ -192,7 +193,7 @@ function enviarEmails(details, total){
     emailjs.send("service_qltdw7m", "template_y9fr06m", {
         to_name: nombre, to_email: emailC, message: items, total_price: total + "€", address: dir
     }).then(() => {
-        alert("¡Pago realizado! Revisa tu email.");
+        alert("¡Pago realizado con éxito! Gracias por tu compra.");
         carrito = [];
         actualizarTotales();
         cerrarCarrito();
@@ -202,26 +203,17 @@ function enviarEmails(details, total){
 function abrirLegal(tipo){
   const t=document.getElementById("legalTitulo");
   const p=document.getElementById("legalTexto");
-  if(tipo==='envios'){
-    t.textContent="Envíos";
-    p.textContent="Solo España Península. Coste: 8€. Plazo: 3-5 días.";
-  } else if(tipo==='devoluciones'){
-    t.textContent="Devoluciones";
-    p.textContent="14 días para devolver si no se ha usado ni lavado. Envío de vuelta a cargo del comprador.";
-  } else if(tipo==='terms'){
-    t.textContent="Términos"; p.textContent="Al comprar aceptas las condiciones.";
-  } else {
-    t.textContent="Privacidad"; p.textContent="Tus datos se usan solo para el envío.";
-  }
+  if(tipo==='envios'){ t.textContent="Envíos"; p.textContent="España Península: 8€. Plazo: 3-5 días hábiles."; }
+  else if(tipo==='devoluciones'){ t.textContent="Devoluciones"; p.textContent="14 días para devoluciones. El producto debe estar nuevo."; }
+  else if(tipo==='terms'){ t.textContent="Términos"; p.textContent="Condiciones de venta de Store EGP."; }
+  else { t.textContent="Privacidad"; p.textContent="Datos protegidos."; }
   document.getElementById("legalModal").style.display="flex";
 }
 
-function quitar(i){ carrito.splice(i,1); actualizarTotales(); }
-function abrirCarrito(){ document.getElementById("carrito").classList.add("abierto"); }
+function quitar(i){ carrito.splice(i,1); actualizarTotales(); if(carrito.length > 0) renderBotonCompleto(); }
 function cerrarCarrito(){ document.getElementById("carrito").classList.remove("abierto"); }
 function cerrarLegal(){ document.getElementById("legalModal").style.display="none"; }
 </script>
 </body>
 </html>
-
 
