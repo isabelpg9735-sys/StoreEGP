@@ -34,6 +34,8 @@ footer{text-align:center;padding:20px;font-size:14px;display:flex;flex-wrap:wrap
 footer a{color:#1e4ddb;text-decoration:none}
 .legal-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
 .legal-box{background:#fff;max-width:500px;width:90%;padding:20px;border-radius:12px}
+/* Estilo para asegurar que los botones de PayPal se vean */
+#paypal-button-container { width: 100%; margin-top: 15px; min-height: 150px; }
 </style>
 </head>
 <body>
@@ -62,7 +64,7 @@ footer a{color:#1e4ddb;text-decoration:none}
     <input id="inputDireccion" placeholder="Dirección completa">
     <input id="inputCP" placeholder="Código Postal">
     <input id="inputCiudad" placeholder="Ciudad">
-    <div id="paypal-button-container" style="margin-top:15px"></div>
+    <div id="paypal-button-container"></div>
   </div>
 </div>
  
@@ -76,7 +78,6 @@ footer a{color:#1e4ddb;text-decoration:none}
 <div class="legal-modal" id="legalModal"><div class="legal-box"><h2 id="legalTitulo"></h2><p id="legalTexto"></p><button onclick="cerrarLegal()">Cerrar</button></div></div>
  
 <script>
-// CONFIGURACIÓN EMAILJS
 const EMAILJS_PUBLIC_KEY = "WLyVJyhY2lgWl421L"; 
 const EMAILJS_SERVICE_ID = "service_qltdw7m"; 
 const EMAILJS_TEMPLATE_ID = "template_y9fr06m";
@@ -104,8 +105,8 @@ const carrito=[];
  
 function cargar(){
   const c=document.getElementById("listaProductos");
- productos.forEach(pr=>{
-   c.innerHTML+=`<div class="producto"><img src="${pr.img}"><h3>${pr.n}</h3><p>${pr.d}</p><div class="precio">${pr.oferta ? pr.oferta : '<b>'+pr.p+' €</b>'}</div><div class="acciones"><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select><button onclick="add('${pr.n}',${pr.p},this)">Añadir</button></div></div>`;
+  productos.forEach(pr=>{
+    c.innerHTML+=`<div class="producto"><img src="${pr.img}"><h3>${pr.n}</h3><p>${pr.d}</p><div class="precio">${pr.oferta ? pr.oferta : '<b>'+pr.p+' €</b>'}</div><div class="acciones"><select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select><button onclick="add('${pr.n}',${pr.p},this)">Añadir</button></div></div>`;
   });
 }
 cargar();
@@ -119,30 +120,45 @@ function add(n,p,btn){
  
 function actualizarTotales(){
   const div=document.getElementById("items");
- div.innerHTML="";
+  div.innerHTML="";
   let total=0;
- carrito.forEach((it,i)=>{
+  carrito.forEach((it,i)=>{
     total+=it.p;
-   div.innerHTML+=`<div class="item"><span>${it.n} (${it.talla}) - ${it.p}€</span><button onclick="quitar(${i})">✖</button></div>`;
+    div.innerHTML+=`<div class="item"><span>${it.n} (${it.talla}) - ${it.p}€</span><button onclick="quitar(${i})">✖</button></div>`;
   });
+  
   const badge=document.getElementById("badge");
- badge.style.display=carrito.length?"flex":"none";
- badge.textContent=carrito.length;
+  badge.style.display=carrito.length?"flex":"none";
+  badge.textContent=carrito.length;
 
   let descuento=(carrito.length>1)?(carrito.length-1)*2:0;
   
-  // MODIFICADO PARA LA PRUEBA: Envío 0
-  let envio = 0;
-  let final=total-descuento+envio;
-  if(final < 0.01) final = 0.01;
+  // PRUEBA: ENVÍO 0
+  let final=total-descuento;
+  if(final < 0.01) final = 1.00; // Aseguramos que PayPal no de error por precio 0
 
- document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${descuento}€</span><br>Envío: ${envio}€<br><b>Precio final: ${final.toFixed(2)}€</b>`;
+  document.getElementById("resumen").innerHTML=`Productos: ${total}€<br><span class="descuento">Descuento: -${descuento}€</span><br>Envío: 0€<br><b>Precio final: ${final.toFixed(2)}€</b>`;
   
-  document.getElementById("paypal-button-container").innerHTML="";
- if(carrito.length > 0){
+  // REINICIAR Y PINTAR LOS BOTONES
+  const btnContainer = document.getElementById("paypal-button-container");
+  btnContainer.innerHTML=""; 
+  
+  if(carrito.length > 0){
      paypal.Buttons({
-       createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:final.toFixed(2)}}]}),
-       onApprove:(d,a)=>a.order.capture().then((details)=>{ enviarEmails(details, final); })
+       createOrder: function(data, actions) {
+         return actions.order.create({
+           purchase_units: [{ amount: { value: final.toFixed(2) } }]
+         });
+       },
+       onApprove: function(data, actions) {
+         return actions.order.capture().then(function(details) {
+           enviarEmails(details, final);
+         });
+       },
+       onError: function (err) {
+         console.error('Error en PayPal:', err);
+         alert("Error con PayPal. Revisa que tu Client ID sea correcto y esté en modo LIVE.");
+       }
      }).render("#paypal-button-container");
   }
 }
@@ -160,9 +176,9 @@ function enviarEmails(details, total){
     
     const templateParams = { to_name: nombre, to_email: emailCliente, message: pedidoTexto, total_price: total + "€", address: direccion };
     
-   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
     .then(()=>{
-        alert("¡Gracias! Pago completado. Recibirás un email pronto.");
+        alert("¡Pago completado! Revisa tu email.");
         carrito.length = 0;
         actualizarTotales();
         cerrarCarrito();
@@ -172,16 +188,8 @@ function enviarEmails(details, total){
 function abrirLegal(tipo){
   const t=document.getElementById("legalTitulo");
   const p=document.getElementById("legalTexto");
-  if(tipo==='envios') {
-      t.textContent="Política de Envíos";
-      p.textContent="Actualmente solo puedo enviar a España dentro de península ibérica por tema de que a otros sitios el envío sube muchisimo y no es viable para vosotros. A España también me gustaria poner envios más baratos pero es el coste que me ponen a mi. Envíos por 8€.";
-  }
-  if(tipo==='devoluciones') {
-      t.textContent="Política de Devoluciones";
-      p.textContent="Si el producto no gusta o no es lo esperado, puede ser devuelto en un plazo de 14 días si la prenda no ha sido usada ni lavada. El precio del envío de vuelta corre a cargo del comprador. El dinero se reembolsará al comprobar el estado del producto.";
-  }
-  if(tipo==='privacy') { t.textContent="Privacidad"; p.textContent="Tus datos se usan solo para gestionar el envío."; }
-  if(tipo==='terms') { t.textContent="Términos"; p.textContent="Al comprar aceptas nuestras condiciones de venta."; }
+  if(tipo==='envios') { t.textContent="Envíos"; p.textContent="Envíos por 8€."; }
+  if(tipo==='devoluciones') { t.textContent="Devoluciones"; p.textContent="Plazo de 14 días."; }
   document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
