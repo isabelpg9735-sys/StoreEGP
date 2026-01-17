@@ -171,6 +171,15 @@ function actualizarTotales(){
       }
     }).render('#paypal-button-container');
   }
+ document.getElementById("paypal-button-container").innerHTML="";
+ paypal.Buttons({
+  createOrder:(d,a)=>a.order.create({
+    purchase_units:[{amount:{value:final.toFixed(2)}}]
+  }),
+  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+ }).render("#paypal-button-container");
+}
+
 }
 
 function enviarEmails(details, total){
