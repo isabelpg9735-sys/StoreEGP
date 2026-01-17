@@ -5,15 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR&components=buttons,funding-eligibility"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUliw1XXDK_UuvVd0lrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR&components=buttons"></script>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f2f2f2}
 
 header{background:#111;color:#fff;padding:20px;text-align:center}
-.subtitulo{font-size:14px;color:#aaa}
+.subtitulo{color:#aaa;font-size:14px}
 header small{color:#ccc}
 
 .productos{
@@ -33,9 +32,6 @@ header small{color:#ccc}
 }
 
 .producto img{width:100%;border-radius:10px}
-.producto h3{margin:10px 0 5px}
-.producto p{margin:5px 0}
-
 .oferta del{color:red;margin-right:6px}
 .oferta{font-weight:bold}
 
@@ -58,8 +54,8 @@ button:hover{opacity:.9}
  width:60px;
  height:60px;
  border-radius:50%;
- font-size:24px;
  background:#2ecc71;
+ font-size:24px;
  border:none;
  cursor:pointer;
  z-index:999;
@@ -70,7 +66,7 @@ button:hover{opacity:.9}
  top:-6px;
  right:-6px;
  background:red;
- color:#fff;
+ color:white;
  width:22px;
  height:22px;
  border-radius:50%;
@@ -88,8 +84,8 @@ button:hover{opacity:.9}
  max-width:420px;
  height:100%;
  background:#fff;
- box-shadow:-5px 0 15px rgba(0,0,0,.2);
  padding:20px;
+ box-shadow:-5px 0 15px rgba(0,0,0,.2);
  overflow:auto;
  transition:.3s;
  z-index:1000;
@@ -104,9 +100,7 @@ button:hover{opacity:.9}
  border-bottom:1px solid #ddd;
 }
 
-.item button{background:none;color:red;font-size:18px}
-
-.campo{margin-bottom:10px}
+.item span{font-size:14px}
 
 .descuento{color:red;font-weight:bold}
 
@@ -154,19 +148,21 @@ footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
 <p id="resumen"></p>
 
 <h3>Datos de envío</h3>
-<div class="campo"><input id="nombre" placeholder="Nombre completo"></div>
-<div class="campo"><input id="email" placeholder="Email"></div>
-<div class="campo"><input id="direccion" placeholder="Dirección"></div>
-<div class="campo"><input id="cp" placeholder="Código Postal"></div>
-<div class="campo"><input id="ciudad" placeholder="Ciudad"></div>
+<input placeholder="Nombre completo">
+<input placeholder="Email">
+<input placeholder="Dirección">
+<input placeholder="Código Postal">
+<input placeholder="Ciudad">
 
 <p><b>Envío:</b> España peninsular · 0€ (prueba)</p>
 
-<!-- PAYPAL SIEMPRE PRESENTE -->
+<!-- PAYPAL -->
 <div id="paypal-button-container"></div>
 </div>
 
 <footer>
+<a href="#" onclick="abrirLegal('terms')">Terms of Service</a>
+<a href="#" onclick="abrirLegal('privacy')">Privacy Policy</a>
 <a href="#" onclick="abrirLegal('returns')">Devoluciones</a>
 <a href="#" onclick="abrirLegal('shipping')">Envíos</a>
 </footer>
@@ -180,28 +176,16 @@ footer a{margin:0 10px;color:#1e4ddb;text-decoration:none}
 </div>
 
 <script>
-emailjs.init("WLyVJyhY2lgWl421L");
-
-const carrito=[];
-let totalActual=0;
-
 const productos=[
  {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido",oferta:"<span class='oferta'><del>15€</del> AHORA 1€</span>"},
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things"},
- {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
- {n:"Fortachón",p:13,img:"camiseta-fuerte.jpg",d:"Con estilo"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre tienes razón"},
- {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Eres un borracho"},
- {n:"Kill Humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things"}
 ];
+
+const carrito=[];
+let totalActual=0;
 
 function cargar(){
  const c=document.getElementById("listaProductos");
@@ -213,16 +197,16 @@ function cargar(){
    <p>${p.d}</p>
    ${p.oferta?p.oferta:`<b>${p.p}€</b>`}
    <div class="acciones">
-    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-    <button onclick="add('${p.n}',${p.p},this)">Añadir</button>
+    <select><option>S</option><option>M</option><option>L</option></select>
+    <button onclick="add('${p.n}',${p.p})">Añadir</button>
    </div>
   </div>`;
  });
 }
 cargar();
 
-function add(n,p,b){
- carrito.push({n,p,talla:b.previousElementSibling.value});
+function add(n,p){
+ carrito.push({n,p});
  actualizar();
  abrirCarrito();
 }
@@ -234,50 +218,62 @@ function actualizar(){
 
  carrito.forEach((it,i)=>{
   total+=it.p;
-  items.innerHTML+=`<div class="item">${it.n} (${it.talla}) <button onclick="quitar(${i})">✖</button></div>`;
+  items.innerHTML+=`
+   <div class="item">
+    <span>${it.n} – ${it.p}€</span>
+    <button onclick="quitar(${i})">✖</button>
+   </div>`;
  });
 
- let descuento = carrito.length>1 ? (carrito.length-1)*2 : 0;
- totalActual = total - descuento;
+ let descuento=carrito.length>1?(carrito.length-1)*2:0;
+ totalActual=total-descuento;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
  <span class="descuento">Descuento: -${descuento}€</span><br>
  <b>Total: ${totalActual}€</b>`;
 
- document.getElementById("badge").style.display=carrito.length?"flex":"none";
- document.getElementById("badge").textContent=carrito.length;
+ const badge=document.getElementById("badge");
+ badge.style.display=carrito.length?"flex":"none";
+ badge.textContent=carrito.length;
+
+ renderPaypal();
+}
+
+function renderPaypal(){
+ document.getElementById("paypal-button-container").innerHTML="";
+ if(totalActual<=0) return;
+
+ paypal.Buttons({
+  createOrder:(d,a)=>a.order.create({
+   purchase_units:[{amount:{value:totalActual.toFixed(2)}}]
+  }),
+  onApprove:(d,a)=>a.order.capture().then(()=>{
+   alert("Pago realizado correctamente");
+   carrito.length=0;
+   actualizar();
+   cerrarCarrito();
+  })
+ }).render("#paypal-button-container");
 }
 
 function quitar(i){carrito.splice(i,1);actualizar()}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
-paypal.Buttons({
- createOrder:(d,a)=>a.order.create({
-  purchase_units:[{amount:{value:()=>totalActual.toFixed(2)}}]
- }),
- onApprove:(d,a)=>a.order.capture().then(()=>{
-  alert("Pago realizado correctamente");
-  carrito.length=0;
-  actualizar();
-  cerrarCarrito();
- })
-}).render("#paypal-button-container");
-
 function abrirLegal(t){
  const T=document.getElementById("legalTitulo");
  const P=document.getElementById("legalTexto");
- if(t==="returns") P.textContent="14 días, sin usar ni lavar. Envío a cargo del comprador.";
- if(t==="shipping") P.textContent="Solo envíos a España peninsular.";
+ if(t==="terms"){T.textContent="Terms of Service";P.textContent="Condiciones de venta."}
+ if(t==="privacy"){T.textContent="Privacy Policy";P.textContent="Uso de datos solo para pedidos."}
+ if(t==="returns"){T.textContent="Devoluciones";P.textContent="14 días sin usar ni lavar."}
+ if(t==="shipping"){T.textContent="Envíos";P.textContent="Solo España peninsular."}
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
 </script>
 
 </body>
-</html>
-
 </html>
 
 
