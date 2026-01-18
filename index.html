@@ -25,142 +25,85 @@ header small{color:#ccc}
 .productos{
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
- gap:20px;
- padding:20px
+ gap:20px;padding:20px
 }
 .producto{
- background:#fff;
- border-radius:12px;
- padding:15px;
+ background:#fff;border-radius:12px;padding:15px;
  box-shadow:0 5px 15px rgba(0,0,0,.1);
- display:flex;
- flex-direction:column
+ display:flex;flex-direction:column
 }
 .producto img{width:100%;border-radius:10px}
 .precio{margin:8px 0}
 .oferta del{color:red;margin-right:6px}
-.acciones{
- margin-top:auto;
- display:flex;
- flex-direction:column;
- gap:8px
-}
+.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
 select,button,input{
- padding:10px;
- border-radius:8px;
- border:1px solid #ccc;
- width:100%
+ padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
 }
 .producto button{
- background:#1e4ddb;
- color:#fff;
- border:none;
- cursor:pointer
+ background:#1e4ddb;color:#fff;border:none;cursor:pointer
 }
 
 /* BOTÓN CARRITO */
 #carritoBtn{
- position:fixed;
- bottom:20px;
- right:20px;
- background:#2ecc71;
- width:60px;
- height:60px;
- border-radius:50%;
- font-size:24px;
- border:none;
- cursor:pointer;
+ position:fixed;bottom:20px;right:20px;
+ background:#2ecc71;width:60px;height:60px;
+ border-radius:50%;font-size:24px;border:none;cursor:pointer;
  z-index:2000
 }
 #badge{
- position:absolute;
- top:-6px;
- right:-6px;
- background:red;
- color:#fff;
- width:22px;
- height:22px;
- border-radius:50%;
- display:none;
- align-items:center;
- justify-content:center
+ position:absolute;top:-6px;right:-6px;
+ background:red;color:#fff;width:22px;height:22px;
+ border-radius:50%;display:none;
+ align-items:center;justify-content:center;
+ font-size:12px;font-weight:bold
 }
 
 /* CARRITO */
 #carrito{
- position:fixed;
- top:0;
- right:-100%;
- width:100%;
- max-width:420px;
- height:100%;
- background:#fff;
- box-shadow:-5px 0 15px rgba(0,0,0,.2);
- padding:20px;
- overflow:auto;
- transition:transform .35s ease;
- transform:translateX(100%);
+ position:fixed;top:0;right:-100%;
+ width:100%;max-width:420px;height:100%;
+ background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
+ padding:20px;overflow:auto;transition:right .35s ease;
  z-index:3000
 }
-#carrito.abierto{
- transform:translateX(0)
-}
-.cerrar{
- float:right;
- font-size:22px;
- cursor:pointer
-}
+#carrito.abierto{right:0}
+.cerrar{float:right;font-size:22px;cursor:pointer}
 
 .item{
  display:flex;
  justify-content:space-between;
  align-items:center;
+ gap:10px;
  border-bottom:1px solid #ddd;
  padding:10px 0;
- gap:10px;
- font-size:14px
+ font-size:14px;
 }
-.item span{flex:1}
-
-.acciones-carrito{
+.item-info{
+ flex:1;
+}
+.item-controles{
  display:flex;
  align-items:center;
- gap:6px
+ gap:8px;
 }
-.item button{
- background:none;
- border:1px solid #ccc;
+.item-controles button{
+ width:26px;height:26px;
  border-radius:6px;
- width:26px;
- height:26px;
- display:flex;
- align-items:center;
- justify-content:center;
- cursor:pointer
+ border:1px solid #ccc;
+ background:#f5f5f5;
+ cursor:pointer;
+ font-size:14px;
+ padding:0;
 }
 
 .descuento{color:red;font-weight:bold}
 
-/* DATOS */
+/* FORM ENVÍO */
 .form-envio{
  display:flex;
  flex-direction:column;
  gap:10px;
- margin-top:10px
-}
-
-/* RESUMEN FIJO EN MÓVIL */
-.resumen-fijo{
- display:none;
- position:fixed;
- bottom:0;
- left:0;
- width:100%;
- background:#fff;
- box-shadow:0 -5px 15px rgba(0,0,0,.15);
- padding:12px;
- font-size:15px;
- z-index:2500
+ margin-top:10px;
 }
 
 /* FOOTER */
@@ -174,30 +117,26 @@ footer a{
 
 /* MODAL LEGAL */
 .legal-modal{
- position:fixed;
- inset:0;
+ position:fixed;inset:0;
  background:rgba(0,0,0,.6);
  display:none;
  align-items:center;
  justify-content:center;
- z-index:9999
+ z-index:9999;
 }
 .legal-box{
  background:#fff;
  max-width:500px;
  width:90%;
  padding:20px;
- border-radius:12px
+ border-radius:12px;
 }
-.legal-box button{
- margin-top:15px;
- width:100%
-}
+.legal-box button{margin-top:15px;width:100%}
 
-/* ===== MÓVIL ===== */
+/* MÓVIL */
 @media(max-width:600px){
- .resumen-fijo{display:block}
- #carrito{padding-bottom:90px}
+ .item{font-size:13px}
+ .item-controles button{width:24px;height:24px}
 }
 </style>
 </head>
@@ -232,14 +171,12 @@ footer a{
  <input placeholder="Ciudad">
 </div>
 
-<select disabled style="margin-top:10px">
- <option>España peninsular (0€ prueba)</option>
-</select>
+<p style="margin-top:10px;font-weight:bold">
+ Envío solo España peninsular (0€ prueba)
+</p>
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
 </div>
-
-<div class="resumen-fijo" id="resumenMovil"></div>
 
 <footer>
 <a onclick="abrirLegal('terms')">Términos</a>
@@ -297,59 +234,61 @@ cargar();
 
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
- const k=n+"_"+talla;
- if(!carrito[k]) carrito[k]={n,p,talla,c:0};
- carrito[k].c++;
+ const key=n+"_"+talla;
+ if(!carrito[key]) carrito[key]={n,p,talla,c:0};
+ carrito[key].c++;
  abrirCarrito();
- actualizar();
+ actualizarTotales();
 }
 
-function actualizar(){
- const d=document.getElementById("items");
- d.innerHTML="";
- let total=0, u=0;
+function actualizarTotales(){
+ const div=document.getElementById("items");
+ div.innerHTML="";
+ let total=0, unidades=0;
 
  Object.entries(carrito).forEach(([k,it])=>{
   total+=it.p*it.c;
-  u+=it.c;
-  d.innerHTML+=`
-   <div class="item">
-    <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
-    <div class="acciones-carrito">
-     <button onclick="menos('${k}')">−</button>
-     <button onclick="eliminar('${k}')">✕</button>
-    </div>
-   </div>`;
+  unidades+=it.c;
+  div.innerHTML+=`
+  <div class="item">
+   <div class="item-info">${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</div>
+   <div class="item-controles">
+    <button onclick="restar('${k}')">−</button>
+    <button onclick="eliminar('${k}')">✕</button>
+   </div>
+  </div>`;
  });
 
- document.getElementById("badge").style.display=u?"flex":"none";
- document.getElementById("badge").textContent=u;
+ document.getElementById("badge").style.display=unidades?"flex":"none";
+ document.getElementById("badge").textContent=unidades;
 
- let desc=u>1?(u-1)*2:0;
- let final=total-desc;
+ let descuento=unidades>1?(unidades-1)*2:0;
+ let envio=0;
+ let final=total-descuento+envio;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
- <span class="descuento">Descuento: -${desc}€</span><br>
- Envío: 0€<br>
+ <span class="descuento">Descuento: -${descuento}€</span><br>
+ Envío: ${envio}€<br>
  <b>Total: ${final}€</b>`;
-
- document.getElementById("resumenMovil").innerHTML=
- `<b>Total: ${final}€</b> · <a onclick="abrirCarrito()" style="color:#1e4ddb">Ver carrito</a>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
   createOrder:(d,a)=>a.order.create({
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
-  onApprove:(d,a)=>a.order.capture().then(()=>{
-   alert("¡Pago realizado! Hemos enviado un email con tu pedido. Revisa Spam.");
-  })
+  onApprove:(d,a)=>a.order.capture().then(()=>alert(
+   "¡Pago realizado! Hemos enviado un email con tu pedido.\nSi no lo encuentras revisa Spam."
+  ))
  }).render("#paypal-button-container");
 }
 
-function menos(k){carrito[k].c>1?carrito[k].c--:delete carrito[k];actualizar()}
-function eliminar(k){delete carrito[k];actualizar()}
+function restar(k){
+ carrito[k].c--;
+ if(carrito[k].c<=0) delete carrito[k];
+ actualizarTotales();
+}
+function eliminar(k){delete carrito[k];actualizarTotales();}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
@@ -359,21 +298,20 @@ function abrirLegal(t){
 
  if(t==="terms"){
   h.textContent="Términos y condiciones";
-  p.textContent="Al realizar una compra en Store EGP aceptas las condiciones de venta, precios mostrados, políticas de envío y devoluciones. La compra implica el compromiso de pago del producto seleccionado y el uso correcto de la plataforma.";
+  p.textContent="Al realizar una compra aceptas las condiciones de venta, precios, envíos y políticas indicadas en esta tienda online.";
  }
  if(t==="privacy"){
   h.textContent="Política de privacidad";
-  p.textContent="Tus datos solo se utilizan para gestionar pedidos, envíos y comunicación relacionada con tu compra. En ningún caso la información será compartida con terceros.";
+  p.textContent="Tus datos solo se usan para gestionar pedidos. En ningún caso la información será compartida con terceros.";
  }
  if(t==="envio"){
   h.textContent="Envío";
-  p.textContent="Actualmente solo se realizan envíos a España peninsular. El plazo estimado de entrega es de unos 15 días desde la compra.";
+  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días desde la compra.";
  }
  if(t==="devoluciones"){
   h.textContent="Devoluciones";
-  p.textContent="Existe la posibilidad de devolver un producto en un plazo de 14 días siempre que no haya sido usado ni lavado. El reembolso se hará al revisar las condiciones del producto. El envío de vuelta corre a cargo del comprador.";
+  p.textContent="Dispones de 14 días para devolver un producto si no ha sido usado ni lavado. El envío de vuelta corre a cargo del comprador. El reembolso se hará al revisar las condiciones del producto.";
  }
-
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
@@ -381,4 +319,5 @@ function cerrarLegal(){document.getElementById("legalModal").style.display="none
 
 </body>
 </html>
+
 
