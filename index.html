@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<!-- PAYPAL -->
-<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
-
-<!-- EMAILJS -->
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
-  emailjs.init("WLyVJyhY2lgWl421L");
+ emailjs.init("WLyVJyhY2lgWl421L");
 })();
 </script>
 
@@ -67,27 +64,42 @@ select,button,input{
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
 
+/* ITEMS CARRITO */
 .item{
  display:flex;
  justify-content:space-between;
  align-items:center;
+ padding:10px 0;
  border-bottom:1px solid #ddd;
- padding:8px 0;
- font-size:14px;
  gap:10px;
-}
-.item span{flex:1}
-.item button{
- background:none;
- border:none;
- color:#c00;
  font-size:14px;
- cursor:pointer;
 }
+.item-info{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ flex-wrap:wrap;
+}
+.item-nombre{font-weight:500}
+.item-precio{font-weight:bold}
+.item-acciones{
+ display:flex;
+ align-items:center;
+ gap:6px;
+}
+.item-acciones button{
+ width:28px;height:28px;
+ border-radius:6px;
+ border:1px solid #ccc;
+ background:#fff;
+ cursor:pointer;
+ font-size:16px;
+}
+.item-acciones button:hover{background:#eee}
 
 .descuento{color:red;font-weight:bold}
 
-/* FORM ENVÍO */
+/* FORM */
 .form-envio{
  display:flex;
  flex-direction:column;
@@ -103,8 +115,9 @@ footer a{
  text-decoration:none;
  cursor:pointer
 }
+footer a:hover{text-decoration:underline}
 
-/* MODAL LEGAL */
+/* MODAL */
 .legal-modal{
  position:fixed;inset:0;
  background:rgba(0,0,0,.6);
@@ -120,10 +133,7 @@ footer a{
  padding:20px;
  border-radius:12px;
 }
-.legal-box button{
- margin-top:15px;
- width:100%;
-}
+.legal-box button{margin-top:15px;width:100%}
 </style>
 </head>
 
@@ -150,11 +160,11 @@ footer a{
 
 <h3>Datos de envío</h3>
 <div class="form-envio">
- <input id="nombre" placeholder="Nombre completo">
- <input id="email" placeholder="Correo electrónico">
- <input id="direccion" placeholder="Dirección">
- <input id="cp" placeholder="Código postal">
- <input id="ciudad" placeholder="Ciudad">
+ <input placeholder="Nombre completo">
+ <input placeholder="Correo electrónico">
+ <input placeholder="Dirección">
+ <input placeholder="Código postal">
+ <input placeholder="Ciudad">
 </div>
 
 <select disabled style="margin-top:10px">
@@ -198,7 +208,7 @@ const productos=[
  {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
 ];
 
-let carrito={};
+const carrito={};
 
 function cargar(){
  const c=document.getElementById("listaProductos");
@@ -208,7 +218,7 @@ function cargar(){
    <img src="${pr.img}">
    <h3>${pr.n}</h3>
    <p>${pr.d}</p>
-   <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
+   <div class="precio">${pr.oferta||`<b>${pr.p}€</b>`}</div>
    <div class="acciones">
     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
@@ -227,6 +237,17 @@ function add(n,p,btn){
  actualizarTotales();
 }
 
+function restar(k){
+ carrito[k].c--;
+ if(carrito[k].c<=0) delete carrito[k];
+ actualizarTotales();
+}
+
+function eliminar(k){
+ delete carrito[k];
+ actualizarTotales();
+}
+
 function actualizarTotales(){
  const div=document.getElementById("items");
  div.innerHTML="";
@@ -236,10 +257,17 @@ function actualizarTotales(){
   total+=it.p*it.c;
   unidades+=it.c;
   div.innerHTML+=`
-   <div class="item">
-    <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
+  <div class="item">
+   <div class="item-info">
+    <span class="item-nombre">${it.n} (${it.talla})</span>
+    <span>x${it.c}</span>
+    <span class="item-precio">${it.p*it.c}€</span>
+   </div>
+   <div class="item-acciones">
+    ${it.c>1?`<button onclick="restar('${it.n}_${it.talla}')">−</button>`:""}
     <button onclick="eliminar('${it.n}_${it.talla}')">✕</button>
-   </div>`;
+   </div>
+  </div>`;
  });
 
  document.getElementById("badge").style.display=unidades?"flex":"none";
@@ -251,54 +279,29 @@ function actualizarTotales(){
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
  <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: 0€<br>
  <b>Total: ${final}€</b>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
-  createOrder:(d,a)=>a.order.create({
-   purchase_units:[{amount:{value:final.toFixed(2)}}]
-  }),
-  onApprove:(d,a)=>a.order.capture().then(()=>{
-    enviarEmailPedido(final);
-    alert("¡Pago realizado! Hemos enviado un email con tu pedido. Revisa Spam.");
-    carrito={};
-    actualizarTotales();
-  })
+  createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:final.toFixed(2)}}]}),
+  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
  }).render("#paypal-button-container");
 }
 
-function enviarEmailPedido(totalFinal){
- let productosTxt="";
- Object.values(carrito).forEach(p=>{
-  productosTxt+=`• ${p.n} (${p.talla}) x${p.c} - ${p.p*p.c}€\n`;
- });
-
- const params={
-  to_name:document.getElementById("nombre").value,
-  to_email:document.getElementById("email").value,
-  order_details:productosTxt,
-  total:totalFinal+"€",
-  address:`${direccion.value}, ${cp.value}, ${ciudad.value}`
- };
-
- emailjs.send("service_ko8t2at","template_y9fr06m",params);
- emailjs.send("service_ko8t2at","template_y9fr06m",{...params,to_email:"sstoreegp@gmail.com",to_name:"Store EGP"});
-}
-
-function eliminar(k){delete carrito[k];actualizarTotales();}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
 function abrirLegal(t){
- const h=legalTitulo,p=legalTexto;
- if(t==="envio"){h.textContent="Envío";p.textContent="Solo España peninsular. Entrega en 15 días."}
- if(t==="devoluciones"){h.textContent="Devoluciones";p.textContent="14 días. Envío de vuelta a cargo del comprador. Reembolso tras revisión."}
- if(t==="terms"){h.textContent="Términos";p.textContent="Al comprar aceptas condiciones, precios y envíos."}
- if(t==="privacy"){h.textContent="Privacidad";p.textContent="Tus datos solo se usan para pedidos y nunca se comparten."}
- legalModal.style.display="flex";
+ const h=document.getElementById("legalTitulo");
+ const p=document.getElementById("legalTexto");
+ if(t==="envio") p.textContent="Solo envíos a España peninsular. Entrega aprox. 15 días.";
+ if(t==="devoluciones") p.textContent="14 días, prenda sin usar. Reembolso tras revisión.";
+ if(t==="terms") p.textContent="Al comprar aceptas condiciones, precios y envíos.";
+ if(t==="privacy") p.textContent="Datos usados solo para pedidos. Nunca compartidos.";
+ h.textContent=t.charAt(0).toUpperCase()+t.slice(1);
+ document.getElementById("legalModal").style.display="flex";
 }
-function cerrarLegal(){legalModal.style.display="none"}
+function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
 </script>
 
 </body>
