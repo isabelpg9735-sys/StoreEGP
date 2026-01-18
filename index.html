@@ -66,42 +66,37 @@ select,button,input{
 
 .item{
  display:flex;
+ align-items:flex-start;
  justify-content:space-between;
- align-items:center;
- border-bottom:1px solid #ddd;
- padding:8px 0;
- font-size:14px;
  gap:10px;
+ border-bottom:1px solid #ddd;
+ padding:10px 0;
+ font-size:14px;
 }
-.item span{flex:1}
+.item span{flex:1;line-height:1.4}
 
 .item .acciones-carrito{
  display:flex;
  gap:6px;
 }
-
 .item button{
  background:none;
- border:none;
- color:#c00;
+ border:1px solid #ccc;
+ border-radius:6px;
+ width:26px;
+ height:26px;
  font-size:14px;
  cursor:pointer;
 }
 
 .descuento{color:red;font-weight:bold}
 
-/* DATOS ENVÍO */
+/* ENVÍO */
 .form-envio{
  display:flex;
  flex-direction:column;
  gap:10px;
  margin-top:10px;
-}
-
-.btn-tarjeta{
- margin-top:10px;background:#000;color:#fff;
- width:100%;border:none;padding:12px;
- border-radius:8px;cursor:pointer
 }
 
 /* FOOTER */
@@ -112,9 +107,8 @@ footer a{
  text-decoration:none;
  cursor:pointer
 }
-footer a:hover{text-decoration:underline}
 
-/* MODAL LEGAL */
+/* MODAL */
 .legal-modal{
  position:fixed;inset:0;
  background:rgba(0,0,0,.6);
@@ -130,9 +124,11 @@ footer a:hover{text-decoration:underline}
  padding:20px;
  border-radius:12px;
 }
-.legal-box button{
- margin-top:15px;
- width:100%;
+.legal-box button{margin-top:15px;width:100%}
+
+/* MÓVIL */
+@media(max-width:480px){
+ .item{font-size:13px}
 }
 </style>
 </head>
@@ -167,12 +163,11 @@ footer a:hover{text-decoration:underline}
  <input id="ciudad" placeholder="Ciudad">
 </div>
 
-<select id="pais" disabled style="margin-top:10px">
+<select disabled style="margin-top:10px">
  <option>España peninsular (0€ prueba)</option>
 </select>
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
-<button class="btn-tarjeta" onclick="pagoTarjeta()">💳 Pagar con tarjeta</button>
 </div>
 
 <footer>
@@ -239,11 +234,9 @@ function add(n,p,btn){
 }
 
 function restar(key){
- if(carrito[key]){
-  carrito[key].c--;
-  if(carrito[key].c<=0) delete carrito[key];
-  actualizarTotales();
- }
+ carrito[key].c--;
+ if(carrito[key].c<=0) delete carrito[key];
+ actualizarTotales();
 }
 
 function actualizarTotales(){
@@ -251,15 +244,15 @@ function actualizarTotales(){
  div.innerHTML="";
  let total=0, unidades=0;
 
- Object.entries(carrito).forEach(([key,it])=>{
+ Object.entries(carrito).forEach(([k,it])=>{
   total+=it.p*it.c;
   unidades+=it.c;
   div.innerHTML+=`
    <div class="item">
     <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
     <div class="acciones-carrito">
-     <button onclick="restar('${key}')">−</button>
-     <button onclick="eliminar('${key}')">✕</button>
+     <button onclick="restar('${k}')">−</button>
+     <button onclick="delete carrito['${k}'],actualizarTotales()">✕</button>
     </div>
    </div>`;
  });
@@ -281,38 +274,45 @@ function actualizarTotales(){
   createOrder:(d,a)=>a.order.create({
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
-  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+  onApprove:(d,a)=>a.order.capture().then(()=>{
+   enviarEmail(final);
+   alert("¡Pago realizado! Hemos enviado un email con tu pedido. Si no lo encuentras revisa Spam.");
+   for(let k in carrito) delete carrito[k];
+   actualizarTotales();
+   cerrarCarrito();
+  })
  }).render("#paypal-button-container");
 }
 
-function eliminar(k){delete carrito[k];actualizarTotales();}
+function enviarEmail(total){
+ let texto="";
+ Object.values(carrito).forEach(i=>{
+  texto+=`${i.n} (${i.talla}) x${i.c}\n`;
+ });
+
+ emailjs.send("service_qltdw7m","template_y9fr06m",{
+  to_name:document.getElementById("nombre").value,
+  to_email:document.getElementById("email").value,
+  message:texto,
+  total_price:total+"€",
+  address:document.getElementById("direccion").value
+ });
+}
+
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
 function abrirLegal(t){
  const h=document.getElementById("legalTitulo");
  const p=document.getElementById("legalTexto");
-
- if(t==="envio"){
-  h.textContent="Envío";
-  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días desde la compra hecha.";
- }
- if(t==="devoluciones"){
-  h.textContent="Devoluciones";
-  p.textContent="Posibilidad de devolución en 14 días si la prenda no ha sido usada ni lavada. El envío de vuelta corre a cargo del comprador.";
- }
- if(t==="terms"){
-  h.textContent="Términos";
-  p.textContent="Al comprar aceptas las condiciones de venta.";
- }
- if(t==="privacy"){
-  h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos.";
- }
+ if(t==="envio") p.textContent="Solo España peninsular. Entrega aprox. 15 días.";
+ if(t==="devoluciones") p.textContent="Devolución 14 días sin usar. Envío a cargo del comprador.";
+ if(t==="terms") p.textContent="Aceptas condiciones de venta.";
+ if(t==="privacy") p.textContent="Datos solo para pedidos.";
+ h.textContent=t.charAt(0).toUpperCase()+t.slice(1);
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
-function pagoTarjeta(){alert("Pago con tarjeta listo para integrar")}
 </script>
 
 </body>
