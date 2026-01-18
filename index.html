@@ -58,7 +58,7 @@ select,button,input{
  cursor:pointer
 }
 
-/* CARRITO */
+/* BOTÓN CARRITO */
 #carritoBtn{
  position:fixed;
  bottom:20px;
@@ -69,7 +69,8 @@ select,button,input{
  border-radius:50%;
  font-size:24px;
  border:none;
- cursor:pointer
+ cursor:pointer;
+ z-index:2000
 }
 #badge{
  position:absolute;
@@ -84,6 +85,8 @@ select,button,input{
  align-items:center;
  justify-content:center
 }
+
+/* CARRITO */
 #carrito{
  position:fixed;
  top:0;
@@ -95,9 +98,13 @@ select,button,input{
  box-shadow:-5px 0 15px rgba(0,0,0,.2);
  padding:20px;
  overflow:auto;
- transition:.3s
+ transition:transform .35s ease;
+ transform:translateX(100%);
+ z-index:3000
 }
-#carrito.abierto{right:0}
+#carrito.abierto{
+ transform:translateX(0)
+}
 .cerrar{
  float:right;
  font-size:22px;
@@ -110,28 +117,22 @@ select,button,input{
  align-items:center;
  border-bottom:1px solid #ddd;
  padding:10px 0;
- font-size:14px;
- gap:10px
+ gap:10px;
+ font-size:14px
 }
-
-.item span{
- flex:1;
-}
+.item span{flex:1}
 
 .acciones-carrito{
  display:flex;
  align-items:center;
  gap:6px
 }
-
 .item button{
  background:none;
  border:1px solid #ccc;
  border-radius:6px;
  width:26px;
  height:26px;
- font-size:14px;
- line-height:1;
  display:flex;
  align-items:center;
  justify-content:center;
@@ -140,7 +141,7 @@ select,button,input{
 
 .descuento{color:red;font-weight:bold}
 
-/* DATOS ENVÍO */
+/* DATOS */
 .form-envio{
  display:flex;
  flex-direction:column;
@@ -148,30 +149,28 @@ select,button,input{
  margin-top:10px
 }
 
-.btn-tarjeta{
- margin-top:10px;
- background:#000;
- color:#fff;
+/* RESUMEN FIJO EN MÓVIL */
+.resumen-fijo{
+ display:none;
+ position:fixed;
+ bottom:0;
+ left:0;
  width:100%;
- border:none;
+ background:#fff;
+ box-shadow:0 -5px 15px rgba(0,0,0,.15);
  padding:12px;
- border-radius:8px;
- cursor:pointer
+ font-size:15px;
+ z-index:2500
 }
 
 /* FOOTER */
-footer{
- text-align:center;
- padding:20px;
- font-size:14px
-}
+footer{text-align:center;padding:20px;font-size:14px}
 footer a{
  margin:0 8px;
  color:#1e4ddb;
  text-decoration:none;
  cursor:pointer
 }
-footer a:hover{text-decoration:underline}
 
 /* MODAL LEGAL */
 .legal-modal{
@@ -195,50 +194,10 @@ footer a:hover{text-decoration:underline}
  width:100%
 }
 
-/* ========================= */
-/* MEJORAS SOLO PARA MÓVIL */
-/* ========================= */
-@media (max-width: 600px){
- header h1{font-size:22px}
- .subtitulo{font-size:13px}
-
- .productos{
-  padding:12px;
-  gap:14px
- }
-
- .producto{
-  padding:12px
- }
-
- .producto h3{
-  font-size:16px
- }
-
- .producto p{
-  font-size:14px
- }
-
- #carrito{
-  max-width:100%;
-  padding:16px
- }
-
- .item{
-  font-size:15px
- }
-
- .acciones-carrito button{
-  width:30px;
-  height:30px;
-  font-size:16px
- }
-
- #carritoBtn{
-  width:64px;
-  height:64px;
-  font-size:26px
- }
+/* ===== MÓVIL ===== */
+@media(max-width:600px){
+ .resumen-fijo{display:block}
+ #carrito{padding-bottom:90px}
 }
 </style>
 </head>
@@ -266,11 +225,11 @@ footer a:hover{text-decoration:underline}
 
 <h3>Datos de envío</h3>
 <div class="form-envio">
- <input id="nombre" placeholder="Nombre completo">
- <input id="email" placeholder="Correo electrónico">
- <input id="direccion" placeholder="Dirección">
- <input id="cp" placeholder="Código postal">
- <input id="ciudad" placeholder="Ciudad">
+ <input placeholder="Nombre completo">
+ <input placeholder="Correo electrónico">
+ <input placeholder="Dirección">
+ <input placeholder="Código postal">
+ <input placeholder="Ciudad">
 </div>
 
 <select disabled style="margin-top:10px">
@@ -279,6 +238,8 @@ footer a:hover{text-decoration:underline}
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
 </div>
+
+<div class="resumen-fijo" id="resumenMovil"></div>
 
 <footer>
 <a onclick="abrirLegal('terms')">Términos</a>
@@ -326,9 +287,7 @@ function cargar(){
    <p>${pr.d}</p>
    <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
    <div class="acciones">
-    <select>
-     <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
-    </select>
+    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
    </div>
   </div>`;
@@ -338,22 +297,22 @@ cargar();
 
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
- const key=n+"_"+talla;
- if(!carrito[key]) carrito[key]={n,p,talla,c:0};
- carrito[key].c++;
+ const k=n+"_"+talla;
+ if(!carrito[k]) carrito[k]={n,p,talla,c:0};
+ carrito[k].c++;
  abrirCarrito();
- actualizarTotales();
+ actualizar();
 }
 
-function actualizarTotales(){
- const div=document.getElementById("items");
- div.innerHTML="";
- let total=0, unidades=0;
+function actualizar(){
+ const d=document.getElementById("items");
+ d.innerHTML="";
+ let total=0, u=0;
 
  Object.entries(carrito).forEach(([k,it])=>{
   total+=it.p*it.c;
-  unidades+=it.c;
-  div.innerHTML+=`
+  u+=it.c;
+  d.innerHTML+=`
    <div class="item">
     <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
     <div class="acciones-carrito">
@@ -363,18 +322,20 @@ function actualizarTotales(){
    </div>`;
  });
 
- document.getElementById("badge").style.display=unidades?"flex":"none";
- document.getElementById("badge").textContent=unidades;
+ document.getElementById("badge").style.display=u?"flex":"none";
+ document.getElementById("badge").textContent=u;
 
- let descuento=unidades>1?(unidades-1)*2:0;
- let envio=0;
- let final=total-descuento+envio;
+ let desc=u>1?(u-1)*2:0;
+ let final=total-desc;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
- <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: ${envio}€<br>
+ <span class="descuento">Descuento: -${desc}€</span><br>
+ Envío: 0€<br>
  <b>Total: ${final}€</b>`;
+
+ document.getElementById("resumenMovil").innerHTML=
+ `<b>Total: ${final}€</b> · <a onclick="abrirCarrito()" style="color:#1e4ddb">Ver carrito</a>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
@@ -382,22 +343,13 @@ function actualizarTotales(){
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
-   alert("¡Pago realizado! Revisa tu correo (Spam incluido).");
+   alert("¡Pago realizado! Hemos enviado un email con tu pedido. Revisa Spam.");
   })
  }).render("#paypal-button-container");
 }
 
-function menos(k){
- if(carrito[k].c>1) carrito[k].c--;
- else delete carrito[k];
- actualizarTotales();
-}
-
-function eliminar(k){
- delete carrito[k];
- actualizarTotales();
-}
-
+function menos(k){carrito[k].c>1?carrito[k].c--:delete carrito[k];actualizar()}
+function eliminar(k){delete carrito[k];actualizar()}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
@@ -405,21 +357,21 @@ function abrirLegal(t){
  const h=document.getElementById("legalTitulo");
  const p=document.getElementById("legalTexto");
 
+ if(t==="terms"){
+  h.textContent="Términos y condiciones";
+  p.textContent="Al realizar una compra en Store EGP aceptas las condiciones de venta, precios mostrados, políticas de envío y devoluciones. La compra implica el compromiso de pago del producto seleccionado y el uso correcto de la plataforma.";
+ }
+ if(t==="privacy"){
+  h.textContent="Política de privacidad";
+  p.textContent="Tus datos solo se utilizan para gestionar pedidos, envíos y comunicación relacionada con tu compra. En ningún caso la información será compartida con terceros.";
+ }
  if(t==="envio"){
   h.textContent="Envío";
-  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días.";
+  p.textContent="Actualmente solo se realizan envíos a España peninsular. El plazo estimado de entrega es de unos 15 días desde la compra.";
  }
  if(t==="devoluciones"){
   h.textContent="Devoluciones";
-  p.textContent="Devolución en 14 días si la prenda no ha sido usada ni lavada. El envío corre a cargo del comprador.";
- }
- if(t==="terms"){
-  h.textContent="Términos";
-  p.textContent="Al realizar una compra aceptas las condiciones de venta.";
- }
- if(t==="privacy"){
-  h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos.";
+  p.textContent="Existe la posibilidad de devolver un producto en un plazo de 14 días siempre que no haya sido usado ni lavado. El reembolso se hará al revisar las condiciones del producto. El envío de vuelta corre a cargo del comprador.";
  }
 
  document.getElementById("legalModal").style.display="flex";
