@@ -34,8 +34,9 @@ header{background:#111;color:#fff;padding:20px;text-align:center}
  display:flex;flex-direction:column
 }
 .producto img{width:100%;border-radius:10px}
-.precio{margin:8px 0}
-.oferta del{color:red;margin-right:6px}
+.desc{font-size:14px;color:#555}
+.precio{margin:8px 0;font-weight:bold}
+
 .acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
 select,button,input{
  padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
@@ -59,9 +60,8 @@ select,button,input{
 #carrito{
  position:fixed;top:0;right:-100%;
  width:100%;max-width:420px;height:100%;
- background:#fff;padding:20px;
- box-shadow:-5px 0 15px rgba(0,0,0,.2);
- overflow:auto;transition:.3s
+ background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
+ padding:20px;overflow:auto;transition:.3s
 }
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
@@ -70,41 +70,26 @@ select,button,input{
  display:flex;
  justify-content:space-between;
  align-items:center;
- padding:10px 0;
  border-bottom:1px solid #ddd;
+ padding:8px 0;
  gap:10px;
 }
-.item-info{flex:1}
-.item-controls{
+.item-info{flex:1;font-size:14px}
+.item-botones{
  display:flex;
  gap:6px;
 }
-.item-controls button{
- width:32px;height:32px;
- display:flex;align-items:center;justify-content:center;
- background:#f5f5f5;border:1px solid #ccc;
- border-radius:6px;font-size:16px;cursor:pointer
+.item-botones button{
+ width:30px;height:30px;
+ border-radius:6px;border:1px solid #ccc;
+ background:#f5f5f5;cursor:pointer
 }
 
-.descuento{color:red;font-weight:bold}
-
-.form-envio{
- display:flex;
- flex-direction:column;
- gap:10px;
- margin-top:10px;
-}
-
-footer{text-align:center;padding:20px;font-size:14px}
-footer a{margin:0 8px;color:#1e4ddb;cursor:pointer}
-
-.legal-modal{
- position:fixed;inset:0;
- background:rgba(0,0,0,.6);
- display:none;align-items:center;justify-content:center
-}
-.legal-box{
- background:#fff;padding:20px;border-radius:12px;max-width:500px;width:90%
+.form-envio{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.btn-tarjeta{
+ margin-top:10px;background:#000;color:#fff;
+ width:100%;border:none;padding:12px;
+ border-radius:8px;cursor:pointer
 }
 </style>
 </head>
@@ -118,11 +103,14 @@ footer a{margin:0 8px;color:#1e4ddb;cursor:pointer}
 
 <section class="productos" id="listaProductos"></section>
 
-<button id="carritoBtn" onclick="abrirCarrito()">🛒<div id="badge">0</div></button>
+<button id="carritoBtn" onclick="abrirCarrito()">🛒
+ <div id="badge">0</div>
+</button>
 
 <div id="carrito">
 <span class="cerrar" onclick="cerrarCarrito()">✖</span>
 <h2>Carrito</h2>
+
 <div id="items"></div>
 <p id="resumen"></p>
 
@@ -138,38 +126,23 @@ footer a{margin:0 8px;color:#1e4ddb;cursor:pointer}
 <div id="paypal-button-container" style="margin-top:15px"></div>
 </div>
 
-<footer>
-<a onclick="abrirLegal('envio')">Envío</a>
-<a onclick="abrirLegal('devoluciones')">Devoluciones</a>
-<a onclick="abrirLegal('terms')">Términos</a>
-<a onclick="abrirLegal('privacy')">Privacidad</a>
-</footer>
-
-<div class="legal-modal" id="legalModal">
-<div class="legal-box">
-<h3 id="legalTitulo"></h3>
-<p id="legalTexto"></p>
-<button onclick="cerrarLegal()">Cerrar</button>
-</div>
-</div>
-
 <script>
 const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe"},
+ {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla, lo sabes"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes del goat"},
  {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
- {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Con estilo"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAAA"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Tu camiseta si siempre la tienes"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"¿Nos tomamos un par?"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
 ];
 
 const carrito={};
@@ -181,8 +154,8 @@ function cargar(){
   <div class="producto">
    <img src="${pr.img}">
    <h3>${pr.n}</h3>
-   <p>${pr.d}</p>
-   <div class="precio"><b>${pr.p}€</b></div>
+   <p class="desc">${pr.d}</p>
+   <div class="precio">${pr.p}€</div>
    <div class="acciones">
     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
@@ -201,82 +174,67 @@ function add(n,p,btn){
  actualizar();
 }
 
-function restar(k){
- if(carrito[k]){
-  carrito[k].c--;
-  if(carrito[k].c<=0) delete carrito[k];
-  actualizar();
- }
-}
-
-function eliminar(k){delete carrito[k];actualizar();}
-
 function actualizar(){
  const div=document.getElementById("items");
  div.innerHTML="";
- let total=0, unidades=0;
+ let total=0, unidades=0, lista="";
 
- Object.entries(carrito).forEach(([k,it])=>{
-  total+=it.p*it.c;unidades+=it.c;
+ Object.values(carrito).forEach(it=>{
+  total+=it.p*it.c;
+  unidades+=it.c;
+  lista+=`${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€\n`;
+
   div.innerHTML+=`
   <div class="item">
    <div class="item-info">${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</div>
-   <div class="item-controls">
-    <button onclick="restar('${k}')">−</button>
-    <button onclick="eliminar('${k}')">✕</button>
+   <div class="item-botones">
+    <button onclick="restar('${it.n}_${it.talla}')">−</button>
+    <button onclick="eliminar('${it.n}_${it.talla}')">✕</button>
    </div>
   </div>`;
  });
 
- document.getElementById("badge").style.display=unidades?"flex":"none";
- document.getElementById("badge").textContent=unidades;
+ badge.textContent=unidades;
+ badge.style.display=unidades?"flex":"none";
 
- let descuento=unidades>1?(unidades-1)*2:0;
- let final=total-descuento;
+ resumen.innerHTML=`<b>Total: ${total}€</b>`;
 
- document.getElementById("resumen").innerHTML=
- `Productos: ${total}€<br>
- <span class="descuento">Descuento: -${descuento}€</span><br>
- <b>Total: ${final}€</b>`;
+ paypalButtons(total, lista);
+}
 
+function restar(k){
+ if(carrito[k].c>1) carrito[k].c--;
+ else delete carrito[k];
+ actualizar();
+}
+function eliminar(k){delete carrito[k];actualizar();}
+function abrirCarrito(){carrito.classList.add("abierto")}
+function cerrarCarrito(){carrito.classList.remove("abierto")}
+
+function paypalButtons(total, lista){
  document.getElementById("paypal-button-container").innerHTML="";
  paypal.Buttons({
-  createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:final.toFixed(2)}}]}),
+  createOrder:(d,a)=>a.order.create({
+   purchase_units:[{amount:{value:total.toFixed(2)}}]
+  }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
-   enviarEmail(final);
-   alert("¡Pago realizado! Hemos enviado un email con tu pedido.");
+   enviarEmail(lista,total);
+   alert("Pago realizado correctamente");
+   location.href=location.pathname;
   })
  }).render("#paypal-button-container");
 }
 
-function enviarEmail(total){
- let lista="";
- Object.values(carrito).forEach(it=>{
-  lista+=`${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€\n`;
- });
-
+function enviarEmail(lista,total){
  emailjs.send("service_ko8t2at","template_y9fr06m",{
-  cliente:document.getElementById("nombre").value,
-  email:document.getElementById("email").value,
+  cliente:nombre.value,
+  email_cliente:email.value,
+  direccion:direccion.value+", "+cp.value+" "+ciudad.value,
   pedido:lista,
-  total:total+"€"
+  total:total+"€",
+  time:new Date().toLocaleString()
  });
 }
-
-function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
-function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
-
-function abrirLegal(t){
- const h=document.getElementById("legalTitulo");
- const p=document.getElementById("legalTexto");
- if(t==="envio") p.textContent="Solo España peninsular. Entrega ~15 días.";
- if(t==="devoluciones") p.textContent="14 días si no está usada ni lavada.";
- if(t==="terms") p.textContent="Al comprar aceptas las condiciones.";
- if(t==="privacy") p.textContent="Tus datos no se comparten con terceros.";
- h.textContent=t.toUpperCase();
- document.getElementById("legalModal").style.display="flex";
-}
-function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
 </script>
 
 </body>
