@@ -25,60 +25,105 @@ header small{color:#ccc}
 .productos{
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
- gap:20px;padding:20px
+ gap:20px;
+ padding:20px
 }
 .producto{
- background:#fff;border-radius:12px;padding:15px;
+ background:#fff;
+ border-radius:12px;
+ padding:15px;
  box-shadow:0 5px 15px rgba(0,0,0,.1);
- display:flex;flex-direction:column
+ display:flex;
+ flex-direction:column
 }
 .producto img{width:100%;border-radius:10px}
 .precio{margin:8px 0}
 .oferta del{color:red;margin-right:6px}
-.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.acciones{
+ margin-top:auto;
+ display:flex;
+ flex-direction:column;
+ gap:8px
+}
 select,button,input{
- padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
+ padding:10px;
+ border-radius:8px;
+ border:1px solid #ccc;
+ width:100%
 }
 .producto button{
- background:#1e4ddb;color:#fff;border:none;cursor:pointer
+ background:#1e4ddb;
+ color:#fff;
+ border:none;
+ cursor:pointer
 }
 
 /* CARRITO */
 #carritoBtn{
- position:fixed;bottom:20px;right:20px;
- background:#2ecc71;width:60px;height:60px;
- border-radius:50%;font-size:24px;border:none;cursor:pointer
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ background:#2ecc71;
+ width:60px;
+ height:60px;
+ border-radius:50%;
+ font-size:24px;
+ border:none;
+ cursor:pointer
 }
 #badge{
- position:absolute;top:-6px;right:-6px;
- background:red;color:#fff;width:22px;height:22px;
- border-radius:50%;display:none;
- align-items:center;justify-content:center
+ position:absolute;
+ top:-6px;
+ right:-6px;
+ background:red;
+ color:#fff;
+ width:22px;
+ height:22px;
+ border-radius:50%;
+ display:none;
+ align-items:center;
+ justify-content:center
 }
 #carrito{
- position:fixed;top:0;right:-100%;
- width:100%;max-width:420px;height:100%;
- background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
- padding:20px;overflow:auto;transition:.3s
+ position:fixed;
+ top:0;
+ right:-100%;
+ width:100%;
+ max-width:420px;
+ height:100%;
+ background:#fff;
+ box-shadow:-5px 0 15px rgba(0,0,0,.2);
+ padding:20px;
+ overflow:auto;
+ transition:.3s
 }
 #carrito.abierto{right:0}
-.cerrar{float:right;font-size:22px;cursor:pointer}
+.cerrar{
+ float:right;
+ font-size:22px;
+ cursor:pointer
+}
 
 .item{
  display:flex;
- align-items:flex-start;
  justify-content:space-between;
- gap:10px;
+ align-items:center;
  border-bottom:1px solid #ddd;
  padding:10px 0;
  font-size:14px;
+ gap:10px
 }
-.item span{flex:1;line-height:1.4}
 
-.item .acciones-carrito{
- display:flex;
- gap:6px;
+.item span{
+ flex:1;
 }
+
+.acciones-carrito{
+ display:flex;
+ align-items:center;
+ gap:6px
+}
+
 .item button{
  background:none;
  border:1px solid #ccc;
@@ -86,49 +131,114 @@ select,button,input{
  width:26px;
  height:26px;
  font-size:14px;
- cursor:pointer;
+ line-height:1;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ cursor:pointer
 }
 
 .descuento{color:red;font-weight:bold}
 
-/* ENVÍO */
+/* DATOS ENVÍO */
 .form-envio{
  display:flex;
  flex-direction:column;
  gap:10px;
+ margin-top:10px
+}
+
+.btn-tarjeta{
  margin-top:10px;
+ background:#000;
+ color:#fff;
+ width:100%;
+ border:none;
+ padding:12px;
+ border-radius:8px;
+ cursor:pointer
 }
 
 /* FOOTER */
-footer{text-align:center;padding:20px;font-size:14px}
+footer{
+ text-align:center;
+ padding:20px;
+ font-size:14px
+}
 footer a{
  margin:0 8px;
  color:#1e4ddb;
  text-decoration:none;
  cursor:pointer
 }
+footer a:hover{text-decoration:underline}
 
-/* MODAL */
+/* MODAL LEGAL */
 .legal-modal{
- position:fixed;inset:0;
+ position:fixed;
+ inset:0;
  background:rgba(0,0,0,.6);
  display:none;
  align-items:center;
  justify-content:center;
- z-index:9999;
+ z-index:9999
 }
 .legal-box{
  background:#fff;
  max-width:500px;
  width:90%;
  padding:20px;
- border-radius:12px;
+ border-radius:12px
 }
-.legal-box button{margin-top:15px;width:100%}
+.legal-box button{
+ margin-top:15px;
+ width:100%
+}
 
-/* MÓVIL */
-@media(max-width:480px){
- .item{font-size:13px}
+/* ========================= */
+/* MEJORAS SOLO PARA MÓVIL */
+/* ========================= */
+@media (max-width: 600px){
+ header h1{font-size:22px}
+ .subtitulo{font-size:13px}
+
+ .productos{
+  padding:12px;
+  gap:14px
+ }
+
+ .producto{
+  padding:12px
+ }
+
+ .producto h3{
+  font-size:16px
+ }
+
+ .producto p{
+  font-size:14px
+ }
+
+ #carrito{
+  max-width:100%;
+  padding:16px
+ }
+
+ .item{
+  font-size:15px
+ }
+
+ .acciones-carrito button{
+  width:30px;
+  height:30px;
+  font-size:16px
+ }
+
+ #carritoBtn{
+  width:64px;
+  height:64px;
+  font-size:26px
+ }
 }
 </style>
 </head>
@@ -137,7 +247,7 @@ footer a{
 
 <header>
 <h1>Store EGP</h1>
-<div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
+<div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
 <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
 
@@ -216,7 +326,9 @@ function cargar(){
    <p>${pr.d}</p>
    <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
    <div class="acciones">
-    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+    <select>
+     <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+    </select>
     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
    </div>
   </div>`;
@@ -233,12 +345,6 @@ function add(n,p,btn){
  actualizarTotales();
 }
 
-function restar(key){
- carrito[key].c--;
- if(carrito[key].c<=0) delete carrito[key];
- actualizarTotales();
-}
-
 function actualizarTotales(){
  const div=document.getElementById("items");
  div.innerHTML="";
@@ -251,8 +357,8 @@ function actualizarTotales(){
    <div class="item">
     <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
     <div class="acciones-carrito">
-     <button onclick="restar('${k}')">−</button>
-     <button onclick="delete carrito['${k}'],actualizarTotales()">✕</button>
+     <button onclick="menos('${k}')">−</button>
+     <button onclick="eliminar('${k}')">✕</button>
     </div>
    </div>`;
  });
@@ -261,12 +367,13 @@ function actualizarTotales(){
  document.getElementById("badge").textContent=unidades;
 
  let descuento=unidades>1?(unidades-1)*2:0;
- let final=total-descuento;
+ let envio=0;
+ let final=total-descuento+envio;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
  <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: 0€<br>
+ Envío: ${envio}€<br>
  <b>Total: ${final}€</b>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
@@ -275,28 +382,20 @@ function actualizarTotales(){
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
-   enviarEmail(final);
-   alert("¡Pago realizado! Hemos enviado un email con tu pedido. Si no lo encuentras revisa Spam.");
-   for(let k in carrito) delete carrito[k];
-   actualizarTotales();
-   cerrarCarrito();
+   alert("¡Pago realizado! Revisa tu correo (Spam incluido).");
   })
  }).render("#paypal-button-container");
 }
 
-function enviarEmail(total){
- let texto="";
- Object.values(carrito).forEach(i=>{
-  texto+=`${i.n} (${i.talla}) x${i.c}\n`;
- });
+function menos(k){
+ if(carrito[k].c>1) carrito[k].c--;
+ else delete carrito[k];
+ actualizarTotales();
+}
 
- emailjs.send("service_qltdw7m","template_y9fr06m",{
-  to_name:document.getElementById("nombre").value,
-  to_email:document.getElementById("email").value,
-  message:texto,
-  total_price:total+"€",
-  address:document.getElementById("direccion").value
- });
+function eliminar(k){
+ delete carrito[k];
+ actualizarTotales();
 }
 
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
@@ -305,11 +404,24 @@ function cerrarCarrito(){document.getElementById("carrito").classList.remove("ab
 function abrirLegal(t){
  const h=document.getElementById("legalTitulo");
  const p=document.getElementById("legalTexto");
- if(t==="envio") p.textContent="Solo España peninsular. Entrega aprox. 15 días.";
- if(t==="devoluciones") p.textContent="Devolución 14 días sin usar. Envío a cargo del comprador.";
- if(t==="terms") p.textContent="Aceptas condiciones de venta.";
- if(t==="privacy") p.textContent="Datos solo para pedidos.";
- h.textContent=t.charAt(0).toUpperCase()+t.slice(1);
+
+ if(t==="envio"){
+  h.textContent="Envío";
+  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días.";
+ }
+ if(t==="devoluciones"){
+  h.textContent="Devoluciones";
+  p.textContent="Devolución en 14 días si la prenda no ha sido usada ni lavada. El envío corre a cargo del comprador.";
+ }
+ if(t==="terms"){
+  h.textContent="Términos";
+  p.textContent="Al realizar una compra aceptas las condiciones de venta.";
+ }
+ if(t==="privacy"){
+  h.textContent="Privacidad";
+  p.textContent="Tus datos solo se usan para gestionar pedidos.";
+ }
+
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
