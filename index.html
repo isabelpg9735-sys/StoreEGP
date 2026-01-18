@@ -2,242 +2,145 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<title>SStoreEGP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store EGP</title>
 
-<!-- PAYPAL -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
 
-<!-- EMAILJS -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-(function(){
- emailjs.init("WLyVJyhY2lgWl421L");
-})();
-</script>
-
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f2f2f2}
-
-header{background:#111;color:#fff;padding:20px;text-align:center}
-.subtitulo{font-size:14px;color:#aaa;margin-top:6px}
-
-.productos{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
- gap:20px;padding:20px
-}
-.producto{
- background:#fff;border-radius:12px;padding:15px;
- box-shadow:0 5px 15px rgba(0,0,0,.1);
- display:flex;flex-direction:column
-}
-.producto img{width:100%;border-radius:10px}
-.desc{font-size:14px;color:#555}
-.precio{margin:8px 0;font-weight:bold}
-
-.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
-select,button,input{
- padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
-}
-.producto button{
- background:#1e4ddb;color:#fff;border:none;cursor:pointer
-}
-
-#carritoBtn{
- position:fixed;bottom:20px;right:20px;
- background:#2ecc71;width:60px;height:60px;
- border-radius:50%;font-size:24px;border:none;cursor:pointer
-}
-#badge{
- position:absolute;top:-6px;right:-6px;
- background:red;color:#fff;width:22px;height:22px;
- border-radius:50%;display:none;
- align-items:center;justify-content:center
-}
-
-#carrito{
- position:fixed;top:0;right:-100%;
- width:100%;max-width:420px;height:100%;
- background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
- padding:20px;overflow:auto;transition:.3s
-}
-#carrito.abierto{right:0}
-.cerrar{float:right;font-size:22px;cursor:pointer}
-
-.item{
- display:flex;
- justify-content:space-between;
- align-items:center;
- border-bottom:1px solid #ddd;
- padding:8px 0;
- gap:10px;
-}
-.item-info{flex:1;font-size:14px}
-.item-botones{
- display:flex;
- gap:6px;
-}
-.item-botones button{
- width:30px;height:30px;
- border-radius:6px;border:1px solid #ccc;
- background:#f5f5f5;cursor:pointer
-}
-
-.form-envio{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.btn-tarjeta{
- margin-top:10px;background:#000;color:#fff;
- width:100%;border:none;padding:12px;
- border-radius:8px;cursor:pointer
-}
+body{font-family:Arial;margin:0;background:#f5f5f5}
+header{text-align:center;padding:15px;background:#000;color:#fff}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;padding:15px}
+.product{background:#fff;padding:10px;border-radius:8px}
+.cart{position:fixed;right:10px;top:10px;background:#000;color:#fff;padding:10px;border-radius:50%;cursor:pointer}
+#cartBox{display:none;position:fixed;right:10px;top:60px;background:#fff;width:320px;padding:10px;border-radius:8px;z-index:10}
+.cart-item{display:flex;justify-content:space-between}
+input{width:100%;margin-bottom:6px;padding:6px}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>Store EGP</h1>
-<div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
+<h1>@sstoreegp</h1>
+<p>Cualquier duda a sstoreegp@gmail.com</p>
 </header>
 
-<section class="productos" id="listaProductos"></section>
+<div class="cart" onclick="toggleCart()">🛒</div>
 
-<button id="carritoBtn" onclick="abrirCarrito()">🛒
- <div id="badge">0</div>
-</button>
-
-<div id="carrito">
-<span class="cerrar" onclick="cerrarCarrito()">✖</span>
-<h2>Carrito</h2>
-
-<div id="items"></div>
-<p id="resumen"></p>
-
+<div id="cartBox">
 <h3>Datos de envío</h3>
-<div class="form-envio">
- <input id="nombre" placeholder="Nombre completo">
- <input id="email" placeholder="Correo electrónico">
- <input id="direccion" placeholder="Dirección">
- <input id="cp" placeholder="Código postal">
- <input id="ciudad" placeholder="Ciudad">
+<input id="name" placeholder="Nombre completo">
+<input id="email" placeholder="Email">
+<input id="address" placeholder="Dirección exacta">
+<input id="cp" placeholder="Código postal">
+<input id="city" placeholder="Ciudad">
+<input id="prov" placeholder="Provincia">
+
+<hr>
+
+<div id="cartItems"></div>
+<p><b>Total: €<span id="total">0</span></b></p>
+<div id="paypal-button-container"></div>
 </div>
 
-<div id="paypal-button-container" style="margin-top:15px"></div>
-</div>
+<div class="products" id="products"></div>
 
 <script>
-const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido te pide comprarla, lo sabes"},
+emailjs.init("WLyVJyhY2lgWl421L");
+
+const products=[
+ {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes del goat"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes"},
  {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAAA"},
- {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Con estilo"},
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Tu camiseta si siempre la tienes"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Diseño rocoso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"¿Nos tomamos un par?"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
 ];
 
-const carrito={};
+let cart=[];
 
-function cargar(){
- const c=document.getElementById("listaProductos");
- productos.forEach(pr=>{
+function renderProducts(){
+ const c=document.getElementById("products");
+ products.forEach((p,i)=>{
   c.innerHTML+=`
-  <div class="producto">
-   <img src="${pr.img}">
-   <h3>${pr.n}</h3>
-   <p class="desc">${pr.d}</p>
-   <div class="precio">${pr.p}€</div>
-   <div class="acciones">
-    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
-   </div>
+  <div class="product">
+   <h3>${p.n}</h3>
+   <p>${p.d}</p>
+   <b>${p.p}€</b><br>
+   <button onclick="add(${i})">Añadir</button>
   </div>`;
  });
 }
-cargar();
+renderProducts();
 
-function add(n,p,btn){
- const talla=btn.previousElementSibling.value;
- const key=n+"_"+talla;
- if(!carrito[key]) carrito[key]={n,p,talla,c:0};
- carrito[key].c++;
- abrirCarrito();
- actualizar();
+function add(i){
+ const f=cart.find(x=>x.i===i);
+ if(f)f.q++; else cart.push({i,q:1});
+ renderCart();
 }
 
-function actualizar(){
- const div=document.getElementById("items");
- div.innerHTML="";
- let total=0, unidades=0, lista="";
-
- Object.values(carrito).forEach(it=>{
-  total+=it.p*it.c;
-  unidades+=it.c;
-  lista+=`${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€\n`;
-
-  div.innerHTML+=`
-  <div class="item">
-   <div class="item-info">${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</div>
-   <div class="item-botones">
-    <button onclick="restar('${it.n}_${it.talla}')">−</button>
-    <button onclick="eliminar('${it.n}_${it.talla}')">✕</button>
-   </div>
-  </div>`;
+function renderCart(){
+ const c=document.getElementById("cartItems");
+ let t=0; c.innerHTML="";
+ cart.forEach(it=>{
+  const p=products[it.i];
+  t+=p.p*it.q;
+  c.innerHTML+=`<div class="cart-item">${p.n} x${it.q}<b>${p.p*it.q}€</b></div>`;
  });
-
- badge.textContent=unidades;
- badge.style.display=unidades?"flex":"none";
-
- resumen.innerHTML=`<b>Total: ${total}€</b>`;
-
- paypalButtons(total, lista);
+ document.getElementById("total").textContent=t.toFixed(2);
 }
 
-function restar(k){
- if(carrito[k].c>1) carrito[k].c--;
- else delete carrito[k];
- actualizar();
-}
-function eliminar(k){delete carrito[k];actualizar();}
-function abrirCarrito(){carrito.classList.add("abierto")}
-function cerrarCarrito(){carrito.classList.remove("abierto")}
-
-function paypalButtons(total, lista){
- document.getElementById("paypal-button-container").innerHTML="";
- paypal.Buttons({
-  createOrder:(d,a)=>a.order.create({
-   purchase_units:[{amount:{value:total.toFixed(2)}}]
-  }),
-  onApprove:(d,a)=>a.order.capture().then(()=>{
-   enviarEmail(lista,total);
-   alert("Pago realizado correctamente");
-   location.href=location.pathname;
-  })
- }).render("#paypal-button-container");
+function toggleCart(){
+ const b=document.getElementById("cartBox");
+ b.style.display=b.style.display==="block"?"none":"block";
 }
 
-function enviarEmail(lista,total){
- emailjs.send("service_ko8t2at","template_y9fr06m",{
-  cliente:nombre.value,
-  email_cliente:email.value,
-  direccion:direccion.value+", "+cp.value+" "+ciudad.value,
-  pedido:lista,
-  total:total+"€",
-  time:new Date().toLocaleString()
- });
-}
+paypal.Buttons({
+ createOrder(){
+  if(!name.value||!email.value||!address.value||!cp.value||!city.value||!prov.value){
+   alert("Rellena todos los datos de envío");
+   throw new Error();
+  }
+  return {purchase_units:[{amount:{value:total.textContent}}]};
+ },
+ onApprove(data,actions){
+  return actions.order.capture().then(()=>{
+   const productos=cart.map(it=>{
+    const p=products[it.i];
+    return `${p.n} x${it.q}`;
+   }).join(", ");
+
+   const params={
+    to_email: email.value,
+    cliente: name.value,
+    direccion: `${address.value}, ${cp.value}, ${city.value}, ${prov.value}`,
+    productos: productos,
+    total: total.textContent
+   };
+
+   emailjs.send("service_ko8t2at","template_y9fr06m",params);
+   emailjs.send("service_ko8t2at","template_y9fr06m",{...params,to_email:"sstoreegp@gmail.com"});
+
+   alert("¡Pago realizado! Hemos enviado un email con tu pedido.");
+   location.href=location.href;
+  });
+ }
+}).render("#paypal-button-container");
 </script>
 
 </body>
 </html>
+
 
 
