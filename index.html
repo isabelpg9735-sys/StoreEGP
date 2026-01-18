@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
+<!-- PAYPAL -->
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
+
+<!-- EMAILJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
- emailjs.init("WLyVJyhY2lgWl421L");
+  emailjs.init("WLyVJyhY2lgWl421L");
 })();
 </script>
 
@@ -43,28 +46,23 @@ select,button,input{
  background:#1e4ddb;color:#fff;border:none;cursor:pointer
 }
 
-/* BOTÓN CARRITO */
+/* CARRITO */
 #carritoBtn{
  position:fixed;bottom:20px;right:20px;
  background:#2ecc71;width:60px;height:60px;
- border-radius:50%;font-size:24px;border:none;cursor:pointer;
- z-index:2000
+ border-radius:50%;font-size:24px;border:none;cursor:pointer
 }
 #badge{
  position:absolute;top:-6px;right:-6px;
  background:red;color:#fff;width:22px;height:22px;
  border-radius:50%;display:none;
- align-items:center;justify-content:center;
- font-size:12px;font-weight:bold
+ align-items:center;justify-content:center
 }
-
-/* CARRITO */
 #carrito{
  position:fixed;top:0;right:-100%;
  width:100%;max-width:420px;height:100%;
  background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
- padding:20px;overflow:auto;transition:right .35s ease;
- z-index:3000
+ padding:20px;overflow:auto;transition:.3s
 }
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
@@ -73,27 +71,18 @@ select,button,input{
  display:flex;
  justify-content:space-between;
  align-items:center;
- gap:10px;
  border-bottom:1px solid #ddd;
- padding:10px 0;
+ padding:8px 0;
  font-size:14px;
+ gap:10px;
 }
-.item-info{
- flex:1;
-}
-.item-controles{
- display:flex;
- align-items:center;
- gap:8px;
-}
-.item-controles button{
- width:26px;height:26px;
- border-radius:6px;
- border:1px solid #ccc;
- background:#f5f5f5;
+.item span{flex:1}
+.item button{
+ background:none;
+ border:none;
+ color:#c00;
+ font-size:14px;
  cursor:pointer;
- font-size:14px;
- padding:0;
 }
 
 .descuento{color:red;font-weight:bold}
@@ -131,12 +120,9 @@ footer a{
  padding:20px;
  border-radius:12px;
 }
-.legal-box button{margin-top:15px;width:100%}
-
-/* MÓVIL */
-@media(max-width:600px){
- .item{font-size:13px}
- .item-controles button{width:24px;height:24px}
+.legal-box button{
+ margin-top:15px;
+ width:100%;
 }
 </style>
 </head>
@@ -164,16 +150,16 @@ footer a{
 
 <h3>Datos de envío</h3>
 <div class="form-envio">
- <input placeholder="Nombre completo">
- <input placeholder="Correo electrónico">
- <input placeholder="Dirección">
- <input placeholder="Código postal">
- <input placeholder="Ciudad">
+ <input id="nombre" placeholder="Nombre completo">
+ <input id="email" placeholder="Correo electrónico">
+ <input id="direccion" placeholder="Dirección">
+ <input id="cp" placeholder="Código postal">
+ <input id="ciudad" placeholder="Ciudad">
 </div>
 
-<p style="margin-top:10px;font-weight:bold">
- Envío solo España peninsular (0€ prueba)
-</p>
+<select disabled style="margin-top:10px">
+ <option>España peninsular (0€ prueba)</option>
+</select>
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
 </div>
@@ -212,7 +198,7 @@ const productos=[
  {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
 ];
 
-const carrito={};
+let carrito={};
 
 function cargar(){
  const c=document.getElementById("listaProductos");
@@ -234,9 +220,9 @@ cargar();
 
 function add(n,p,btn){
  const talla=btn.previousElementSibling.value;
- const key=n+"_"+talla;
- if(!carrito[key]) carrito[key]={n,p,talla,c:0};
- carrito[key].c++;
+ const k=n+"_"+talla;
+ if(!carrito[k]) carrito[k]={n,p,talla,c:0};
+ carrito[k].c++;
  abrirCarrito();
  actualizarTotales();
 }
@@ -246,30 +232,26 @@ function actualizarTotales(){
  div.innerHTML="";
  let total=0, unidades=0;
 
- Object.entries(carrito).forEach(([k,it])=>{
+ Object.values(carrito).forEach(it=>{
   total+=it.p*it.c;
   unidades+=it.c;
   div.innerHTML+=`
-  <div class="item">
-   <div class="item-info">${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</div>
-   <div class="item-controles">
-    <button onclick="restar('${k}')">−</button>
-    <button onclick="eliminar('${k}')">✕</button>
-   </div>
-  </div>`;
+   <div class="item">
+    <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
+    <button onclick="eliminar('${it.n}_${it.talla}')">✕</button>
+   </div>`;
  });
 
  document.getElementById("badge").style.display=unidades?"flex":"none";
  document.getElementById("badge").textContent=unidades;
 
  let descuento=unidades>1?(unidades-1)*2:0;
- let envio=0;
- let final=total-descuento+envio;
+ let final=total-descuento;
 
  document.getElementById("resumen").innerHTML=
  `Productos: ${total}€<br>
  <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: ${envio}€<br>
+ Envío: 0€<br>
  <b>Total: ${final}€</b>`;
 
  document.getElementById("paypal-button-container").innerHTML="";
@@ -277,44 +259,46 @@ function actualizarTotales(){
   createOrder:(d,a)=>a.order.create({
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
-  onApprove:(d,a)=>a.order.capture().then(()=>alert(
-   "¡Pago realizado! Hemos enviado un email con tu pedido.\nSi no lo encuentras revisa Spam."
-  ))
+  onApprove:(d,a)=>a.order.capture().then(()=>{
+    enviarEmailPedido(final);
+    alert("¡Pago realizado! Hemos enviado un email con tu pedido. Revisa Spam.");
+    carrito={};
+    actualizarTotales();
+  })
  }).render("#paypal-button-container");
 }
 
-function restar(k){
- carrito[k].c--;
- if(carrito[k].c<=0) delete carrito[k];
- actualizarTotales();
+function enviarEmailPedido(totalFinal){
+ let productosTxt="";
+ Object.values(carrito).forEach(p=>{
+  productosTxt+=`• ${p.n} (${p.talla}) x${p.c} - ${p.p*p.c}€\n`;
+ });
+
+ const params={
+  to_name:document.getElementById("nombre").value,
+  to_email:document.getElementById("email").value,
+  order_details:productosTxt,
+  total:totalFinal+"€",
+  address:`${direccion.value}, ${cp.value}, ${ciudad.value}`
+ };
+
+ emailjs.send("service_ko8t2at","template_y9fr06m",params);
+ emailjs.send("service_ko8t2at","template_y9fr06m",{...params,to_email:"sstoreegp@gmail.com",to_name:"Store EGP"});
 }
+
 function eliminar(k){delete carrito[k];actualizarTotales();}
 function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
 function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
 
 function abrirLegal(t){
- const h=document.getElementById("legalTitulo");
- const p=document.getElementById("legalTexto");
-
- if(t==="terms"){
-  h.textContent="Términos y condiciones";
-  p.textContent="Al realizar una compra aceptas las condiciones de venta, precios, envíos y políticas indicadas en esta tienda online.";
- }
- if(t==="privacy"){
-  h.textContent="Política de privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos. En ningún caso la información será compartida con terceros.";
- }
- if(t==="envio"){
-  h.textContent="Envío";
-  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días desde la compra.";
- }
- if(t==="devoluciones"){
-  h.textContent="Devoluciones";
-  p.textContent="Dispones de 14 días para devolver un producto si no ha sido usado ni lavado. El envío de vuelta corre a cargo del comprador. El reembolso se hará al revisar las condiciones del producto.";
- }
- document.getElementById("legalModal").style.display="flex";
+ const h=legalTitulo,p=legalTexto;
+ if(t==="envio"){h.textContent="Envío";p.textContent="Solo España peninsular. Entrega en 15 días."}
+ if(t==="devoluciones"){h.textContent="Devoluciones";p.textContent="14 días. Envío de vuelta a cargo del comprador. Reembolso tras revisión."}
+ if(t==="terms"){h.textContent="Términos";p.textContent="Al comprar aceptas condiciones, precios y envíos."}
+ if(t==="privacy"){h.textContent="Privacidad";p.textContent="Tus datos solo se usan para pedidos y nunca se comparten."}
+ legalModal.style.display="flex";
 }
-function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
+function cerrarLegal(){legalModal.style.display="none"}
 </script>
 
 </body>
