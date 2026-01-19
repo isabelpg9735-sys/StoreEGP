@@ -202,21 +202,21 @@ footer a:hover{text-decoration:underline}
 
 <script>
 const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 1€</b></span>"},
+ {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 1€</b></span>"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat"},
  {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
- {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Con estilo"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAA"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La camiseta perfecta si siempre la tienes"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas"}
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso muy triste)"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
 ];
 
 const carrito={};
@@ -350,7 +350,7 @@ function abrirLegal(t){
  }
  if(t==="devoluciones"){
   h.textContent="Devoluciones";
-  p.textContent="Si un producto no gusta, hay posibilidad de devolver en 14 días siempre que no haya sido usado ni lavado. El envío de vuelta corre a cargo del comprador.";
+  p.textContent="Si un producto no gusta, hay posibilidad de devolver en 14 días siempre que no haya sido usado ni lavado. El envío de vuelta corre a cargo del comprador. El reembolso se hará al comprobar las condiciones del producto.";
  }
  if(t==="terms"){
   h.textContent="Términos";
@@ -358,7 +358,7 @@ function abrirLegal(t){
  }
  if(t==="privacy"){
   h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos.";
+  p.textContent="Tus datos solo se usan para gestionar pedidos, no serán compartidos con terceros.";
  }
 
  document.getElementById("legalModal").style.display="flex";
