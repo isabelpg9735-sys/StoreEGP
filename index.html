@@ -298,7 +298,11 @@ function actualizarTotales(){
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
 
+   // GENERAR NÚMERO DE PEDIDO ALEATORIO
+   const numPedido = "EGP-" + Math.floor(1000 + Math.random() * 9000);
+
    const datosPedido={
+    order_id: numPedido, // Esta es la nueva variable
     name: document.getElementById("nombre").value,
     email: document.getElementById("email").value,
     direccion: document.getElementById("direccion").value,
@@ -312,9 +316,9 @@ function actualizarTotales(){
 
    // ENVÍO DE CORREOS
    emailjs.send("default_service","contact_us",datosPedido);
-   emailjs.send("default_service","contact_us",{...datosPedido, subject:"Pedido confirmado"});
+   emailjs.send("default_service","contact_us",{...datosPedido, subject:"Pedido confirmado " + numPedido});
 
-   alert("¡Pago realizado! Te hemos mandado un correo con tu pedido. Revisa la carpeta de spam.");
+   alert("¡Pago realizado! Tu pedido es el " + numPedido + ". Te hemos mandado un correo.");
    window.location.href=window.location.pathname;
   })
  }).render("#paypal-button-container");
@@ -339,11 +343,11 @@ function abrirLegal(t){
 
  if(t==="envio"){
   h.textContent="Envío";
-  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. Me gustaría que el envío fuese más barato pero es lo que me cuesta a mí. El producto llegará en unos 15 días desde la compra hecha.";
+  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días desde la compra hecha.";
  }
  if(t==="devoluciones"){
   h.textContent="Devoluciones";
-  p.textContent="Si un producto no gusta o no es lo esperado, hay posibilidad de devolver en un término de 14 días siempre que la prenda no haya sido usada ni lavada. El precio del envío de vuelta corre a cargo del comprador. Al comprobar las condiciones del producto se hará el reembolso.";
+  p.textContent="Si un producto no gusta, hay posibilidad de devolver en 14 días siempre que no haya sido usado ni lavado. El envío de vuelta corre a cargo del comprador.";
  }
  if(t==="terms"){
   h.textContent="Términos";
@@ -351,7 +355,7 @@ function abrirLegal(t){
  }
  if(t==="privacy"){
   h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos, en ningún caso se comparten con terceros.";
+  p.textContent="Tus datos solo se usan para gestionar pedidos.";
  }
 
  document.getElementById("legalModal").style.display="flex";
@@ -361,4 +365,3 @@ function cerrarLegal(){document.getElementById("legalModal").style.display="none
 
 </body>
 </html>
-
