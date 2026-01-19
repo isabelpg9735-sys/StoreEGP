@@ -267,6 +267,27 @@ function actualizarTotales(){
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
+
+   const datosPedido={
+    name:nombre.value,
+    email:email.value,
+    direccion:direccion.value,
+    cp:cp.value,
+    ciudad:ciudad.value,
+    productos:Object.values(carrito).map(i=>`${i.n} (${i.talla}) x${i.c}`).join(" | "),
+    total:final,
+    time:new Date().toLocaleString()
+   };
+
+   // EMAIL A LA TIENDA
+   emailjs.send("default_service","contact_us",datosPedido);
+
+   // EMAIL AL CLIENTE (ASUNTO CAMBIADO)
+   emailjs.send("default_service","contact_us",{
+    ...datosPedido,
+    subject:"Pedido confirmado"
+   });
+
    alert("¡Pago realizado! Te hemos mandado un correo con tu pedido. Revisa la carpeta de spam.");
    window.location.href=window.location.pathname;
   })
@@ -305,5 +326,6 @@ function cerrarLegal(){document.getElementById("legalModal").style.display="none
 
 </body>
 </html>
+
 
 
