@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR"></script>
+<!-- PAYPAL REAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
+
+<!-- EMAILJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
@@ -76,7 +79,7 @@ select,button,input{
  background:none;
  border:none;
  color:#c00;
- font-size:14px;
+ font-size:16px;
  cursor:pointer;
 }
 
@@ -88,12 +91,6 @@ select,button,input{
  flex-direction:column;
  gap:10px;
  margin-top:10px;
-}
-
-.btn-tarjeta{
- margin-top:10px;background:#000;color:#fff;
- width:100%;border:none;padding:12px;
- border-radius:8px;cursor:pointer
 }
 
 /* FOOTER */
@@ -133,7 +130,7 @@ footer a:hover{text-decoration:underline}
 
 <header>
 <h1>Store EGP</h1>
-<div class="subtitulo">Aquí encuentras lo que no sabías que buscabas</div>
+<div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
 <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
 </header>
 
@@ -154,17 +151,16 @@ footer a:hover{text-decoration:underline}
 <div class="form-envio">
  <input id="nombre" placeholder="Nombre completo">
  <input id="email" placeholder="Correo electrónico">
- <input id="direccion" placeholder="Dirección">
+ <input id="direccion" placeholder="Dirección completa">
  <input id="cp" placeholder="Código postal">
  <input id="ciudad" placeholder="Ciudad">
 </div>
 
-<select id="pais" disabled style="margin-top:10px">
- <option>España peninsular (0€ prueba)</option>
+<select disabled style="margin-top:10px">
+ <option>España peninsular · Envío 0€ (prueba)</option>
 </select>
 
 <div id="paypal-button-container" style="margin-top:15px"></div>
-<button class="btn-tarjeta" onclick="pagoTarjeta()">💳 Pagar con tarjeta</button>
 </div>
 
 <footer>
@@ -184,7 +180,7 @@ footer a:hover{text-decoration:underline}
 
 <script>
 const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe",oferta:"<span class='oferta'><del>15€</del> AHORA 1€</span>"},
+ {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido lo sabe",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 1€</b></span>"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes"},
@@ -192,7 +188,7 @@ const productos=[
  {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad sí"},
  {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL"},
  {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Con estilo"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> AHORA 18€</span>"},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
  {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi"},
  {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"Siempre"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja 😐"},
@@ -258,12 +254,22 @@ function actualizarTotales(){
  Envío: ${envio}€<br>
  <b>Total: ${final}€</b>`;
 
- document.getElementById("paypal-button-container").innerHTML="";
+ const paypalDiv=document.getElementById("paypal-button-container");
+ paypalDiv.innerHTML="";
+
+ if(unidades===0){
+  paypalDiv.innerHTML="<p style='color:#c00;font-weight:bold'>Añade productos para poder pagar</p>";
+  return;
+ }
+
  paypal.Buttons({
   createOrder:(d,a)=>a.order.create({
    purchase_units:[{amount:{value:final.toFixed(2)}}]
   }),
-  onApprove:(d,a)=>a.order.capture().then(()=>alert("Pago realizado"))
+  onApprove:(d,a)=>a.order.capture().then(()=>{
+   alert("¡Pago realizado! Te hemos mandado un correo con tu pedido. Revisa la carpeta de spam.");
+   window.location.href=window.location.pathname;
+  })
  }).render("#paypal-button-container");
 }
 
@@ -289,16 +295,15 @@ function abrirLegal(t){
  }
  if(t==="privacy"){
   h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos.";
+  p.textContent="Tus datos solo se usan para gestionar pedidos, en ningún caso se comparten con terceros.";
  }
 
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
-function pagoTarjeta(){alert("Pago con tarjeta listo para integrar")}
 </script>
 
 </body>
-
+</html>
 
 
