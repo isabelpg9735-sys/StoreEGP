@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
 
-<!-- PAYPAL REAL -->
 <script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
 
-<!-- EMAILJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
@@ -72,15 +70,40 @@ select,button,input{
  justify-content:space-between;
  align-items:center;
  border-bottom:1px solid #ddd;
- padding:8px 0;
+ padding:10px 0;
  font-size:14px;
 }
-.item button{
+.item-info{
+ flex-grow: 1;
+ display: flex;
+ justify-content: space-between;
+ margin-right: 15px;
+}
+.item-controles{
+ display: flex;
+ align-items: center;
+ gap: 8px;
+}
+.btn-restar{
+ background: #eee;
+ border: 1px solid #ccc;
+ width: 24px;
+ height: 24px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ border-radius: 4px;
+ cursor: pointer;
+ padding: 0;
+ font-size: 16px;
+}
+.btn-eliminar{
  background:none;
  border:none;
  color:#c00;
- font-size:16px;
+ font-size:18px;
  cursor:pointer;
+ font-weight: bold;
 }
 
 .descuento{color:red;font-weight:bold}
@@ -234,10 +257,17 @@ function actualizarTotales(){
  Object.values(carrito).forEach(it=>{
   total+=it.p*it.c;
   unidades+=it.c;
+  const key = `${it.n}_${it.talla}`;
   div.innerHTML+=`
    <div class="item">
-    <span>${it.n} (${it.talla}) x${it.c} – ${it.p*it.c}€</span>
-    <button onclick="eliminar('${it.n}_${it.talla}')">✕</button>
+    <div class="item-info">
+      <span>${it.n} (${it.talla}) x${it.c}</span>
+      <span>${it.p*it.c}€</span>
+    </div>
+    <div class="item-controles">
+      <button class="btn-restar" onclick="restar('${key}')">-</button>
+      <button class="btn-eliminar" onclick="eliminar('${key}')">✕</button>
+    </div>
    </div>`;
  });
 
@@ -269,29 +299,34 @@ function actualizarTotales(){
   onApprove:(d,a)=>a.order.capture().then(()=>{
 
    const datosPedido={
-    name:nombre.value,
-    email:email.value,
-    direccion:direccion.value,
-    cp:cp.value,
-    ciudad:ciudad.value,
-    productos:Object.values(carrito).map(i=>`${i.n} (${i.talla}) x${i.c}`).join(" | "),
-    total:final,
-    time:new Date().toLocaleString()
+    name: document.getElementById("nombre").value,
+    email: document.getElementById("email").value,
+    direccion: document.getElementById("direccion").value,
+    cp: document.getElementById("cp").value,
+    ciudad: document.getElementById("ciudad").value,
+    extra: "", 
+    productos: Object.values(carrito).map(i=>`${i.n} (${i.talla}) x${i.c}`).join(" | "),
+    total: final,
+    time: new Date().toLocaleString()
    };
 
-   // EMAIL A LA TIENDA
+   // ENVÍO DE CORREOS
    emailjs.send("default_service","contact_us",datosPedido);
-
-   // EMAIL AL CLIENTE (ASUNTO CAMBIADO)
-   emailjs.send("default_service","contact_us",{
-    ...datosPedido,
-    subject:"Pedido confirmado"
-   });
+   emailjs.send("default_service","contact_us",{...datosPedido, subject:"Pedido confirmado"});
 
    alert("¡Pago realizado! Te hemos mandado un correo con tu pedido. Revisa la carpeta de spam.");
    window.location.href=window.location.pathname;
   })
  }).render("#paypal-button-container");
+}
+
+function restar(k) {
+  if (carrito[k].c > 1) {
+    carrito[k].c--;
+  } else {
+    delete carrito[k];
+  }
+  actualizarTotales();
 }
 
 function eliminar(k){delete carrito[k];actualizarTotales();}
@@ -326,6 +361,4 @@ function cerrarLegal(){document.getElementById("legalModal").style.display="none
 
 </body>
 </html>
-
-
 
