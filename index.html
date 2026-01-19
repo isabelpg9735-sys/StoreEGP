@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
+ // Tu clave pública verificada de la captura
  emailjs.init("WLyVJyhY2lgWl421L");
 })();
 </script>
@@ -65,6 +66,7 @@ select,button,input{
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
 
+/* Estilo de fila recta en carrito solicitado */
 .item{
  display:flex;
  justify-content:space-between;
@@ -108,7 +110,6 @@ select,button,input{
 
 .descuento{color:red;font-weight:bold}
 
-/* DATOS ENVÍO */
 .form-envio{
  display:flex;
  flex-direction:column;
@@ -116,7 +117,6 @@ select,button,input{
  margin-top:10px;
 }
 
-/* FOOTER */
 footer{text-align:center;padding:20px;font-size:14px}
 footer a{
  margin:0 8px;
@@ -126,7 +126,6 @@ footer a{
 }
 footer a:hover{text-decoration:underline}
 
-/* MODAL LEGAL */
 .legal-modal{
  position:fixed;inset:0;
  background:rgba(0,0,0,.6);
@@ -298,11 +297,10 @@ function actualizarTotales(){
   }),
   onApprove:(d,a)=>a.order.capture().then(()=>{
 
-   // GENERAR NÚMERO DE PEDIDO ALEATORIO
    const numPedido = "EGP-" + Math.floor(1000 + Math.random() * 9000);
 
    const datosPedido={
-    order_id: numPedido, // Esta es la nueva variable
+    order_id: numPedido,
     name: document.getElementById("nombre").value,
     email: document.getElementById("email").value,
     direccion: document.getElementById("direccion").value,
@@ -314,11 +312,16 @@ function actualizarTotales(){
     time: new Date().toLocaleString()
    };
 
-   // ENVÍO DE CORREOS
-   emailjs.send("default_service","contact_us",datosPedido);
-   emailjs.send("default_service","contact_us",{...datosPedido, subject:"Pedido confirmado " + numPedido});
+   // CONFIGURACIÓN BASADA EN TUS CAPTURAS
+   const SERVICE_ID = "service_ko8t2at"; 
+   const TEMPLATE_ID = "template_y9fr06m"; 
 
-   alert("¡Pago realizado! Tu pedido es el " + numPedido + ". Te hemos mandado un correo.");
+   // ENVÍO DE CORREOS
+   emailjs.send(SERVICE_ID, TEMPLATE_ID, datosPedido);
+   emailjs.send(SERVICE_ID, TEMPLATE_ID, {...datosPedido, subject: "Pedido confirmado " + numPedido});
+
+   alert("¡Pago realizado! Tu pedido es el " + numPedido + ". Te hemos enviado un correo con los detalles. Si no lo ves, revisa tu carpeta de CORREO NO DESEADO o SPAM.");
+   
    window.location.href=window.location.pathname;
   })
  }).render("#paypal-button-container");
