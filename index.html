@@ -5,23 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
  
-<script src="https://www.paypal.com/sdk/js?client-id=AXT9Rz8ikVS_WVQfA3fLGG4YK1lUIiw1XXDK_UuvVd0IrzYds4I9tW6J1ixXPgwhwjOWr7HTqqZ6G9kh&currency=EUR"></script>
- 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-(function(){
- // Tu clave pública verificada de la captura
- emailjs.init("WLyVJyhY2lgWl421L");
-})();
-</script>
- 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f2f2f2}
  
-header{background:#111;color:#fff;padding:20px;text-align:center}
+header{background:#111;color:#fff;padding:20px;text-align:center;position:relative}
 header small{color:#ccc}
 .subtitulo{font-size:14px;color:#aaa;margin-top:6px}
+
+.header-inner{display:flex;align-items:center;justify-content:center;gap:18px}
+.header-inner h1{margin:0}
+.game-icon{
+  font-size:28px;cursor:pointer;
+  background:#222;border:2px solid #444;
+  border-radius:10px;padding:6px 10px;
+  transition:transform .15s,border-color .15s;
+  user-select:none;text-align:center;
+}
+.game-icon:hover{transform:scale(1.12);border-color:#2ecc71}
+.game-icon span{font-size:10px;display:block;color:#aaa;margin-top:2px}
+
+/* MODAL JUEGOS */
+.game-modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;
+  z-index:10000;flex-direction:column;
+}
+.game-modal.abierto{display:flex}
+.game-wrap{
+  background:#1a1a1a;border-radius:16px;
+  padding:16px;display:flex;flex-direction:column;align-items:center;
+  gap:10px;max-height:95vh;
+}
+.game-wrap h2{color:#fff;margin:0;font-size:18px}
+.game-close{
+  align-self:flex-end;background:none;border:none;
+  color:#fff;font-size:24px;cursor:pointer;line-height:1;
+}
+canvas{border-radius:10px;display:block}
+.game-info{color:#ccc;font-size:13px;text-align:center}
+.game-score{color:#2ecc71;font-weight:bold;font-size:15px}
  
 /* PRODUCTOS */
 .productos{
@@ -66,7 +90,6 @@ select,button,input{
 #carrito.abierto{right:0}
 .cerrar{float:right;font-size:22px;cursor:pointer}
  
-/* Estilo de fila recta en carrito solicitado */
 .item{
  display:flex;
  justify-content:space-between;
@@ -116,7 +139,54 @@ select,button,input{
  gap:10px;
  margin-top:10px;
 }
- 
+
+/* BOTÓN CONFIRMAR SIMULADO */
+#btn-confirmar{
+  background:#2ecc71;
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+  margin-top:15px;
+  display:none;
+}
+#btn-confirmar:hover{background:#27ae60}
+
+/* AVISO SIMULADOR */
+.aviso-sim{
+  background:#fff3cd;
+  border:1px solid #ffc107;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  color:#856404;
+  margin-top:12px;
+  text-align:center;
+}
+
+/* PANTALLA DE GRACIAS */
+#pantalla-gracias{
+  display:none;
+  text-align:center;
+  padding:30px 20px;
+}
+#pantalla-gracias h2{color:#2ecc71;font-size:26px;margin-bottom:10px}
+#pantalla-gracias p{color:#555;font-size:15px;line-height:1.6}
+#pantalla-gracias button{
+  margin-top:20px;
+  background:#1e4ddb;
+  color:#fff;
+  border:none;
+  padding:12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+}
+
 footer{text-align:center;padding:20px;font-size:14px}
 footer a{
  margin:0 8px;
@@ -151,10 +221,38 @@ footer a:hover{text-decoration:underline}
 <body>
  
 <header>
-<h1>Store EGP</h1>
-<div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
-<small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
+<div class="header-inner">
+  <div class="game-icon" onclick="abrirJuego('dino')" title="Minijuego del dino">🦕<span>DINO</span></div>
+  <div>
+    <h1>Store EGP</h1>
+    <div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
+    <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
+  </div>
+  <div class="game-icon" onclick="abrirJuego('pong')" title="Minijuego de pong">🏓<span>PONG</span></div>
+</div>
 </header>
+
+<!-- MODAL DINO -->
+<div class="game-modal" id="modal-dino">
+  <div class="game-wrap">
+    <button class="game-close" onclick="cerrarJuego('dino')">✖</button>
+    <h2>🦕 Dino Runner</h2>
+    <div class="game-score" id="dino-score-txt">Puntuación: 0 | Récord: <span id="dino-record-txt">0</span></div>
+    <canvas id="dino-canvas" width="340" height="480"></canvas>
+    <div class="game-info" id="dino-info">Pulsa ESPACIO o toca la pantalla para saltar</div>
+  </div>
+</div>
+
+<!-- MODAL PONG -->
+<div class="game-modal" id="modal-pong">
+  <div class="game-wrap">
+    <button class="game-close" onclick="cerrarJuego('pong')">✖</button>
+    <h2>🏓 Pong</h2>
+    <div class="game-score" id="pong-score-txt">Tú: 0 — IA: 0 | Historial: <span id="pong-hist-txt">Victorias 0 / Derrotas 0</span></div>
+    <canvas id="pong-canvas" width="340" height="480"></canvas>
+    <div class="game-info" id="pong-info">Mueve tu barra (azul) con el ratón o el dedo</div>
+  </div>
+</div>
  
 <section class="productos" id="listaProductos"></section>
  
@@ -163,26 +261,42 @@ footer a:hover{text-decoration:underline}
 </button>
  
 <div id="carrito">
-<span class="cerrar" onclick="cerrarCarrito()">✖</span>
-<h2>Carrito</h2>
- 
-<div id="items"></div>
-<p id="resumen"></p>
- 
-<h3>Datos de envío</h3>
-<div class="form-envio">
- <input id="nombre" placeholder="Nombre completo">
- <input id="email" placeholder="Correo electrónico">
- <input id="direccion" placeholder="Dirección completa">
- <input id="cp" placeholder="Código postal">
- <input id="ciudad" placeholder="Ciudad">
-</div>
- 
-<select disabled style="margin-top:10px">
- <option>España peninsular · Envío 0€ (prueba)</option>
-</select>
- 
-<div id="paypal-button-container" style="margin-top:15px"></div>
+  <span class="cerrar" onclick="cerrarCarrito()">✖</span>
+
+  <!-- Vista normal del carrito -->
+  <div id="vista-carrito">
+    <h2>Carrito</h2>
+    <div id="items"></div>
+    <p id="resumen"></p>
+   
+    <h3>Datos de envío</h3>
+    <div class="form-envio">
+      <input id="nombre" placeholder="Nombre completo">
+      <input id="email" placeholder="Correo electrónico">
+      <input id="direccion" placeholder="Dirección completa">
+      <input id="cp" placeholder="Código postal">
+      <input id="ciudad" placeholder="Ciudad">
+    </div>
+   
+    <select disabled style="margin-top:10px">
+      <option>España peninsular · Envío 0€ (prueba)</option>
+    </select>
+
+    <div class="aviso-sim">🧪 <b>Modo simulación</b> — Esta es una tienda de prueba. No se realizará ningún pago real.</div>
+
+    <div id="zona-pago">
+      <p style="color:#c00;font-weight:bold;margin-top:15px">Añade productos para poder confirmar</p>
+    </div>
+  </div>
+
+  <!-- Pantalla de gracias -->
+  <div id="pantalla-gracias">
+    <div style="font-size:60px">🎉</div>
+    <h2>¡Pedido simulado!</h2>
+    <p>En una tienda real, tu pedido estaría en camino.<br>Pero esto es una simulación, así que... <b>no te va a llegar nada</b> 😄</p>
+    <p style="margin-top:10px;font-size:13px;color:#888">Gracias por participar en este experimento de marketing.</p>
+    <button onclick="resetear()">Volver a la tienda</button>
+  </div>
 </div>
  
 <footer>
@@ -202,7 +316,7 @@ footer a:hover{text-decoration:underline}
  
 <script>
 const productos=[
- {n:"Spiderman",p:1,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 1€</b></span>"},
+ {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
  {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat"},
@@ -232,7 +346,7 @@ function cargar(){
    <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
    <div class="acciones">
     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-     <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
+    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
    </div>
   </div>`;
  });
@@ -254,10 +368,10 @@ function actualizarTotales(){
  let total=0, unidades=0;
  
  Object.values(carrito).forEach(it=>{
- total+=it.p*it.c;
- unidades+=it.c;
-  const key = `${it.n}_${it.talla}`;
- div.innerHTML+=`
+  total+=it.p*it.c;
+  unidades+=it.c;
+  const key=`${it.n}_${it.talla}`;
+  div.innerHTML+=`
    <div class="item">
     <div class="item-info">
       <span>${it.n} (${it.talla}) x${it.c}</span>
@@ -278,63 +392,38 @@ function actualizarTotales(){
  let final=total-descuento+envio;
  
  document.getElementById("resumen").innerHTML=
- `Productos: ${total}€<br>
- <span class="descuento">Descuento: -${descuento}€</span><br>
- Envío: ${envio}€<br>
- <b>Total: ${final}€</b>`;
- 
- const paypalDiv=document.getElementById("paypal-button-container");
- paypalDiv.innerHTML="";
- 
+  `Productos: ${total}€<br>
+  <span class="descuento">Descuento: -${descuento}€</span><br>
+  Envío: ${envio}€<br>
+  <b>Total: ${final}€</b>`;
+
+ // Zona del botón de confirmar
+ const zona=document.getElementById("zona-pago");
  if(unidades===0){
- paypalDiv.innerHTML="<p style='color:#c00;font-weight:bold'>Añade productos para poder pagar</p>";
-  return;
+  zona.innerHTML="<p style='color:#c00;font-weight:bold;margin-top:15px'>Añade productos para poder confirmar</p>";
+ } else {
+  zona.innerHTML=`<button id="btn-confirmar" style="display:block" onclick="confirmarPedido(${final})">✅ Confirmar pedido simulado (${final}€)</button>`;
  }
- 
- paypal.Buttons({
-  createOrder:(d,a)=>a.order.create({
-   purchase_units:[{amount:{value:final.toFixed(2)}}]
-  }),
-  onApprove:(d,a)=>a.order.capture().then(()=>{
- 
-   const numPedido = "EGP-" + Math.floor(1000 + Math.random() * 9000);
-   const clienteEmail = document.getElementById("email").value;
- 
-   const datosPedido={
-    order_id: numPedido,
-    name: document.getElementById("nombre").value,
-    email: clienteEmail,
-    direccion: document.getElementById("direccion").value,
-    cp: document.getElementById("cp").value,
-    ciudad: document.getElementById("ciudad").value,
-    extra: "", 
-    productos: Object.values(carrito).map(i=>`${i.n} (${i.talla}) x${i.c}`).join(" | "),
-    total: final,
-    time: new Date().toLocaleString()
-   };
- 
-   const SERVICE_ID = "service_ko8t2at"; 
-   const TEMPLATE_ID = "template_y9fr06m"; 
- 
-   // Envia a TI
-   emailjs.send(SERVICE_ID, TEMPLATE_ID, {...datosPedido, to_email: "sstoreegp@gmail.com"});
-   // Envia al CLIENTE
-   emailjs.send(SERVICE_ID, TEMPLATE_ID, {...datosPedido, to_email: clienteEmail, subject: "Pedido confirmado " + numPedido});
- 
-   alert("¡Pago realizado! Tu pedido es el " + numPedido + ". Te hemos enviado un correo con los detalles. Si no lo ves, revisa tu carpeta de correo no deseado o spam.");
-   
-   window.location.href=window.location.pathname;
-  })
- }).render("#paypal-button-container");
+}
+
+function confirmarPedido(total){
+  // Aquí más adelante añadiremos el envío de datos a Google Sheets
+  document.getElementById("vista-carrito").style.display="none";
+  document.getElementById("pantalla-gracias").style.display="block";
+}
+
+function resetear(){
+  // Vaciar carrito
+  Object.keys(carrito).forEach(k=>delete carrito[k]);
+  actualizarTotales();
+  document.getElementById("pantalla-gracias").style.display="none";
+  document.getElementById("vista-carrito").style.display="block";
+  cerrarCarrito();
 }
  
-function restar(k) {
-  if (carrito[k].c > 1) {
-   carrito[k].c--;
-  } else {
-   delete carrito[k];
-  }
-  actualizarTotales();
+function restar(k){
+ if(carrito[k].c>1){carrito[k].c--;}else{delete carrito[k];}
+ actualizarTotales();
 }
  
 function eliminar(k){delete carrito[k];actualizarTotales();}
@@ -344,27 +433,387 @@ function cerrarCarrito(){document.getElementById("carrito").classList.remove("ab
 function abrirLegal(t){
  const h=document.getElementById("legalTitulo");
  const p=document.getElementById("legalTexto");
- 
  if(t==="envio"){
   h.textContent="Envío";
-  p.textContent="Por motivos de precio actualmente solo es posible enviar en España peninsular. El producto llegará en unos 15 días desde la compra hecha.";
+  p.textContent="Compra desde donde quieras, que sea como sea no te va a llegar nada.";
  }
  if(t==="devoluciones"){
   h.textContent="Devoluciones";
-  p.textContent="Si un producto no gusta, hay posibilidad de devolver en 14 días siempre que no haya sido usado ni lavado. El envío de vuelta corre a cargo del comprador. El reembolso se hará al comprobar las condiciones del producto.";
+  p.textContent="Si un producto no te gusta, no es mi problema, ya que sería mentira: no puede no gustar algo que nunca va a llegar. Si quieres devolver un producto imaginario, imagina cómo realmente desea ese amigo que le devuelvas el dinero que le debes.";
  }
  if(t==="terms"){
- h.textContent="Términos";
-  p.textContent="Al realizar una compra aceptas las condiciones de venta, precios y envíos.";
+  h.textContent="Términos";
+  p.textContent="Al realizar una compra aceptas las condiciones de venta, precios y envíos. Además, que te robemos todos los datos y bla bla bla.";
  }
  if(t==="privacy"){
- h.textContent="Privacidad";
-  p.textContent="Tus datos solo se usan para gestionar pedidos, no serán compartidos con terceros.";
+  h.textContent="Privacidad";
+  p.textContent="Tus datos solo se usan para gestionar pedidos, no serán compartidos con terceros, aparte de Elon Musk, Jeff Bezos y esos que pagan bien.";
  }
- 
  document.getElementById("legalModal").style.display="flex";
 }
 function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
+
+// ============================================================
+// SISTEMA DE JUEGOS
+// ============================================================
+function abrirJuego(j){
+  document.getElementById("modal-"+j).classList.add("abierto");
+  if(j==="dino") iniciarDino();
+  if(j==="pong") iniciarPong();
+}
+function cerrarJuego(j){
+  document.getElementById("modal-"+j).classList.remove("abierto");
+  if(j==="dino"&&dinoRAF){cancelAnimationFrame(dinoRAF);dinoRAF=null;}
+  if(j==="pong"&&pongRAF){cancelAnimationFrame(pongRAF);pongRAF=null;}
+}
+
+// ============================================================
+// JUEGO 1: DINO RUNNER
+// ============================================================
+let dinoRAF=null;
+const DINO_RECORD_KEY="storeegp_dino_record";
+
+function iniciarDino(){
+  if(dinoRAF){cancelAnimationFrame(dinoRAF);dinoRAF=null;}
+  const canvas=document.getElementById("dino-canvas");
+  const ctx=canvas.getContext("2d");
+  const W=canvas.width,H=canvas.height;
+  const SUELO=H-50; // más abajo para aprovechar espacio
+  let record=parseInt(localStorage.getItem(DINO_RECORD_KEY)||"0");
+  let dino={x:55,y:SUELO,w:36,h:46,vy:0,enSuelo:true};
+  let obstaculos=[],nubes=[],pajaros=[],puntos=0,velocidad=4,frame=0,vivo=true,esperandoReinicio=false;
+  const GRAVEDAD=0.65,SALTO=-13;
+
+  // Nubes en la zona alta
+  for(let i=0;i<4;i++) nubes.push({x:Math.random()*W,y:30+Math.random()*100,w:50+Math.random()*40,vel:0.3+Math.random()*0.4});
+
+  // ---- LISTENERS (se guardan para poder quitarlos) ----
+  function saltar(){
+    if(!vivo){
+      if(esperandoReinicio){
+        document.removeEventListener("keydown",onKey);
+        canvas.removeEventListener("touchstart",onTouch);
+        iniciarDino();
+      }
+      return;
+    }
+    if(dino.enSuelo){dino.vy=SALTO;dino.enSuelo=false;}
+  }
+  function onKey(e){if(e.code==="Space"||e.key===" "){e.preventDefault();saltar();}}
+  function onTouch(e){e.preventDefault();saltar();}
+  document.addEventListener("keydown",onKey);
+  canvas.addEventListener("touchstart",onTouch,{passive:false});
+
+  function loop(){
+    dinoRAF=requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+
+    // Cielo degradado (más oscuro arriba conforme avanza)
+    const oscuridad=Math.min(puntos/2000,0.5);
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,`hsl(200,${60-oscuridad*30}%,${70-oscuridad*30}%)`);
+    grad.addColorStop(0.7,"#e8e8e8");
+    grad.addColorStop(1,"#d0d0d0");
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+
+    // Nubes
+    ctx.fillStyle="rgba(255,255,255,0.85)";
+    nubes.forEach(n=>{
+      ctx.beginPath();ctx.ellipse(n.x,n.y,n.w/2,14,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x-14,n.y+4,n.w/3,10,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x+16,n.y+5,n.w/3.5,9,0,0,Math.PI*2);ctx.fill();
+      n.x-=n.vel*velocidad/4;
+      if(n.x<-80)n.x=W+80;
+    });
+
+    // Suelo con textura
+    ctx.fillStyle="#7a7a7a";ctx.fillRect(0,SUELO+dino.h,W,3);
+    ctx.fillStyle="#b0b0b0";ctx.fillRect(0,SUELO+dino.h+3,W,H);
+    // Línea de suelo decorativa
+    for(let lx=(-frame*velocidad*0.5)%40;lx<W;lx+=40){
+      ctx.fillStyle="#999";ctx.fillRect(lx,SUELO+dino.h+3,20,2);
+    }
+
+    if(vivo){
+      // Física
+      dino.vy+=GRAVEDAD;dino.y+=dino.vy;
+      if(dino.y>=SUELO){dino.y=SUELO;dino.vy=0;dino.enSuelo=true;}
+      frame++;
+
+      // Velocidad progresiva con más impacto
+      velocidad=4+puntos/180;
+
+      // Spawn obstáculos en suelo
+      const intervalo=Math.max(40,85-Math.floor(puntos/150));
+      if(frame%intervalo===0){
+        const h=28+Math.random()*45,w=18+Math.random()*18;
+        // A veces doble cactus
+        obstaculos.push({x:W,y:SUELO+dino.h-h,w,h,tipo:"cactus"});
+        if(puntos>400&&Math.random()<0.3){
+          obstaculos.push({x:W+w+12,y:SUELO+dino.h-h*0.8,w:w*0.75,h:h*0.8,tipo:"cactus"});
+        }
+      }
+
+      // Spawn pájaros (zona alta) — aparecen a partir de 300 puntos
+      if(puntos>300&&frame%(Math.max(90,160-Math.floor(puntos/80)))===0){
+        // Altura variable: zona media-alta del cielo
+        const alturaPajaro=60+Math.random()*(SUELO-dino.h-100);
+        pajaros.push({x:W,y:alturaPajaro,alas:0,vel:velocidad*1.1});
+      }
+
+      // Mover todo
+      obstaculos.forEach(o=>{o.x-=velocidad;});
+      obstaculos=obstaculos.filter(o=>o.x>-60);
+      pajaros.forEach(p=>{p.x-=p.vel;p.alas=(p.alas+0.15)%1;});
+      pajaros=pajaros.filter(p=>p.x>-40);
+
+      puntos++;
+
+      // Colisión cactus
+      const m=7;
+      obstaculos.forEach(o=>{
+        if(dino.x+m<o.x+o.w&&dino.x+dino.w-m>o.x&&dino.y+m<o.y+o.h&&dino.y+dino.h-m>o.y){
+          vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
+        }
+      });
+      // Colisión pájaros (margen más generoso)
+      const mp=10;
+      pajaros.forEach(p=>{
+        if(dino.x+mp<p.x+28&&dino.x+dino.w-mp>p.x&&dino.y+mp<p.y+14&&dino.y+dino.h-mp>p.y+4){
+          vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
+        }
+      });
+    }
+
+    // Dibujar cactus
+    ctx.fillStyle="#2d6a2d";
+    obstaculos.forEach(o=>{
+      ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,3);ctx.fill();
+      ctx.fillRect(o.x-7,o.y+o.h*0.25,7,8);
+      ctx.fillRect(o.x+o.w,o.y+o.h*0.4,7,8);
+      ctx.fillRect(o.x-7,o.y+o.h*0.2,3,o.h*0.15);
+      ctx.fillRect(o.x+o.w+4,o.y+o.h*0.35,3,o.h*0.15);
+    });
+
+    // Dibujar pájaros (forma de M con alas)
+    ctx.strokeStyle="#444";ctx.lineWidth=2;
+    pajaros.forEach(p=>{
+      const batida=Math.sin(p.alas*Math.PI*2)*6;
+      ctx.beginPath();
+      ctx.moveTo(p.x,p.y+8);
+      ctx.quadraticCurveTo(p.x+10,p.y+batida,p.x+20,p.y+8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(p.x+20,p.y+8);
+      ctx.quadraticCurveTo(p.x+30,p.y+batida,p.x+40,p.y+8);
+      ctx.stroke();
+      // Cuerpo pájaro
+      ctx.fillStyle="#444";
+      ctx.beginPath();ctx.ellipse(p.x+20,p.y+9,6,4,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#e88";
+      ctx.beginPath();ctx.moveTo(p.x+25,p.y+8);ctx.lineTo(p.x+30,p.y+9);ctx.lineTo(p.x+25,p.y+10);ctx.fill();
+    });
+
+    // Dibujar dino
+    const af=Math.floor(Date.now()/130)%2;
+    ctx.fillStyle=vivo?"#333":"#c00";
+    ctx.beginPath();ctx.roundRect(dino.x,dino.y+5,dino.w,dino.h-14,8);ctx.fill();
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w-14,dino.y-14,20,18,5);ctx.fill();
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(dino.x+dino.w+1,dino.y-8,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=vivo?"#111":"#c00";ctx.beginPath();ctx.arc(dino.x+dino.w+2,dino.y-8,1.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=vivo?"#333":"#c00";
+    if(dino.enSuelo&&vivo){
+      if(af===0){ctx.fillRect(dino.x+5,dino.y+dino.h-10,10,11);ctx.fillRect(dino.x+20,dino.y+dino.h-16,10,5);}
+      else{ctx.fillRect(dino.x+5,dino.y+dino.h-16,10,5);ctx.fillRect(dino.x+20,dino.y+dino.h-10,10,11);}
+    } else {ctx.fillRect(dino.x+5,dino.y+dino.h-12,10,9);ctx.fillRect(dino.x+20,dino.y+dino.h-12,10,9);}
+    ctx.beginPath();ctx.moveTo(dino.x,dino.y+15);ctx.lineTo(dino.x-12,dino.y+24);ctx.lineTo(dino.x,dino.y+30);ctx.fill();
+
+    // Puntuación en canvas
+    ctx.fillStyle="rgba(0,0,0,0.25)";ctx.font="bold 14px monospace";ctx.textAlign="right";
+    ctx.fillText("PTS "+String(puntos).padStart(5,"0"),W-8,20);ctx.textAlign="left";
+
+    if(puntos>record){record=puntos;localStorage.setItem(DINO_RECORD_KEY,record);}
+    document.getElementById("dino-score-txt").textContent="Puntuación: "+puntos+" | Récord: "+record;
+
+    // Indicador de nivel
+    const nivel=Math.floor(puntos/300)+1;
+    ctx.fillStyle="rgba(0,0,0,0.2)";ctx.font="11px Arial";
+    ctx.fillText("Nivel "+nivel,8,18);
+    if(puntos>300){ctx.fillStyle="rgba(200,50,50,0.5)";ctx.fillText("⚠ Pájaros",8,32);}
+
+    if(!vivo){
+      ctx.fillStyle="rgba(0,0,0,0.5)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
+      ctx.fillText("💀 Game Over",W/2,H/2-25);
+      ctx.font="15px Arial";ctx.fillText("Puntuación: "+puntos,W/2,H/2+5);
+      if(puntos===record&&puntos>0){ctx.fillStyle="#ffd700";ctx.fillText("🏆 ¡Nuevo récord!",W/2,H/2+25);}
+      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 14px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+52);}
+      ctx.textAlign="left";
+    }
+  }
+  loop();
+}
+
+// ============================================================
+// JUEGO 2: PONG
+// ============================================================
+let pongRAF=null;
+const PONG_WINS_KEY="storeegp_pong_wins";
+const PONG_LOSSES_KEY="storeegp_pong_losses";
+
+function iniciarPong(){
+  if(pongRAF){cancelAnimationFrame(pongRAF);pongRAF=null;}
+  const canvas=document.getElementById("pong-canvas");
+  const ctx=canvas.getContext("2d");
+  const W=canvas.width,H=canvas.height;
+  const PUNTOS_VICTORIA=5,BARRA_H=70,BARRA_W=12;
+  const VEL_MAX=14; // límite para que no se vuelva imposible
+
+  let wins=parseInt(localStorage.getItem(PONG_WINS_KEY)||"0");
+  let losses=parseInt(localStorage.getItem(PONG_LOSSES_KEY)||"0");
+
+  let jugador={x:W/2-BARRA_H/2,y:H-30,w:BARRA_H,h:BARRA_W};
+  let ia={x:W/2-BARRA_H/2,y:18,w:BARRA_H,h:BARRA_W};
+  let rebotes=0; // contador de rebotes en barras
+  let bola={x:W/2,y:H/2,r:9,vx:(Math.random()>0.5?1:-1)*3.5,vy:-4};
+  let scoreJugador=0,scoreIA=0,partidaTerminada=false,msgFinal="";
+
+  function velocidadActual(){
+    // Velocidad total de la bola según rebotes
+    return Math.sqrt(bola.vx*bola.vx+bola.vy*bola.vy);
+  }
+
+  function actualizarHistorial(){
+    const el=document.getElementById("pong-hist-txt");
+    if(el) el.textContent="Victorias "+wins+" / Derrotas "+losses;
+  }
+  actualizarHistorial();
+
+  function onMouseMove(e){
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    jugador.x=Math.max(0,Math.min(W-jugador.w,mx-jugador.w/2));
+  }
+  function onTouchMove(e){
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const tx=(e.touches[0].clientX-rect.left)*(W/rect.width);
+    jugador.x=Math.max(0,Math.min(W-jugador.w,tx-jugador.w/2));
+  }
+  canvas.addEventListener("mousemove",onMouseMove);
+  canvas.addEventListener("touchmove",onTouchMove,{passive:false});
+
+  function resetBola(dir){
+    bola.x=W/2;bola.y=H/2;
+    bola.vx=(Math.random()>0.5?1:-1)*3.5;
+    bola.vy=dir==="jugador"?4:-4;
+    rebotes=0;
+  }
+
+  function loop(){
+    pongRAF=requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#111";ctx.fillRect(0,0,W,H);
+
+    // Línea central con brillo según velocidad
+    const velNorm=Math.min(velocidadActual()/VEL_MAX,1);
+    ctx.setLineDash([8,8]);
+    ctx.strokeStyle=`rgba(${Math.floor(51+velNorm*150)},${Math.floor(200-velNorm*150)},${Math.floor(51)},0.6)`;
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();ctx.setLineDash([]);
+
+    if(!partidaTerminada){
+      bola.x+=bola.vx;bola.y+=bola.vy;
+      if(bola.x-bola.r<0){bola.x=bola.r;bola.vx*=-1;}
+      if(bola.x+bola.r>W){bola.x=W-bola.r;bola.vx*=-1;}
+
+      // IA: velocidad de reacción sube con los rebotes (se hace más difícil también para ella)
+      const iaVel=3.0+rebotes*0.08;
+      const iaCentro=ia.x+ia.w/2;
+      const diff=bola.x-iaCentro;
+      ia.x+=Math.sign(diff)*Math.min(Math.abs(diff),iaVel);
+      ia.x=Math.max(0,Math.min(W-ia.w,ia.x));
+
+      // Rebote en jugador — +aceleración
+      if(bola.y+bola.r>=jugador.y&&bola.y-bola.r<=jugador.y+jugador.h&&bola.x>=jugador.x&&bola.x<=jugador.x+jugador.w){
+        rebotes++;
+        const accel=Math.min(0.35*rebotes,VEL_MAX-Math.abs(bola.vy));
+        bola.vy=-(Math.abs(bola.vy)+accel);
+        bola.vx+=(bola.x-(jugador.x+jugador.w/2))*0.12;
+        // Limitar velocidad máxima
+        const speed=velocidadActual();
+        if(speed>VEL_MAX){bola.vx*=VEL_MAX/speed;bola.vy*=VEL_MAX/speed;}
+        bola.y=jugador.y-bola.r;
+      }
+      // Rebote en IA — +aceleración
+      if(bola.y-bola.r<=ia.y+ia.h&&bola.y+bola.r>=ia.y&&bola.x>=ia.x&&bola.x<=ia.x+ia.w){
+        rebotes++;
+        const accel=Math.min(0.35*rebotes,VEL_MAX-Math.abs(bola.vy));
+        bola.vy=Math.abs(bola.vy)+accel;
+        bola.vx+=(bola.x-(ia.x+ia.w/2))*0.12;
+        const speed=velocidadActual();
+        if(speed>VEL_MAX){bola.vx*=VEL_MAX/speed;bola.vy*=VEL_MAX/speed;}
+        bola.y=ia.y+ia.h+bola.r;
+      }
+
+      if(bola.y-bola.r<0){scoreJugador++;resetBola("ia");}
+      if(bola.y+bola.r>H){scoreIA++;resetBola("jugador");}
+
+      if(scoreJugador>=PUNTOS_VICTORIA){
+        partidaTerminada=true;msgFinal="🎉 ¡Has ganado!";
+        wins++;localStorage.setItem(PONG_WINS_KEY,wins);actualizarHistorial();
+      }
+      if(scoreIA>=PUNTOS_VICTORIA){
+        partidaTerminada=true;msgFinal="😅 Ha ganado la IA";
+        losses++;localStorage.setItem(PONG_LOSSES_KEY,losses);actualizarHistorial();
+      }
+    }
+
+    // Estela de la bola según velocidad
+    const vel=velocidadActual();
+    if(vel>6){
+      const alpha=Math.min((vel-6)/6,0.5);
+      ctx.fillStyle=`rgba(255,255,100,${alpha})`;
+      ctx.beginPath();ctx.arc(bola.x-bola.vx*2,bola.y-bola.vy*2,bola.r*0.6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=`rgba(255,200,50,${alpha*0.5})`;
+      ctx.beginPath();ctx.arc(bola.x-bola.vx*4,bola.y-bola.vy*4,bola.r*0.35,0,Math.PI*2);ctx.fill();
+    }
+
+    // Bola (color según velocidad)
+    const r=Math.min(255,Math.floor(200+vel*8));
+    const g=Math.max(100,Math.floor(255-vel*15));
+    ctx.fillStyle=`rgb(${r},${g},100)`;
+    ctx.beginPath();ctx.arc(bola.x,bola.y,bola.r,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#3498db";ctx.beginPath();ctx.roundRect(jugador.x,jugador.y,jugador.w,jugador.h,5);ctx.fill();
+    ctx.fillStyle="#e74c3c";ctx.beginPath();ctx.roundRect(ia.x,ia.y,ia.w,ia.h,5);ctx.fill();
+
+    ctx.fillStyle="#fff";ctx.font="bold 22px Arial";ctx.textAlign="center";
+    ctx.fillText(scoreJugador,W/2,H-8);ctx.fillText(scoreIA,W/2,H/2-8);ctx.textAlign="left";
+    ctx.fillStyle="#3498db";ctx.font="12px Arial";ctx.fillText("TÚ",8,H-8);
+    ctx.fillStyle="#e74c3c";ctx.fillText("IA",8,26);
+
+    // Indicador de velocidad/rebotes
+    if(rebotes>0){
+      ctx.fillStyle="rgba(255,255,100,0.7)";ctx.font="11px Arial";ctx.textAlign="right";
+      ctx.fillText("x"+rebotes+" rebotes 🔥",W-6,H/2-16);ctx.textAlign="left";
+    }
+
+    document.getElementById("pong-score-txt").innerHTML=
+      "Tú: "+scoreJugador+" — IA: "+scoreIA+" | Historial: <span id='pong-hist-txt'>Victorias "+wins+" / Derrotas "+losses+"</span>";
+
+    if(partidaTerminada){
+      ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
+      ctx.fillText(msgFinal,W/2,H/2-20);
+      ctx.font="15px Arial";ctx.fillStyle="#2ecc71";ctx.fillText("Toca para jugar otra partida",W/2,H/2+20);ctx.textAlign="left";
+      canvas.removeEventListener("mousemove",onMouseMove);canvas.removeEventListener("touchmove",onTouchMove);
+      canvas.addEventListener("click",()=>iniciarPong(),{once:true});
+      canvas.addEventListener("touchstart",()=>iniciarPong(),{once:true});
+    }
+  }
+  loop();
+}
 </script>
  
 </body>
