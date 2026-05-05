@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store EGP</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4MVX89K7Y3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4MVX89K7Y3', {
+    page_title: 'Store EGP',
+    page_location: window.location.href
+  });
+</script>
  
 <style>
 *{box-sizing:border-box}
@@ -56,8 +68,10 @@ canvas{border-radius:10px;display:block}
 .producto{
  background:#fff;border-radius:12px;padding:15px;
  box-shadow:0 5px 15px rgba(0,0,0,.1);
- display:flex;flex-direction:column
+ display:flex;flex-direction:column;
+ transition:transform .18s,box-shadow .18s;
 }
+.producto:hover{transform:translateY(-4px);box-shadow:0 10px 25px rgba(0,0,0,.15)}
 .producto img{width:100%;border-radius:10px}
 .precio{margin:8px 0}
 .oferta del{color:red;margin-right:6px}
@@ -66,8 +80,10 @@ select,button,input{
  padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
 }
 .producto button{
- background:#1e4ddb;color:#fff;border:none;cursor:pointer
+ background:#1e4ddb;color:#fff;border:none;cursor:pointer;
+ transition:background .15s,transform .1s;
 }
+.producto button:hover{background:#1a3fc0;transform:scale(1.02)}
  
 /* CARRITO */
 #carritoBtn{
@@ -140,6 +156,40 @@ select,button,input{
  margin-top:10px;
 }
 
+/* ANIMACIÓN VUELA AL CARRITO */
+.vuela{
+  position:fixed;
+  width:50px;height:50px;
+  border-radius:50%;
+  object-fit:cover;
+  pointer-events:none;
+  z-index:99999;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  transition:none;
+}
+@keyframes vuelaAnim{
+  0%{transform:scale(1) rotate(0deg);opacity:1;}
+  40%{transform:scale(1.2) rotate(-15deg);opacity:1;}
+  100%{transform:scale(0.1) rotate(20deg);opacity:0;}
+}
+
+/* TOAST NOTIFICACIÓN */
+#toast{
+  position:fixed;bottom:90px;right:20px;
+  background:#111;color:#fff;
+  padding:10px 16px;border-radius:10px;
+  font-size:13px;font-weight:bold;
+  z-index:99998;opacity:0;
+  transform:translateY(10px);
+  transition:opacity .25s,transform .25s;
+  pointer-events:none;
+}
+#toast.visible{opacity:1;transform:translateY(0);}
+
+/* BADGE ANIMACIÓN */
+@keyframes popBadge{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+.badge-pop{animation:popBadge .3s ease;}
+
 /* BOTÓN CONFIRMAR SIMULADO */
 #btn-confirmar{
   background:#2ecc71;
@@ -158,14 +208,16 @@ select,button,input{
 
 /* AVISO SIMULADOR */
 .aviso-sim{
-  background:#fff3cd;
+  background:linear-gradient(135deg,#fff8e1,#fff3cd);
   border:1px solid #ffc107;
+  border-left:4px solid #f59e0b;
   border-radius:8px;
-  padding:10px 14px;
+  padding:12px 14px;
   font-size:13px;
   color:#856404;
   margin-top:12px;
   text-align:center;
+  line-height:1.5;
 }
 
 /* PANTALLA DE GRACIAS */
@@ -173,9 +225,13 @@ select,button,input{
   display:none;
   text-align:center;
   padding:30px 20px;
+  animation:fadeIn .4s ease;
 }
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 #pantalla-gracias h2{color:#2ecc71;font-size:26px;margin-bottom:10px}
 #pantalla-gracias p{color:#555;font-size:15px;line-height:1.6}
+#pantalla-gracias .emoji-grande{font-size:70px;display:block;margin-bottom:10px;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
 #pantalla-gracias button{
   margin-top:20px;
   background:#1e4ddb;
@@ -185,7 +241,9 @@ select,button,input{
   border-radius:8px;
   cursor:pointer;
   font-size:15px;
+  transition:background .15s;
 }
+#pantalla-gracias button:hover{background:#1a3fc0}
 
 footer{text-align:center;padding:20px;font-size:14px}
 footer a{
@@ -282,7 +340,7 @@ footer a:hover{text-decoration:underline}
       <option>España peninsular · Envío 0€ (prueba)</option>
     </select>
 
-    <div class="aviso-sim">🧪 <b>Modo simulación</b> — Esta es una tienda de prueba. No se realizará ningún pago real.</div>
+    <div class="aviso-sim">🧪 <b>Modo simulación</b> — Esto es un análisis de marketing para un proyecto escolar.<br><span style="font-size:12px">No se efectuará ningún pago.</span></div>
 
     <div id="zona-pago">
       <p style="color:#c00;font-weight:bold;margin-top:15px">Añade productos para poder confirmar</p>
@@ -291,11 +349,11 @@ footer a:hover{text-decoration:underline}
 
   <!-- Pantalla de gracias -->
   <div id="pantalla-gracias">
-    <div style="font-size:60px">🎉</div>
+    <span class="emoji-grande">🎉</span>
     <h2>¡Pedido simulado!</h2>
     <p>En una tienda real, tu pedido estaría en camino.<br>Pero esto es una simulación, así que... <b>no te va a llegar nada</b> 😄</p>
-    <p style="margin-top:10px;font-size:13px;color:#888">Gracias por participar en este experimento de marketing.</p>
-    <button onclick="resetear()">Volver a la tienda</button>
+    <p style="margin-top:10px;font-size:13px;color:#888">Gracias por participar en este experimento de marketing.<br>Tus datos han quedado registrados de forma anónima.</p>
+    <button onclick="resetear()">← Volver a la tienda</button>
   </div>
 </div>
  
@@ -314,6 +372,8 @@ footer a:hover{text-decoration:underline}
  </div>
 </div>
  
+<div id="toast">🛒 ¡Añadido al carrito!</div>
+
 <script>
 const productos=[
  {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
@@ -354,12 +414,71 @@ function cargar(){
 cargar();
  
 function add(n,p,btn){
- const talla=btn.previousElementSibling.value;
- const key=n+"_"+talla;
- if(!carrito[key]) carrito[key]={n,p,talla,c:0};
- carrito[key].c++;
- abrirCarrito();
- actualizarTotales();
+  const talla=btn.previousElementSibling.value;
+  const key=n+"_"+talla;
+  if(!carrito[key]) carrito[key]={n,p,talla,c:0};
+  carrito[key].c++;
+
+  // Animación: la imagen vuela al carrito
+  const producto=btn.closest('.producto');
+  const img=producto.querySelector('img');
+  const carritoBtn=document.getElementById('carritoBtn');
+
+  if(img&&carritoBtn){
+    const imgRect=img.getBoundingClientRect();
+    const btnRect=carritoBtn.getBoundingClientRect();
+
+    const clone=document.createElement('img');
+    clone.src=img.src;
+    clone.classList.add('vuela');
+    clone.style.left=imgRect.left+'px';
+    clone.style.top=imgRect.top+'px';
+    document.body.appendChild(clone);
+
+    // Animación con requestAnimationFrame para mayor fluidez
+    const startX=imgRect.left, startY=imgRect.top;
+    const endX=btnRect.left+btnRect.width/2-25;
+    const endY=btnRect.top+btnRect.height/2-25;
+    const startTime=performance.now();
+    const dur=620;
+
+    function animar(now){
+      const t=Math.min((now-startTime)/dur,1);
+      const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; // easeInOut
+      const arco=-160*Math.sin(Math.PI*t); // arco hacia arriba
+      const x=startX+(endX-startX)*ease;
+      const y=startY+(endY-startY)*ease+arco;
+      const escala=1-t*0.85;
+      clone.style.left=x+'px';
+      clone.style.top=y+'px';
+      clone.style.transform=`scale(${escala}) rotate(${t*30}deg)`;
+      clone.style.opacity=t>0.7?(1-t)*3.3:1;
+      if(t<1){requestAnimationFrame(animar);}
+      else{
+        clone.remove();
+        // Animación pop en el badge
+        const badge=document.getElementById('badge');
+        badge.classList.remove('badge-pop');
+        void badge.offsetWidth;
+        badge.classList.add('badge-pop');
+      }
+    }
+    requestAnimationFrame(animar);
+  }
+
+  // Toast
+  mostrarToast('🛒 '+n+' ('+talla+') añadido');
+
+  actualizarTotales();
+}
+
+let toastTimer=null;
+function mostrarToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('visible'),2200);
 }
  
 function actualizarTotales(){
@@ -478,16 +597,17 @@ function iniciarDino(){
   const canvas=document.getElementById("dino-canvas");
   const ctx=canvas.getContext("2d");
   const W=canvas.width,H=canvas.height;
-  const SUELO=H-50; // más abajo para aprovechar espacio
+  const SUELO=H-50;
   let record=parseInt(localStorage.getItem(DINO_RECORD_KEY)||"0");
-  let dino={x:55,y:SUELO,w:36,h:46,vy:0,enSuelo:true};
+  let dino={x:55,y:SUELO,w:40,h:52,vy:0,enSuelo:true};
   let obstaculos=[],nubes=[],pajaros=[],puntos=0,velocidad=4,frame=0,vivo=true,esperandoReinicio=false;
   const GRAVEDAD=0.65,SALTO=-13;
 
-  // Nubes en la zona alta
-  for(let i=0;i<4;i++) nubes.push({x:Math.random()*W,y:30+Math.random()*100,w:50+Math.random()*40,vel:0.3+Math.random()*0.4});
+  // Nubes solo en zona alta
+  for(let i=0;i<5;i++) nubes.push({x:Math.random()*W,y:15+Math.random()*70,w:55+Math.random()*45,vel:0.25+Math.random()*0.3});
+  // Pájaros decorativos — solo en zona muy alta del cielo (y≤80), nunca matan
+  for(let i=0;i<3;i++) pajaros.push({x:Math.random()*W,y:15+Math.random()*60,alas:Math.random(),vel:0.6+Math.random()*0.7,tam:0.7+Math.random()*0.5});
 
-  // ---- LISTENERS (se guardan para poder quitarlos) ----
   function saltar(){
     if(!vivo){
       if(esperandoReinicio){
@@ -504,150 +624,259 @@ function iniciarDino(){
   document.addEventListener("keydown",onKey);
   canvas.addEventListener("touchstart",onTouch,{passive:false});
 
+  function dibujarDino(){
+    const af=Math.floor(Date.now()/115)%2;
+    const colorBase=vivo?"#2e7d32":"#c00";
+    const colorVientre=vivo?"#66bb6a":"#e57373";
+    const colorOscuro=vivo?"#1b5e20":"#b71c1c";
+
+    // Sombra suave en el suelo
+    if(dino.enSuelo){
+      ctx.fillStyle="rgba(0,0,0,0.12)";
+      ctx.beginPath();ctx.ellipse(dino.x+dino.w/2,SUELO+dino.h+2,dino.w/2,5,0,0,Math.PI*2);ctx.fill();
+    }
+
+    // Cola triangular con curva
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+6,dino.y+dino.h-16);
+    ctx.lineTo(dino.x-16,dino.y+dino.h-8);
+    ctx.lineTo(dino.x-10,dino.y+dino.h-30);
+    ctx.closePath();ctx.fill();
+    // Detalle cola
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+2,dino.y+dino.h-18);
+    ctx.lineTo(dino.x-10,dino.y+dino.h-10);
+    ctx.lineTo(dino.x-6,dino.y+dino.h-26);
+    ctx.closePath();ctx.fill();
+
+    // Cuerpo principal
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x,dino.y+6,dino.w,dino.h-16,12);ctx.fill();
+
+    // Vientre (parte delantera más clara)
+    ctx.fillStyle=colorVientre;
+    ctx.beginPath();ctx.roundRect(dino.x+7,dino.y+14,dino.w-18,dino.h-28,8);ctx.fill();
+
+    // Líneas de escamas en el cuerpo
+    ctx.strokeStyle=colorOscuro;ctx.lineWidth=0.8;ctx.globalAlpha=0.4;
+    for(let s=0;s<3;s++){
+      ctx.beginPath();
+      ctx.moveTo(dino.x+dino.w-4,dino.y+12+s*10);
+      ctx.lineTo(dino.x+dino.w+2,dino.y+18+s*10);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // Cabeza
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w-10,dino.y-18,26,24,8);ctx.fill();
+
+    // Cresta en la cabeza
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w-4,dino.y-18);
+    ctx.lineTo(dino.x+dino.w,dino.y-26);
+    ctx.lineTo(dino.x+dino.w+5,dino.y-18);
+    ctx.closePath();ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w+4,dino.y-18);
+    ctx.lineTo(dino.x+dino.w+8,dino.y-24);
+    ctx.lineTo(dino.x+dino.w+12,dino.y-18);
+    ctx.closePath();ctx.fill();
+
+    // Hocico
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w+10,dino.y-11,12,9,3);ctx.fill();
+    // Fosa nasal
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.arc(dino.x+dino.w+18,dino.y-8,1.5,0,Math.PI*2);ctx.fill();
+
+    // Ojo — esclerótica
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+4,dino.y-10,6,0,Math.PI*2);ctx.fill();
+    // Iris verde
+    ctx.fillStyle=vivo?"#00c853":"#f44336";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,4,0,Math.PI*2);ctx.fill();
+    // Pupila
+    ctx.fillStyle="#000";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,2,0,Math.PI*2);ctx.fill();
+    // Brillo
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+6,dino.y-12,1.2,0,Math.PI*2);ctx.fill();
+
+    // Bracito
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w-4,dino.y+10,12,7,4);ctx.fill();
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w+6,dino.y+16);
+    ctx.lineTo(dino.x+dino.w+10,dino.y+20);
+    ctx.lineTo(dino.x+dino.w+8,dino.y+22);
+    ctx.stroke();
+
+    // Patas animadas con dedos
+    ctx.fillStyle=colorBase;
+    if(dino.enSuelo&&vivo){
+      if(af===0){
+        // Pata delantera abajo
+        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-14,14,16,4);ctx.fill();
+        ctx.fillStyle=colorOscuro;
+        ctx.beginPath();ctx.roundRect(dino.x+18,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+24,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+30,dino.y+dino.h+1,5,4,2);ctx.fill();
+        // Pata trasera arriba (paso)
+        ctx.fillStyle=colorBase;
+        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-20,13,8,4);ctx.fill();
+      } else {
+        // Pata trasera abajo
+        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-14,14,16,4);ctx.fill();
+        ctx.fillStyle=colorOscuro;
+        ctx.beginPath();ctx.roundRect(dino.x+2,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+8,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+14,dino.y+dino.h+1,5,4,2);ctx.fill();
+        // Pata delantera arriba
+        ctx.fillStyle=colorBase;
+        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-20,13,8,4);ctx.fill();
+      }
+    } else {
+      // En el aire — patas extendidas
+      ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-12,13,13,4);ctx.fill();
+      ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-12,13,13,4);ctx.fill();
+    }
+  }
+
   function loop(){
     dinoRAF=requestAnimationFrame(loop);
     ctx.clearRect(0,0,W,H);
 
-    // Cielo degradado (más oscuro arriba conforme avanza)
-    const oscuridad=Math.min(puntos/2000,0.5);
+    // Cielo con color dinámico según puntos
+    const prog=Math.min(puntos/1800,1);
     const grad=ctx.createLinearGradient(0,0,0,H);
-    grad.addColorStop(0,`hsl(200,${60-oscuridad*30}%,${70-oscuridad*30}%)`);
-    grad.addColorStop(0.7,"#e8e8e8");
-    grad.addColorStop(1,"#d0d0d0");
+    grad.addColorStop(0,`hsl(${210-prog*30},${62-prog*20}%,${74-prog*22}%)`);
+    grad.addColorStop(0.6,`hsl(${200-prog*20},20%,${88-prog*10}%)`);
+    grad.addColorStop(1,"#c8c8c8");
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 
-    // Nubes
-    ctx.fillStyle="rgba(255,255,255,0.85)";
+    // Sol decorativo en esquina
+    ctx.save();
+    ctx.globalAlpha=0.25;
+    const gSol=ctx.createRadialGradient(W-40,30,2,W-40,30,40);
+    gSol.addColorStop(0,"#ffe066");gSol.addColorStop(1,"rgba(255,220,50,0)");
+    ctx.fillStyle=gSol;ctx.beginPath();ctx.arc(W-40,30,40,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;ctx.restore();
+
+    // Nubes — solo zona alta
     nubes.forEach(n=>{
-      ctx.beginPath();ctx.ellipse(n.x,n.y,n.w/2,14,0,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.ellipse(n.x-14,n.y+4,n.w/3,10,0,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.ellipse(n.x+16,n.y+5,n.w/3.5,9,0,0,Math.PI*2);ctx.fill();
-      n.x-=n.vel*velocidad/4;
-      if(n.x<-80)n.x=W+80;
+      ctx.fillStyle="rgba(255,255,255,0.92)";
+      ctx.beginPath();ctx.ellipse(n.x,n.y,n.w/2,13,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x-13,n.y+5,n.w/3,9,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x+15,n.y+5,n.w/3.5,8,0,0,Math.PI*2);ctx.fill();
+      // Sombra nube
+      ctx.fillStyle="rgba(180,200,220,0.3)";
+      ctx.beginPath();ctx.ellipse(n.x,n.y+14,n.w/2-4,5,0,0,Math.PI*2);ctx.fill();
+      n.x-=n.vel*(velocidad/4);
+      if(n.x<-100)n.x=W+100;
     });
 
+    // Pájaros DECORATIVOS — zona alta del cielo (y máx 80px), nunca interfieren con el juego
+    pajaros.forEach(p=>{
+      const batida=Math.sin(p.alas*Math.PI*2)*5*p.tam;
+      const t=p.tam;
+      ctx.strokeStyle=`rgba(50,50,60,0.65)`;ctx.lineWidth=1.5*t;
+      ctx.beginPath();ctx.moveTo(p.x,p.y+5*t);ctx.quadraticCurveTo(p.x+7*t,p.y+batida,p.x+14*t,p.y+5*t);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(p.x+14*t,p.y+5*t);ctx.quadraticCurveTo(p.x+21*t,p.y+batida,p.x+28*t,p.y+5*t);ctx.stroke();
+      ctx.fillStyle="rgba(50,50,60,0.7)";
+      ctx.beginPath();ctx.ellipse(p.x+14*t,p.y+6*t,4*t,2.5*t,0,0,Math.PI*2);ctx.fill();
+      p.x-=p.vel;p.alas=(p.alas+0.1)%1;
+      if(p.x<-40)p.x=W+40;
+    });
+
+    // Montañas de fondo (decorativas)
+    ctx.globalAlpha=0.12;
+    ctx.fillStyle="#5577aa";
+    [[0,180,100],[80,160,120],[180,170,90],[260,155,110]].forEach(([mx,my,mw])=>{
+      ctx.beginPath();ctx.moveTo(mx-mw,SUELO+dino.h);ctx.lineTo(mx,my);ctx.lineTo(mx+mw,SUELO+dino.h);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+
     // Suelo con textura
-    ctx.fillStyle="#7a7a7a";ctx.fillRect(0,SUELO+dino.h,W,3);
-    ctx.fillStyle="#b0b0b0";ctx.fillRect(0,SUELO+dino.h+3,W,H);
-    // Línea de suelo decorativa
-    for(let lx=(-frame*velocidad*0.5)%40;lx<W;lx+=40){
-      ctx.fillStyle="#999";ctx.fillRect(lx,SUELO+dino.h+3,20,2);
+    ctx.fillStyle="#6d6d6d";ctx.fillRect(0,SUELO+dino.h,W,3);
+    ctx.fillStyle="#b5b5b5";ctx.fillRect(0,SUELO+dino.h+3,W,H);
+    // Guijarros animados
+    for(let lx=(-frame*velocidad*0.5)%48;lx<W;lx+=48){
+      ctx.fillStyle="#9e9e9e";ctx.fillRect(lx,SUELO+dino.h+3,24,2);
+      ctx.fillStyle="#c0c0c0";ctx.beginPath();ctx.ellipse(lx+36,SUELO+dino.h+7,4,3,0,0,Math.PI*2);ctx.fill();
     }
 
     if(vivo){
-      // Física
       dino.vy+=GRAVEDAD;dino.y+=dino.vy;
       if(dino.y>=SUELO){dino.y=SUELO;dino.vy=0;dino.enSuelo=true;}
       frame++;
-
-      // Velocidad progresiva con más impacto
       velocidad=4+puntos/180;
 
-      // Spawn obstáculos en suelo
       const intervalo=Math.max(40,85-Math.floor(puntos/150));
       if(frame%intervalo===0){
         const h=28+Math.random()*45,w=18+Math.random()*18;
-        // A veces doble cactus
-        obstaculos.push({x:W,y:SUELO+dino.h-h,w,h,tipo:"cactus"});
-        if(puntos>400&&Math.random()<0.3){
-          obstaculos.push({x:W+w+12,y:SUELO+dino.h-h*0.8,w:w*0.75,h:h*0.8,tipo:"cactus"});
-        }
+        obstaculos.push({x:W,y:SUELO+dino.h-h,w,h});
+        if(puntos>400&&Math.random()<0.3)
+          obstaculos.push({x:W+w+14,y:SUELO+dino.h-h*0.8,w:w*0.75,h:h*0.8});
       }
 
-      // Spawn pájaros (zona alta) — aparecen a partir de 300 puntos
-      if(puntos>300&&frame%(Math.max(90,160-Math.floor(puntos/80)))===0){
-        // Altura variable: zona media-alta del cielo
-        const alturaPajaro=60+Math.random()*(SUELO-dino.h-100);
-        pajaros.push({x:W,y:alturaPajaro,alas:0,vel:velocidad*1.1});
-      }
-
-      // Mover todo
       obstaculos.forEach(o=>{o.x-=velocidad;});
       obstaculos=obstaculos.filter(o=>o.x>-60);
-      pajaros.forEach(p=>{p.x-=p.vel;p.alas=(p.alas+0.15)%1;});
-      pajaros=pajaros.filter(p=>p.x>-40);
-
       puntos++;
 
-      // Colisión cactus
-      const m=7;
+      const m=9;
       obstaculos.forEach(o=>{
         if(dino.x+m<o.x+o.w&&dino.x+dino.w-m>o.x&&dino.y+m<o.y+o.h&&dino.y+dino.h-m>o.y){
           vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
         }
       });
-      // Colisión pájaros (margen más generoso)
-      const mp=10;
-      pajaros.forEach(p=>{
-        if(dino.x+mp<p.x+28&&dino.x+dino.w-mp>p.x&&dino.y+mp<p.y+14&&dino.y+dino.h-mp>p.y+4){
-          vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
-        }
-      });
     }
 
-    // Dibujar cactus
-    ctx.fillStyle="#2d6a2d";
+    // Cactus con más detalle
     obstaculos.forEach(o=>{
+      // Sombra cactus
+      ctx.fillStyle="rgba(0,0,0,0.1)";
+      ctx.beginPath();ctx.ellipse(o.x+o.w/2,SUELO+dino.h+1,o.w/2+3,4,0,0,Math.PI*2);ctx.fill();
+      // Tronco
+      const cg=ctx.createLinearGradient(o.x,0,o.x+o.w,0);
+      cg.addColorStop(0,"#2e7d32");cg.addColorStop(0.5,"#43a047");cg.addColorStop(1,"#2e7d32");
+      ctx.fillStyle=cg;
       ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,3);ctx.fill();
-      ctx.fillRect(o.x-7,o.y+o.h*0.25,7,8);
-      ctx.fillRect(o.x+o.w,o.y+o.h*0.4,7,8);
-      ctx.fillRect(o.x-7,o.y+o.h*0.2,3,o.h*0.15);
-      ctx.fillRect(o.x+o.w+4,o.y+o.h*0.35,3,o.h*0.15);
+      // Brazos
+      ctx.fillStyle="#388e3c";
+      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.22,9,8,3);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.12,4,o.h*0.14,2);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x+o.w,o.y+o.h*0.38,9,8,3);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x+o.w+5,o.y+o.h*0.28,4,o.h*0.14,2);ctx.fill();
+      // Líneas textura
+      ctx.strokeStyle="#1b5e20";ctx.lineWidth=0.8;ctx.globalAlpha=0.5;
+      for(let ly=o.y+8;ly<o.y+o.h-8;ly+=8){
+        ctx.beginPath();ctx.moveTo(o.x+2,ly);ctx.lineTo(o.x+o.w-2,ly+3);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
     });
 
-    // Dibujar pájaros (forma de M con alas)
-    ctx.strokeStyle="#444";ctx.lineWidth=2;
-    pajaros.forEach(p=>{
-      const batida=Math.sin(p.alas*Math.PI*2)*6;
-      ctx.beginPath();
-      ctx.moveTo(p.x,p.y+8);
-      ctx.quadraticCurveTo(p.x+10,p.y+batida,p.x+20,p.y+8);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(p.x+20,p.y+8);
-      ctx.quadraticCurveTo(p.x+30,p.y+batida,p.x+40,p.y+8);
-      ctx.stroke();
-      // Cuerpo pájaro
-      ctx.fillStyle="#444";
-      ctx.beginPath();ctx.ellipse(p.x+20,p.y+9,6,4,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#e88";
-      ctx.beginPath();ctx.moveTo(p.x+25,p.y+8);ctx.lineTo(p.x+30,p.y+9);ctx.lineTo(p.x+25,p.y+10);ctx.fill();
-    });
+    // Dino
+    dibujarDino();
 
-    // Dibujar dino
-    const af=Math.floor(Date.now()/130)%2;
-    ctx.fillStyle=vivo?"#333":"#c00";
-    ctx.beginPath();ctx.roundRect(dino.x,dino.y+5,dino.w,dino.h-14,8);ctx.fill();
-    ctx.beginPath();ctx.roundRect(dino.x+dino.w-14,dino.y-14,20,18,5);ctx.fill();
-    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(dino.x+dino.w+1,dino.y-8,3,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=vivo?"#111":"#c00";ctx.beginPath();ctx.arc(dino.x+dino.w+2,dino.y-8,1.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=vivo?"#333":"#c00";
-    if(dino.enSuelo&&vivo){
-      if(af===0){ctx.fillRect(dino.x+5,dino.y+dino.h-10,10,11);ctx.fillRect(dino.x+20,dino.y+dino.h-16,10,5);}
-      else{ctx.fillRect(dino.x+5,dino.y+dino.h-16,10,5);ctx.fillRect(dino.x+20,dino.y+dino.h-10,10,11);}
-    } else {ctx.fillRect(dino.x+5,dino.y+dino.h-12,10,9);ctx.fillRect(dino.x+20,dino.y+dino.h-12,10,9);}
-    ctx.beginPath();ctx.moveTo(dino.x,dino.y+15);ctx.lineTo(dino.x-12,dino.y+24);ctx.lineTo(dino.x,dino.y+30);ctx.fill();
-
-    // Puntuación en canvas
-    ctx.fillStyle="rgba(0,0,0,0.25)";ctx.font="bold 14px monospace";ctx.textAlign="right";
+    // Puntuación
+    ctx.fillStyle="rgba(0,0,0,0.2)";ctx.font="bold 13px monospace";ctx.textAlign="right";
     ctx.fillText("PTS "+String(puntos).padStart(5,"0"),W-8,20);ctx.textAlign="left";
 
     if(puntos>record){record=puntos;localStorage.setItem(DINO_RECORD_KEY,record);}
     document.getElementById("dino-score-txt").textContent="Puntuación: "+puntos+" | Récord: "+record;
 
-    // Indicador de nivel
-    const nivel=Math.floor(puntos/300)+1;
-    ctx.fillStyle="rgba(0,0,0,0.2)";ctx.font="11px Arial";
-    ctx.fillText("Nivel "+nivel,8,18);
-    if(puntos>300){ctx.fillStyle="rgba(200,50,50,0.5)";ctx.fillText("⚠ Pájaros",8,32);}
-
     if(!vivo){
-      ctx.fillStyle="rgba(0,0,0,0.5)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="rgba(0,0,0,0.52)";ctx.fillRect(0,0,W,H);
       ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
-      ctx.fillText("💀 Game Over",W/2,H/2-25);
-      ctx.font="15px Arial";ctx.fillText("Puntuación: "+puntos,W/2,H/2+5);
-      if(puntos===record&&puntos>0){ctx.fillStyle="#ffd700";ctx.fillText("🏆 ¡Nuevo récord!",W/2,H/2+25);}
-      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 14px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+52);}
+      ctx.fillText("💀 Game Over",W/2,H/2-28);
+      ctx.font="15px Arial";ctx.fillText("Puntuación: "+puntos,W/2,H/2+2);
+      if(puntos===record&&puntos>0){ctx.fillStyle="#ffd700";ctx.font="bold 15px Arial";ctx.fillText("🏆 ¡Nuevo récord!",W/2,H/2+26);}
+      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 13px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+55);}
       ctx.textAlign="left";
     }
   }
