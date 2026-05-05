@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store EGP</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4MVX89K7Y3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4MVX89K7Y3', {
+    page_title: 'Store EGP',
+    page_location: window.location.href
+  });
+</script>
+ 
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f2f2f2}
+ 
+header{background:#111;color:#fff;padding:20px;text-align:center;position:relative}
+header small{color:#ccc}
+.subtitulo{font-size:14px;color:#aaa;margin-top:6px}
+
+.header-inner{display:flex;align-items:center;justify-content:center;gap:18px}
+.header-inner h1{margin:0}
+.game-icon{
+  font-size:28px;cursor:pointer;
+  background:#222;border:2px solid #444;
+  border-radius:10px;padding:6px 10px;
+  transition:transform .15s,border-color .15s;
+  user-select:none;text-align:center;
+}
+.game-icon:hover{transform:scale(1.12);border-color:#2ecc71}
+.game-icon span{font-size:10px;display:block;color:#aaa;margin-top:2px}
+
+/* MODAL JUEGOS */
+.game-modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;
+  z-index:10000;flex-direction:column;
+}
+.game-modal.abierto{display:flex}
+.game-wrap{
+  background:#1a1a1a;border-radius:16px;
+  padding:16px;display:flex;flex-direction:column;align-items:center;
+  gap:10px;max-height:95vh;
+}
+.game-wrap h2{color:#fff;margin:0;font-size:18px}
+.game-close{
+  align-self:flex-end;background:none;border:none;
+  color:#fff;font-size:24px;cursor:pointer;line-height:1;
+}
+canvas{border-radius:10px;display:block}
+.game-info{color:#ccc;font-size:13px;text-align:center}
+.game-score{color:#2ecc71;font-weight:bold;font-size:15px}
+ 
+/* PRODUCTOS */
+.productos{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+ gap:20px;padding:20px
+}
+.producto{
+ background:#fff;border-radius:12px;padding:15px;
+ box-shadow:0 5px 15px rgba(0,0,0,.1);
+ display:flex;flex-direction:column;
+ transition:transform .18s,box-shadow .18s;
+}
+.producto:hover{transform:translateY(-4px);box-shadow:0 10px 25px rgba(0,0,0,.15)}
+.producto img{width:100%;border-radius:10px}
+.precio{margin:8px 0}
+.oferta del{color:red;margin-right:6px}
+.acciones{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+select,button,input{
+ padding:10px;border-radius:8px;border:1px solid #ccc;width:100%
+}
+.producto button{
+ background:#1e4ddb;color:#fff;border:none;cursor:pointer;
+ transition:background .15s,transform .1s;
+}
+.producto button:hover{background:#1a3fc0;transform:scale(1.02)}
+ 
+/* CARRITO */
+#carritoBtn{
+ position:fixed;bottom:20px;right:20px;
+ background:#2ecc71;width:60px;height:60px;
+ border-radius:50%;font-size:24px;border:none;cursor:pointer
+}
+#badge{
+ position:absolute;top:-6px;right:-6px;
+ background:red;color:#fff;width:22px;height:22px;
+ border-radius:50%;display:none;
+ align-items:center;justify-content:center
+}
+#carrito{
+ position:fixed;top:0;right:-100%;
+ width:100%;max-width:420px;height:100%;
+ background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
+ padding:20px;overflow:auto;transition:.3s
+}
+#carrito.abierto{right:0}
+.cerrar{float:right;font-size:22px;cursor:pointer}
+ 
+.item{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #ddd;
+ padding:10px 0;
+ font-size:14px;
+}
+.item-info{
+ flex-grow: 1;
+ display: flex;
+ justify-content: space-between;
+ margin-right: 15px;
+}
+.item-controles{
+ display: flex;
+ align-items: center;
+ gap: 8px;
+}
+.btn-restar{
+ background: #eee;
+ border: 1px solid #ccc;
+ width: 24px;
+ height: 24px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ border-radius: 4px;
+ cursor: pointer;
+ padding: 0;
+ font-size: 16px;
+}
+.btn-eliminar{
+ background:none;
+ border:none;
+ color:#c00;
+ font-size:18px;
+ cursor:pointer;
+ font-weight: bold;
+}
+ 
+.descuento{color:red;font-weight:bold}
+ 
+.form-envio{
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+ margin-top:10px;
+}
+
+/* BOTÓN CONFIRMAR SIMULADO */
+#btn-confirmar{
+  background:#2ecc71;
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+  margin-top:15px;
+  display:none;
+}
+#btn-confirmar:hover{background:#27ae60}
+
+/* AVISO SIMULADOR */
+.aviso-sim{
+  background:linear-gradient(135deg,#fff8e1,#fff3cd);
+  border:1px solid #ffc107;
+  border-left:4px solid #f59e0b;
+  border-radius:8px;
+  padding:12px 14px;
+  font-size:13px;
+  color:#856404;
+  margin-top:12px;
+  text-align:center;
+  line-height:1.5;
+}
+
+/* PANTALLA DE GRACIAS */
+#pantalla-gracias{
+  display:none;
+  text-align:center;
+  padding:30px 20px;
+  animation:fadeIn .4s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#pantalla-gracias h2{color:#2ecc71;font-size:26px;margin-bottom:10px}
+#pantalla-gracias p{color:#555;font-size:15px;line-height:1.6}
+#pantalla-gracias .emoji-grande{font-size:70px;display:block;margin-bottom:10px;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+#pantalla-gracias button{
+  margin-top:20px;
+  background:#1e4ddb;
+  color:#fff;
+  border:none;
+  padding:12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  transition:background .15s;
+}
+#pantalla-gracias button:hover{background:#1a3fc0}
+
+footer{text-align:center;padding:20px;font-size:14px}
+footer a{
+ margin:0 8px;
+ color:#1e4ddb;
+ text-decoration:none;
+ cursor:pointer
+}
+footer a:hover{text-decoration:underline}
+ 
+.legal-modal{
+ position:fixed;inset:0;
+ background:rgba(0,0,0,.6);
+ display:none;
+ align-items:center;
+ justify-content:center;
+ z-index:9999;
+}
+.legal-box{
+ background:#fff;
+ max-width:500px;
+ width:90%;
+ padding:20px;
+ border-radius:12px;
+}
+.legal-box button{
+ margin-top:15px;
+ width:100%;
+}
+</style>
+</head>
+ 
+<body>
+ 
+<header>
+<div class="header-inner">
+  <div class="game-icon" onclick="abrirJuego('dino')" title="Minijuego del dino">🦕<span>DINO</span></div>
+  <div>
+    <h1>Store EGP</h1>
+    <div class="subtitulo">Aquí encuentras lo que no sabías que necesitabas</div>
+    <small>@sstoreegp · dudas: sstoreegp@gmail.com</small>
+  </div>
+  <div class="game-icon" onclick="abrirJuego('pong')" title="Minijuego de pong">🏓<span>PONG</span></div>
+</div>
+</header>
+
+<!-- MODAL DINO -->
+<div class="game-modal" id="modal-dino">
+  <div class="game-wrap">
+    <button class="game-close" onclick="cerrarJuego('dino')">✖</button>
+    <h2>🦕 Dino Runner</h2>
+    <div class="game-score" id="dino-score-txt">Puntuación: 0 | Récord: <span id="dino-record-txt">0</span></div>
+    <canvas id="dino-canvas" width="340" height="480"></canvas>
+    <div class="game-info" id="dino-info">Pulsa ESPACIO o toca la pantalla para saltar</div>
+  </div>
+</div>
+
+<!-- MODAL PONG -->
+<div class="game-modal" id="modal-pong">
+  <div class="game-wrap">
+    <button class="game-close" onclick="cerrarJuego('pong')">✖</button>
+    <h2>🏓 Pong</h2>
+    <div class="game-score" id="pong-score-txt">Tú: 0 — IA: 0 | Historial: <span id="pong-hist-txt">Victorias 0 / Derrotas 0</span></div>
+    <canvas id="pong-canvas" width="340" height="480"></canvas>
+    <div class="game-info" id="pong-info">Mueve tu barra (azul) con el ratón o el dedo</div>
+  </div>
+</div>
+ 
+<section class="productos" id="listaProductos"></section>
+ 
+<button id="carritoBtn" onclick="abrirCarrito()">🛒
+ <div id="badge">0</div>
+</button>
+ 
+<div id="carrito">
+  <span class="cerrar" onclick="cerrarCarrito()">✖</span>
+
+  <!-- Vista normal del carrito -->
+  <div id="vista-carrito">
+    <h2>Carrito</h2>
+    <div id="items"></div>
+    <p id="resumen"></p>
+   
+    <h3>Datos de envío</h3>
+    <div class="form-envio">
+      <input id="nombre" placeholder="Nombre completo">
+      <input id="email" placeholder="Correo electrónico">
+      <input id="direccion" placeholder="Dirección completa">
+      <input id="cp" placeholder="Código postal">
+      <input id="ciudad" placeholder="Ciudad">
+    </div>
+   
+    <select disabled style="margin-top:10px">
+      <option>España peninsular · Envío 0€ (prueba)</option>
+    </select>
+
+    <div class="aviso-sim">🧪 <b>Modo simulación</b> — Esto es un análisis de marketing para un proyecto escolar.<br><span style="font-size:12px">No se efectuará ningún pago.</span></div>
+
+    <div id="zona-pago">
+      <p style="color:#c00;font-weight:bold;margin-top:15px">Añade productos para poder confirmar</p>
+    </div>
+  </div>
+
+  <!-- Pantalla de gracias -->
+  <div id="pantalla-gracias">
+    <span class="emoji-grande">🎉</span>
+    <h2>¡Pedido simulado!</h2>
+    <p>En una tienda real, tu pedido estaría en camino.<br>Pero esto es una simulación, así que... <b>no te va a llegar nada</b> 😄</p>
+    <p style="margin-top:10px;font-size:13px;color:#888">Gracias por participar en este experimento de marketing.<br>Tus datos han quedado registrados de forma anónima.</p>
+    <button onclick="resetear()">← Volver a la tienda</button>
+  </div>
+</div>
+ 
+<footer>
+<a onclick="abrirLegal('terms')">Términos</a>
+<a onclick="abrirLegal('privacy')">Privacidad</a>
+<a onclick="abrirLegal('envio')">Envío</a>
+<a onclick="abrirLegal('devoluciones')">Devoluciones</a>
+</footer>
+ 
+<div class="legal-modal" id="legalModal">
+ <div class="legal-box">
+  <h3 id="legalTitulo"></h3>
+  <p id="legalTexto"></p>
+  <button onclick="cerrarLegal()">Cerrar</button>
+ </div>
+</div>
+ 
+<script>
+const productos=[
+ {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat"},
+ {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAA"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La camiseta perfecta si siempre la tienes"},
+ {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso muy triste)"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
+];
+ 
+const carrito={};
+ 
+function cargar(){
+ const c=document.getElementById("listaProductos");
+ productos.forEach(pr=>{
+  c.innerHTML+=`
+  <div class="producto">
+   <img src="${pr.img}">
+   <h3>${pr.n}</h3>
+   <p>${pr.d}</p>
+   <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
+   <div class="acciones">
+    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
+   </div>
+  </div>`;
+ });
+}
+cargar();
+ 
+function add(n,p,btn){
+ const talla=btn.previousElementSibling.value;
+ const key=n+"_"+talla;
+ if(!carrito[key]) carrito[key]={n,p,talla,c:0};
+ carrito[key].c++;
+ abrirCarrito();
+ actualizarTotales();
+}
+ 
+function actualizarTotales(){
+ const div=document.getElementById("items");
+ div.innerHTML="";
+ let total=0, unidades=0;
+ 
+ Object.values(carrito).forEach(it=>{
+  total+=it.p*it.c;
+  unidades+=it.c;
+  const key=`${it.n}_${it.talla}`;
+  div.innerHTML+=`
+   <div class="item">
+    <div class="item-info">
+      <span>${it.n} (${it.talla}) x${it.c}</span>
+      <span>${it.p*it.c}€</span>
+    </div>
+    <div class="item-controles">
+      <button class="btn-restar" onclick="restar('${key}')">-</button>
+      <button class="btn-eliminar" onclick="eliminar('${key}')">✕</button>
+    </div>
+   </div>`;
+ });
+ 
+ document.getElementById("badge").style.display=unidades?"flex":"none";
+ document.getElementById("badge").textContent=unidades;
+ 
+ let descuento=unidades>1?(unidades-1)*2:0;
+ let envio=0;
+ let final=total-descuento+envio;
+ 
+ document.getElementById("resumen").innerHTML=
+  `Productos: ${total}€<br>
+  <span class="descuento">Descuento: -${descuento}€</span><br>
+  Envío: ${envio}€<br>
+  <b>Total: ${final}€</b>`;
+
+ // Zona del botón de confirmar
+ const zona=document.getElementById("zona-pago");
+ if(unidades===0){
+  zona.innerHTML="<p style='color:#c00;font-weight:bold;margin-top:15px'>Añade productos para poder confirmar</p>";
+ } else {
+  zona.innerHTML=`<button id="btn-confirmar" style="display:block" onclick="confirmarPedido(${final})">✅ Confirmar pedido simulado (${final}€)</button>`;
+ }
+}
+
+function confirmarPedido(total){
+  // Aquí más adelante añadiremos el envío de datos a Google Sheets
+  document.getElementById("vista-carrito").style.display="none";
+  document.getElementById("pantalla-gracias").style.display="block";
+}
+
+function resetear(){
+  // Vaciar carrito
+  Object.keys(carrito).forEach(k=>delete carrito[k]);
+  actualizarTotales();
+  document.getElementById("pantalla-gracias").style.display="none";
+  document.getElementById("vista-carrito").style.display="block";
+  cerrarCarrito();
+}
+ 
+function restar(k){
+ if(carrito[k].c>1){carrito[k].c--;}else{delete carrito[k];}
+ actualizarTotales();
+}
+ 
+function eliminar(k){delete carrito[k];actualizarTotales();}
+function abrirCarrito(){document.getElementById("carrito").classList.add("abierto")}
+function cerrarCarrito(){document.getElementById("carrito").classList.remove("abierto")}
+ 
+function abrirLegal(t){
+ const h=document.getElementById("legalTitulo");
+ const p=document.getElementById("legalTexto");
+ if(t==="envio"){
+  h.textContent="Envío";
+  p.textContent="Compra desde donde quieras, que sea como sea no te va a llegar nada.";
+ }
+ if(t==="devoluciones"){
+  h.textContent="Devoluciones";
+  p.textContent="Si un producto no te gusta, no es mi problema, ya que sería mentira: no puede no gustar algo que nunca va a llegar. Si quieres devolver un producto imaginario, imagina cómo realmente desea ese amigo que le devuelvas el dinero que le debes.";
+ }
+ if(t==="terms"){
+  h.textContent="Términos";
+  p.textContent="Al realizar una compra aceptas las condiciones de venta, precios y envíos. Además, que te robemos todos los datos y bla bla bla.";
+ }
+ if(t==="privacy"){
+  h.textContent="Privacidad";
+  p.textContent="Tus datos solo se usan para gestionar pedidos, no serán compartidos con terceros, aparte de Elon Musk, Jeff Bezos y esos que pagan bien.";
+ }
+ document.getElementById("legalModal").style.display="flex";
+}
+function cerrarLegal(){document.getElementById("legalModal").style.display="none"}
+
+// ============================================================
+// SISTEMA DE JUEGOS
+// ============================================================
+function abrirJuego(j){
+  document.getElementById("modal-"+j).classList.add("abierto");
+  if(j==="dino") iniciarDino();
+  if(j==="pong") iniciarPong();
+}
+function cerrarJuego(j){
+  document.getElementById("modal-"+j).classList.remove("abierto");
+  if(j==="dino"&&dinoRAF){cancelAnimationFrame(dinoRAF);dinoRAF=null;}
+  if(j==="pong"&&pongRAF){cancelAnimationFrame(pongRAF);pongRAF=null;}
+}
+
+// ============================================================
+// JUEGO 1: DINO RUNNER
+// ============================================================
+let dinoRAF=null;
+const DINO_RECORD_KEY="storeegp_dino_record";
+
+function iniciarDino(){
+  if(dinoRAF){cancelAnimationFrame(dinoRAF);dinoRAF=null;}
+  const canvas=document.getElementById("dino-canvas");
+  const ctx=canvas.getContext("2d");
+  const W=canvas.width,H=canvas.height;
+  const SUELO=H-50;
+  let record=parseInt(localStorage.getItem(DINO_RECORD_KEY)||"0");
+  let dino={x:55,y:SUELO,w:40,h:52,vy:0,enSuelo:true};
+  let obstaculos=[],nubes=[],pajaros=[],puntos=0,velocidad=4,frame=0,vivo=true,esperandoReinicio=false;
+  const GRAVEDAD=0.65,SALTO=-13;
+
+  // Nubes solo en zona alta
+  for(let i=0;i<5;i++) nubes.push({x:Math.random()*W,y:15+Math.random()*70,w:55+Math.random()*45,vel:0.25+Math.random()*0.3});
+  // Pájaros decorativos — solo en zona muy alta del cielo (y≤80), nunca matan
+  for(let i=0;i<3;i++) pajaros.push({x:Math.random()*W,y:15+Math.random()*60,alas:Math.random(),vel:0.6+Math.random()*0.7,tam:0.7+Math.random()*0.5});
+
+  function saltar(){
+    if(!vivo){
+      if(esperandoReinicio){
+        document.removeEventListener("keydown",onKey);
+        canvas.removeEventListener("touchstart",onTouch);
+        iniciarDino();
+      }
+      return;
+    }
+    if(dino.enSuelo){dino.vy=SALTO;dino.enSuelo=false;}
+  }
+  function onKey(e){if(e.code==="Space"||e.key===" "){e.preventDefault();saltar();}}
+  function onTouch(e){e.preventDefault();saltar();}
+  document.addEventListener("keydown",onKey);
+  canvas.addEventListener("touchstart",onTouch,{passive:false});
+
+  function dibujarDino(){
+    const af=Math.floor(Date.now()/115)%2;
+    const colorBase=vivo?"#2e7d32":"#c00";
+    const colorVientre=vivo?"#66bb6a":"#e57373";
+    const colorOscuro=vivo?"#1b5e20":"#b71c1c";
+
+    // Sombra suave en el suelo
+    if(dino.enSuelo){
+      ctx.fillStyle="rgba(0,0,0,0.12)";
+      ctx.beginPath();ctx.ellipse(dino.x+dino.w/2,SUELO+dino.h+2,dino.w/2,5,0,0,Math.PI*2);ctx.fill();
+    }
+
+    // Cola triangular con curva
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+6,dino.y+dino.h-16);
+    ctx.lineTo(dino.x-16,dino.y+dino.h-8);
+    ctx.lineTo(dino.x-10,dino.y+dino.h-30);
+    ctx.closePath();ctx.fill();
+    // Detalle cola
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+2,dino.y+dino.h-18);
+    ctx.lineTo(dino.x-10,dino.y+dino.h-10);
+    ctx.lineTo(dino.x-6,dino.y+dino.h-26);
+    ctx.closePath();ctx.fill();
+
+    // Cuerpo principal
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x,dino.y+6,dino.w,dino.h-16,12);ctx.fill();
+
+    // Vientre (parte delantera más clara)
+    ctx.fillStyle=colorVientre;
+    ctx.beginPath();ctx.roundRect(dino.x+7,dino.y+14,dino.w-18,dino.h-28,8);ctx.fill();
+
+    // Líneas de escamas en el cuerpo
+    ctx.strokeStyle=colorOscuro;ctx.lineWidth=0.8;ctx.globalAlpha=0.4;
+    for(let s=0;s<3;s++){
+      ctx.beginPath();
+      ctx.moveTo(dino.x+dino.w-4,dino.y+12+s*10);
+      ctx.lineTo(dino.x+dino.w+2,dino.y+18+s*10);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    // Cabeza
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w-10,dino.y-18,26,24,8);ctx.fill();
+
+    // Cresta en la cabeza
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w-4,dino.y-18);
+    ctx.lineTo(dino.x+dino.w,dino.y-26);
+    ctx.lineTo(dino.x+dino.w+5,dino.y-18);
+    ctx.closePath();ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w+4,dino.y-18);
+    ctx.lineTo(dino.x+dino.w+8,dino.y-24);
+    ctx.lineTo(dino.x+dino.w+12,dino.y-18);
+    ctx.closePath();ctx.fill();
+
+    // Hocico
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w+10,dino.y-11,12,9,3);ctx.fill();
+    // Fosa nasal
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.arc(dino.x+dino.w+18,dino.y-8,1.5,0,Math.PI*2);ctx.fill();
+
+    // Ojo — esclerótica
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+4,dino.y-10,6,0,Math.PI*2);ctx.fill();
+    // Iris verde
+    ctx.fillStyle=vivo?"#00c853":"#f44336";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,4,0,Math.PI*2);ctx.fill();
+    // Pupila
+    ctx.fillStyle="#000";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,2,0,Math.PI*2);ctx.fill();
+    // Brillo
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.arc(dino.x+dino.w+6,dino.y-12,1.2,0,Math.PI*2);ctx.fill();
+
+    // Bracito
+    ctx.fillStyle=colorBase;
+    ctx.beginPath();ctx.roundRect(dino.x+dino.w-4,dino.y+10,12,7,4);ctx.fill();
+    ctx.fillStyle=colorOscuro;
+    ctx.beginPath();
+    ctx.moveTo(dino.x+dino.w+6,dino.y+16);
+    ctx.lineTo(dino.x+dino.w+10,dino.y+20);
+    ctx.lineTo(dino.x+dino.w+8,dino.y+22);
+    ctx.stroke();
+
+    // Patas animadas con dedos
+    ctx.fillStyle=colorBase;
+    if(dino.enSuelo&&vivo){
+      if(af===0){
+        // Pata delantera abajo
+        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-14,14,16,4);ctx.fill();
+        ctx.fillStyle=colorOscuro;
+        ctx.beginPath();ctx.roundRect(dino.x+18,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+24,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+30,dino.y+dino.h+1,5,4,2);ctx.fill();
+        // Pata trasera arriba (paso)
+        ctx.fillStyle=colorBase;
+        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-20,13,8,4);ctx.fill();
+      } else {
+        // Pata trasera abajo
+        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-14,14,16,4);ctx.fill();
+        ctx.fillStyle=colorOscuro;
+        ctx.beginPath();ctx.roundRect(dino.x+2,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+8,dino.y+dino.h+1,5,4,2);ctx.fill();
+        ctx.beginPath();ctx.roundRect(dino.x+14,dino.y+dino.h+1,5,4,2);ctx.fill();
+        // Pata delantera arriba
+        ctx.fillStyle=colorBase;
+        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-20,13,8,4);ctx.fill();
+      }
+    } else {
+      // En el aire — patas extendidas
+      ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-12,13,13,4);ctx.fill();
+      ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-12,13,13,4);ctx.fill();
+    }
+  }
+
+  function loop(){
+    dinoRAF=requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+
+    // Cielo con color dinámico según puntos
+    const prog=Math.min(puntos/1800,1);
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,`hsl(${210-prog*30},${62-prog*20}%,${74-prog*22}%)`);
+    grad.addColorStop(0.6,`hsl(${200-prog*20},20%,${88-prog*10}%)`);
+    grad.addColorStop(1,"#c8c8c8");
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+
+    // Sol decorativo en esquina
+    ctx.save();
+    ctx.globalAlpha=0.25;
+    const gSol=ctx.createRadialGradient(W-40,30,2,W-40,30,40);
+    gSol.addColorStop(0,"#ffe066");gSol.addColorStop(1,"rgba(255,220,50,0)");
+    ctx.fillStyle=gSol;ctx.beginPath();ctx.arc(W-40,30,40,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;ctx.restore();
+
+    // Nubes — solo zona alta
+    nubes.forEach(n=>{
+      ctx.fillStyle="rgba(255,255,255,0.92)";
+      ctx.beginPath();ctx.ellipse(n.x,n.y,n.w/2,13,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x-13,n.y+5,n.w/3,9,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(n.x+15,n.y+5,n.w/3.5,8,0,0,Math.PI*2);ctx.fill();
+      // Sombra nube
+      ctx.fillStyle="rgba(180,200,220,0.3)";
+      ctx.beginPath();ctx.ellipse(n.x,n.y+14,n.w/2-4,5,0,0,Math.PI*2);ctx.fill();
+      n.x-=n.vel*(velocidad/4);
+      if(n.x<-100)n.x=W+100;
+    });
+
+    // Pájaros DECORATIVOS — zona alta del cielo (y máx 80px), nunca interfieren con el juego
+    pajaros.forEach(p=>{
+      const batida=Math.sin(p.alas*Math.PI*2)*5*p.tam;
+      const t=p.tam;
+      ctx.strokeStyle=`rgba(50,50,60,0.65)`;ctx.lineWidth=1.5*t;
+      ctx.beginPath();ctx.moveTo(p.x,p.y+5*t);ctx.quadraticCurveTo(p.x+7*t,p.y+batida,p.x+14*t,p.y+5*t);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(p.x+14*t,p.y+5*t);ctx.quadraticCurveTo(p.x+21*t,p.y+batida,p.x+28*t,p.y+5*t);ctx.stroke();
+      ctx.fillStyle="rgba(50,50,60,0.7)";
+      ctx.beginPath();ctx.ellipse(p.x+14*t,p.y+6*t,4*t,2.5*t,0,0,Math.PI*2);ctx.fill();
+      p.x-=p.vel;p.alas=(p.alas+0.1)%1;
+      if(p.x<-40)p.x=W+40;
+    });
+
+    // Montañas de fondo (decorativas)
+    ctx.globalAlpha=0.12;
+    ctx.fillStyle="#5577aa";
+    [[0,180,100],[80,160,120],[180,170,90],[260,155,110]].forEach(([mx,my,mw])=>{
+      ctx.beginPath();ctx.moveTo(mx-mw,SUELO+dino.h);ctx.lineTo(mx,my);ctx.lineTo(mx+mw,SUELO+dino.h);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+
+    // Suelo con textura
+    ctx.fillStyle="#6d6d6d";ctx.fillRect(0,SUELO+dino.h,W,3);
+    ctx.fillStyle="#b5b5b5";ctx.fillRect(0,SUELO+dino.h+3,W,H);
+    // Guijarros animados
+    for(let lx=(-frame*velocidad*0.5)%48;lx<W;lx+=48){
+      ctx.fillStyle="#9e9e9e";ctx.fillRect(lx,SUELO+dino.h+3,24,2);
+      ctx.fillStyle="#c0c0c0";ctx.beginPath();ctx.ellipse(lx+36,SUELO+dino.h+7,4,3,0,0,Math.PI*2);ctx.fill();
+    }
+
+    if(vivo){
+      dino.vy+=GRAVEDAD;dino.y+=dino.vy;
+      if(dino.y>=SUELO){dino.y=SUELO;dino.vy=0;dino.enSuelo=true;}
+      frame++;
+      velocidad=4+puntos/180;
+
+      const intervalo=Math.max(40,85-Math.floor(puntos/150));
+      if(frame%intervalo===0){
+        const h=28+Math.random()*45,w=18+Math.random()*18;
+        obstaculos.push({x:W,y:SUELO+dino.h-h,w,h});
+        if(puntos>400&&Math.random()<0.3)
+          obstaculos.push({x:W+w+14,y:SUELO+dino.h-h*0.8,w:w*0.75,h:h*0.8});
+      }
+
+      obstaculos.forEach(o=>{o.x-=velocidad;});
+      obstaculos=obstaculos.filter(o=>o.x>-60);
+      puntos++;
+
+      const m=9;
+      obstaculos.forEach(o=>{
+        if(dino.x+m<o.x+o.w&&dino.x+dino.w-m>o.x&&dino.y+m<o.y+o.h&&dino.y+dino.h-m>o.y){
+          vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
+        }
+      });
+    }
+
+    // Cactus con más detalle
+    obstaculos.forEach(o=>{
+      // Sombra cactus
+      ctx.fillStyle="rgba(0,0,0,0.1)";
+      ctx.beginPath();ctx.ellipse(o.x+o.w/2,SUELO+dino.h+1,o.w/2+3,4,0,0,Math.PI*2);ctx.fill();
+      // Tronco
+      const cg=ctx.createLinearGradient(o.x,0,o.x+o.w,0);
+      cg.addColorStop(0,"#2e7d32");cg.addColorStop(0.5,"#43a047");cg.addColorStop(1,"#2e7d32");
+      ctx.fillStyle=cg;
+      ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,3);ctx.fill();
+      // Brazos
+      ctx.fillStyle="#388e3c";
+      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.22,9,8,3);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.12,4,o.h*0.14,2);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x+o.w,o.y+o.h*0.38,9,8,3);ctx.fill();
+      ctx.beginPath();ctx.roundRect(o.x+o.w+5,o.y+o.h*0.28,4,o.h*0.14,2);ctx.fill();
+      // Líneas textura
+      ctx.strokeStyle="#1b5e20";ctx.lineWidth=0.8;ctx.globalAlpha=0.5;
+      for(let ly=o.y+8;ly<o.y+o.h-8;ly+=8){
+        ctx.beginPath();ctx.moveTo(o.x+2,ly);ctx.lineTo(o.x+o.w-2,ly+3);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+    });
+
+    // Dino
+    dibujarDino();
+
+    // Puntuación
+    ctx.fillStyle="rgba(0,0,0,0.2)";ctx.font="bold 13px monospace";ctx.textAlign="right";
+    ctx.fillText("PTS "+String(puntos).padStart(5,"0"),W-8,20);ctx.textAlign="left";
+
+    if(puntos>record){record=puntos;localStorage.setItem(DINO_RECORD_KEY,record);}
+    document.getElementById("dino-score-txt").textContent="Puntuación: "+puntos+" | Récord: "+record;
+
+    if(!vivo){
+      ctx.fillStyle="rgba(0,0,0,0.52)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
+      ctx.fillText("💀 Game Over",W/2,H/2-28);
+      ctx.font="15px Arial";ctx.fillText("Puntuación: "+puntos,W/2,H/2+2);
+      if(puntos===record&&puntos>0){ctx.fillStyle="#ffd700";ctx.font="bold 15px Arial";ctx.fillText("🏆 ¡Nuevo récord!",W/2,H/2+26);}
+      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 13px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+55);}
+      ctx.textAlign="left";
+    }
+  }
+  loop();
+}
+
+// ============================================================
+// JUEGO 2: PONG
+// ============================================================
+let pongRAF=null;
+const PONG_WINS_KEY="storeegp_pong_wins";
+const PONG_LOSSES_KEY="storeegp_pong_losses";
+
+function iniciarPong(){
+  if(pongRAF){cancelAnimationFrame(pongRAF);pongRAF=null;}
+  const canvas=document.getElementById("pong-canvas");
+  const ctx=canvas.getContext("2d");
+  const W=canvas.width,H=canvas.height;
+  const PUNTOS_VICTORIA=5,BARRA_H=70,BARRA_W=12;
+  const VEL_MAX=14; // límite para que no se vuelva imposible
+
+  let wins=parseInt(localStorage.getItem(PONG_WINS_KEY)||"0");
+  let losses=parseInt(localStorage.getItem(PONG_LOSSES_KEY)||"0");
+
+  let jugador={x:W/2-BARRA_H/2,y:H-30,w:BARRA_H,h:BARRA_W};
+  let ia={x:W/2-BARRA_H/2,y:18,w:BARRA_H,h:BARRA_W};
+  let rebotes=0; // contador de rebotes en barras
+  let bola={x:W/2,y:H/2,r:9,vx:(Math.random()>0.5?1:-1)*3.5,vy:-4};
+  let scoreJugador=0,scoreIA=0,partidaTerminada=false,msgFinal="";
+
+  function velocidadActual(){
+    // Velocidad total de la bola según rebotes
+    return Math.sqrt(bola.vx*bola.vx+bola.vy*bola.vy);
+  }
+
+  function actualizarHistorial(){
+    const el=document.getElementById("pong-hist-txt");
+    if(el) el.textContent="Victorias "+wins+" / Derrotas "+losses;
+  }
+  actualizarHistorial();
+
+  function onMouseMove(e){
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    jugador.x=Math.max(0,Math.min(W-jugador.w,mx-jugador.w/2));
+  }
+  function onTouchMove(e){
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const tx=(e.touches[0].clientX-rect.left)*(W/rect.width);
+    jugador.x=Math.max(0,Math.min(W-jugador.w,tx-jugador.w/2));
+  }
+  canvas.addEventListener("mousemove",onMouseMove);
+  canvas.addEventListener("touchmove",onTouchMove,{passive:false});
+
+  function resetBola(dir){
+    bola.x=W/2;bola.y=H/2;
+    bola.vx=(Math.random()>0.5?1:-1)*3.5;
+    bola.vy=dir==="jugador"?4:-4;
+    rebotes=0;
+  }
+
+  function loop(){
+    pongRAF=requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle="#111";ctx.fillRect(0,0,W,H);
+
+    // Línea central con brillo según velocidad
+    const velNorm=Math.min(velocidadActual()/VEL_MAX,1);
+    ctx.setLineDash([8,8]);
+    ctx.strokeStyle=`rgba(${Math.floor(51+velNorm*150)},${Math.floor(200-velNorm*150)},${Math.floor(51)},0.6)`;
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();ctx.setLineDash([]);
+
+    if(!partidaTerminada){
+      bola.x+=bola.vx;bola.y+=bola.vy;
+      if(bola.x-bola.r<0){bola.x=bola.r;bola.vx*=-1;}
+      if(bola.x+bola.r>W){bola.x=W-bola.r;bola.vx*=-1;}
+
+      // IA: velocidad de reacción sube con los rebotes (se hace más difícil también para ella)
+      const iaVel=3.0+rebotes*0.08;
+      const iaCentro=ia.x+ia.w/2;
+      const diff=bola.x-iaCentro;
+      ia.x+=Math.sign(diff)*Math.min(Math.abs(diff),iaVel);
+      ia.x=Math.max(0,Math.min(W-ia.w,ia.x));
+
+      // Rebote en jugador — +aceleración
+      if(bola.y+bola.r>=jugador.y&&bola.y-bola.r<=jugador.y+jugador.h&&bola.x>=jugador.x&&bola.x<=jugador.x+jugador.w){
+        rebotes++;
+        const accel=Math.min(0.35*rebotes,VEL_MAX-Math.abs(bola.vy));
+        bola.vy=-(Math.abs(bola.vy)+accel);
+        bola.vx+=(bola.x-(jugador.x+jugador.w/2))*0.12;
+        // Limitar velocidad máxima
+        const speed=velocidadActual();
+        if(speed>VEL_MAX){bola.vx*=VEL_MAX/speed;bola.vy*=VEL_MAX/speed;}
+        bola.y=jugador.y-bola.r;
+      }
+      // Rebote en IA — +aceleración
+      if(bola.y-bola.r<=ia.y+ia.h&&bola.y+bola.r>=ia.y&&bola.x>=ia.x&&bola.x<=ia.x+ia.w){
+        rebotes++;
+        const accel=Math.min(0.35*rebotes,VEL_MAX-Math.abs(bola.vy));
+        bola.vy=Math.abs(bola.vy)+accel;
+        bola.vx+=(bola.x-(ia.x+ia.w/2))*0.12;
+        const speed=velocidadActual();
+        if(speed>VEL_MAX){bola.vx*=VEL_MAX/speed;bola.vy*=VEL_MAX/speed;}
+        bola.y=ia.y+ia.h+bola.r;
+      }
+
+      if(bola.y-bola.r<0){scoreJugador++;resetBola("ia");}
+      if(bola.y+bola.r>H){scoreIA++;resetBola("jugador");}
+
+      if(scoreJugador>=PUNTOS_VICTORIA){
+        partidaTerminada=true;msgFinal="🎉 ¡Has ganado!";
+        wins++;localStorage.setItem(PONG_WINS_KEY,wins);actualizarHistorial();
+      }
+      if(scoreIA>=PUNTOS_VICTORIA){
+        partidaTerminada=true;msgFinal="😅 Ha ganado la IA";
+        losses++;localStorage.setItem(PONG_LOSSES_KEY,losses);actualizarHistorial();
+      }
+    }
+
+    // Estela de la bola según velocidad
+    const vel=velocidadActual();
+    if(vel>6){
+      const alpha=Math.min((vel-6)/6,0.5);
+      ctx.fillStyle=`rgba(255,255,100,${alpha})`;
+      ctx.beginPath();ctx.arc(bola.x-bola.vx*2,bola.y-bola.vy*2,bola.r*0.6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=`rgba(255,200,50,${alpha*0.5})`;
+      ctx.beginPath();ctx.arc(bola.x-bola.vx*4,bola.y-bola.vy*4,bola.r*0.35,0,Math.PI*2);ctx.fill();
+    }
+
+    // Bola (color según velocidad)
+    const r=Math.min(255,Math.floor(200+vel*8));
+    const g=Math.max(100,Math.floor(255-vel*15));
+    ctx.fillStyle=`rgb(${r},${g},100)`;
+    ctx.beginPath();ctx.arc(bola.x,bola.y,bola.r,0,Math.PI*2);ctx.fill();
+
+    ctx.fillStyle="#3498db";ctx.beginPath();ctx.roundRect(jugador.x,jugador.y,jugador.w,jugador.h,5);ctx.fill();
+    ctx.fillStyle="#e74c3c";ctx.beginPath();ctx.roundRect(ia.x,ia.y,ia.w,ia.h,5);ctx.fill();
+
+    ctx.fillStyle="#fff";ctx.font="bold 22px Arial";ctx.textAlign="center";
+    ctx.fillText(scoreJugador,W/2,H-8);ctx.fillText(scoreIA,W/2,H/2-8);ctx.textAlign="left";
+    ctx.fillStyle="#3498db";ctx.font="12px Arial";ctx.fillText("TÚ",8,H-8);
+    ctx.fillStyle="#e74c3c";ctx.fillText("IA",8,26);
+
+    // Indicador de velocidad/rebotes
+    if(rebotes>0){
+      ctx.fillStyle="rgba(255,255,100,0.7)";ctx.font="11px Arial";ctx.textAlign="right";
+      ctx.fillText("x"+rebotes+" rebotes 🔥",W-6,H/2-16);ctx.textAlign="left";
+    }
+
+    document.getElementById("pong-score-txt").innerHTML=
+      "Tú: "+scoreJugador+" — IA: "+scoreIA+" | Historial: <span id='pong-hist-txt'>Victorias "+wins+" / Derrotas "+losses+"</span>";
+
+    if(partidaTerminada){
+      ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
+      ctx.fillText(msgFinal,W/2,H/2-20);
+      ctx.font="15px Arial";ctx.fillStyle="#2ecc71";ctx.fillText("Toca para jugar otra partida",W/2,H/2+20);ctx.textAlign="left";
+      canvas.removeEventListener("mousemove",onMouseMove);canvas.removeEventListener("touchmove",onTouchMove);
+      canvas.addEventListener("click",()=>iniciarPong(),{once:true});
+      canvas.addEventListener("touchstart",()=>iniciarPong(),{once:true});
+    }
+  }
+  loop();
+}
+</script>
+ 
+</body>
+</html>
