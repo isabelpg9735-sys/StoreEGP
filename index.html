@@ -378,24 +378,19 @@ footer a:hover{text-decoration:underline}
 const productos=[
  {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
  {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógele el teléfono va"},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
  {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat"},
  {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"Te has bebido unas copitas de más, eh"},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
  {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAA"},
- {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con menos panza"},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
  {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La razón la tengo yo crack"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La camiseta perfecta si siempre la tienes"},
  {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
- {n:"Señor Pedrito",p:14,img:"camiseta-pedrito.jpg",d:"Perfecta para una cena familiar"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Para entender la historia de Five Nights at Freddy's..."},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal campeón"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"Todos deberiamos ser como Bender"},
- {n:"Milfo",p:15,img:"figura-milfo.png",d:"Directo del tito Nil"},
- {n:"Mini Milfo",p:7,img:"figura-milfito.jpg",d:"Este viene con bebida",oferta:"<span class='oferta'><del>12€</del> <b style='color:red'>OFERTA 7€</b></span>"},},
- {n:"Milfo Lunar",p:17,img:"figura-milfolunar.jpg",d:"Llegó a la luna antes que EEUU"},
- {n:"AleaMilfo",p:10,img:"figura-milfoaleatorio.png",d:"Agotadisimo"},
- {n:"MilfiAlfombra",p:21,img:"figura-milfialfombra.png",d:"La compraría pero no la pisaría"}
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso muy triste)"},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal"},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
 ];
  
 const carrito={};
@@ -604,13 +599,24 @@ function iniciarDino(){
   const W=canvas.width,H=canvas.height;
   const SUELO=H-50;
   let record=parseInt(localStorage.getItem(DINO_RECORD_KEY)||"0");
-  let dino={x:55,y:SUELO,w:40,h:52,vy:0,enSuelo:true};
+  let recordMundial=0;
+  let dino={x:55,y:SUELO,w:38,h:56,vy:0,enSuelo:true};
   let obstaculos=[],nubes=[],pajaros=[],puntos=0,velocidad=4,frame=0,vivo=true,esperandoReinicio=false;
   const GRAVEDAD=0.65,SALTO=-13;
 
-  // Nubes solo en zona alta
+  // Cargar récord mundial compartido
+  async function cargarRecordMundial(){
+    try{
+      const r=await window.storage.get('dino_record_mundial',true);
+      if(r) recordMundial=parseInt(r.value)||0;
+    }catch(e){recordMundial=0;}
+  }
+  async function guardarRecordMundial(pts){
+    try{await window.storage.set('dino_record_mundial',String(pts),true);}catch(e){}
+  }
+  cargarRecordMundial();
+
   for(let i=0;i<5;i++) nubes.push({x:Math.random()*W,y:15+Math.random()*70,w:55+Math.random()*45,vel:0.25+Math.random()*0.3});
-  // Pájaros decorativos — solo en zona muy alta del cielo (y≤80), nunca matan
   for(let i=0;i<3;i++) pajaros.push({x:Math.random()*W,y:15+Math.random()*60,alas:Math.random(),vel:0.6+Math.random()*0.7,tam:0.7+Math.random()*0.5});
 
   function saltar(){
@@ -629,134 +635,182 @@ function iniciarDino(){
   document.addEventListener("keydown",onKey);
   canvas.addEventListener("touchstart",onTouch,{passive:false});
 
-  function dibujarDino(){
-    const af=Math.floor(Date.now()/115)%2;
-    const colorBase=vivo?"#2e7d32":"#c00";
-    const colorVientre=vivo?"#66bb6a":"#e57373";
-    const colorOscuro=vivo?"#1b5e20":"#b71c1c";
+  function dibujarPersonaje(){
+    const x=dino.x, y=dino.y, w=dino.w, h=dino.h;
+    const cx=x+w/2; // centro horizontal
+    const af=Math.floor(Date.now()/130)%2;
+    const muerto=!vivo;
 
-    // Sombra suave en el suelo
+    // SOMBRA
     if(dino.enSuelo){
-      ctx.fillStyle="rgba(0,0,0,0.12)";
-      ctx.beginPath();ctx.ellipse(dino.x+dino.w/2,SUELO+dino.h+2,dino.w/2,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(0,0,0,0.13)";
+      ctx.beginPath();ctx.ellipse(cx,SUELO+h+3,w/2+6,5,0,0,Math.PI*2);ctx.fill();
     }
 
-    // Cola triangular con curva
-    ctx.fillStyle=colorBase;
-    ctx.beginPath();
-    ctx.moveTo(dino.x+6,dino.y+dino.h-16);
-    ctx.lineTo(dino.x-16,dino.y+dino.h-8);
-    ctx.lineTo(dino.x-10,dino.y+dino.h-30);
-    ctx.closePath();ctx.fill();
-    // Detalle cola
-    ctx.fillStyle=colorOscuro;
-    ctx.beginPath();
-    ctx.moveTo(dino.x+2,dino.y+dino.h-18);
-    ctx.lineTo(dino.x-10,dino.y+dino.h-10);
-    ctx.lineTo(dino.x-6,dino.y+dino.h-26);
-    ctx.closePath();ctx.fill();
+    // ---- ZAPATOS (de frente, dos zapatos lado a lado) ----
+    const sy=y+h; // y base zapatos
+    const zapatoW=16, zapatoH=10;
+    // Zapato izquierdo
+    const lx=cx-zapatoW-2;
+    // Zapato derecho
+    const rx=cx+2;
 
-    // Cuerpo principal
-    ctx.fillStyle=colorBase;
-    ctx.beginPath();ctx.roundRect(dino.x,dino.y+6,dino.w,dino.h-16,12);ctx.fill();
+    // Animación correr de frente: zapatos se alternan arriba/abajo
+    const offsetL=af===0?-3:0;
+    const offsetR=af===0?0:-3;
 
-    // Vientre (parte delantera más clara)
-    ctx.fillStyle=colorVientre;
-    ctx.beginPath();ctx.roundRect(dino.x+7,dino.y+14,dino.w-18,dino.h-28,8);ctx.fill();
-
-    // Líneas de escamas en el cuerpo
-    ctx.strokeStyle=colorOscuro;ctx.lineWidth=0.8;ctx.globalAlpha=0.4;
-    for(let s=0;s<3;s++){
-      ctx.beginPath();
-      ctx.moveTo(dino.x+dino.w-4,dino.y+12+s*10);
-      ctx.lineTo(dino.x+dino.w+2,dino.y+18+s*10);
-      ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-
-    // Cabeza
-    ctx.fillStyle=colorBase;
-    ctx.beginPath();ctx.roundRect(dino.x+dino.w-10,dino.y-18,26,24,8);ctx.fill();
-
-    // Cresta en la cabeza
-    ctx.fillStyle=colorOscuro;
-    ctx.beginPath();
-    ctx.moveTo(dino.x+dino.w-4,dino.y-18);
-    ctx.lineTo(dino.x+dino.w,dino.y-26);
-    ctx.lineTo(dino.x+dino.w+5,dino.y-18);
-    ctx.closePath();ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(dino.x+dino.w+4,dino.y-18);
-    ctx.lineTo(dino.x+dino.w+8,dino.y-24);
-    ctx.lineTo(dino.x+dino.w+12,dino.y-18);
-    ctx.closePath();ctx.fill();
-
-    // Hocico
-    ctx.fillStyle=colorOscuro;
-    ctx.beginPath();ctx.roundRect(dino.x+dino.w+10,dino.y-11,12,9,3);ctx.fill();
-    // Fosa nasal
-    ctx.fillStyle=colorBase;
-    ctx.beginPath();ctx.arc(dino.x+dino.w+18,dino.y-8,1.5,0,Math.PI*2);ctx.fill();
-
-    // Ojo — esclerótica
+    // Suela blanca
     ctx.fillStyle="#fff";
-    ctx.beginPath();ctx.arc(dino.x+dino.w+4,dino.y-10,6,0,Math.PI*2);ctx.fill();
-    // Iris verde
-    ctx.fillStyle=vivo?"#00c853":"#f44336";
-    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,4,0,Math.PI*2);ctx.fill();
-    // Pupila
-    ctx.fillStyle="#000";
-    ctx.beginPath();ctx.arc(dino.x+dino.w+5,dino.y-10,2,0,Math.PI*2);ctx.fill();
-    // Brillo
-    ctx.fillStyle="#fff";
-    ctx.beginPath();ctx.arc(dino.x+dino.w+6,dino.y-12,1.2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.roundRect(lx-2,sy+offsetL+zapatoH-3,zapatoW+4,5,3);ctx.fill();
+    ctx.beginPath();ctx.roundRect(rx-2,sy+offsetR+zapatoH-3,zapatoW+4,5,3);ctx.fill();
+    // Zapato rojo
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.roundRect(lx,sy+offsetL,zapatoW,zapatoH,4);ctx.fill();
+    ctx.beginPath();ctx.roundRect(rx,sy+offsetR,zapatoW,zapatoH,4);ctx.fill();
+    // Detalle oscuro zapato
+    ctx.fillStyle="#b71c1c";
+    ctx.beginPath();ctx.roundRect(lx,sy+offsetL,zapatoW,4,{upperLeft:4,upperRight:4});ctx.fill();
+    ctx.beginPath();ctx.roundRect(rx,sy+offsetR,zapatoW,4,{upperLeft:4,upperRight:4});ctx.fill();
+    // Cordón
+    ctx.fillStyle="#fff";ctx.font="bold 4px Arial";
+    ctx.fillRect(lx+5,sy+offsetL+2,6,1);
+    ctx.fillRect(rx+5,sy+offsetR+2,6,1);
 
-    // Bracito
-    ctx.fillStyle=colorBase;
-    ctx.beginPath();ctx.roundRect(dino.x+dino.w-4,dino.y+10,12,7,4);ctx.fill();
-    ctx.fillStyle=colorOscuro;
-    ctx.beginPath();
-    ctx.moveTo(dino.x+dino.w+6,dino.y+16);
-    ctx.lineTo(dino.x+dino.w+10,dino.y+20);
-    ctx.lineTo(dino.x+dino.w+8,dino.y+22);
-    ctx.stroke();
+    // ---- CUERPO VASO (cilindro rojo-blanco-rojo de frente) ----
+    const bodyTop=sy-h+10;
+    const bodyH=h-20;
 
-    // Patas animadas con dedos
-    ctx.fillStyle=colorBase;
-    if(dino.enSuelo&&vivo){
-      if(af===0){
-        // Pata delantera abajo
-        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-14,14,16,4);ctx.fill();
-        ctx.fillStyle=colorOscuro;
-        ctx.beginPath();ctx.roundRect(dino.x+18,dino.y+dino.h+1,5,4,2);ctx.fill();
-        ctx.beginPath();ctx.roundRect(dino.x+24,dino.y+dino.h+1,5,4,2);ctx.fill();
-        ctx.beginPath();ctx.roundRect(dino.x+30,dino.y+dino.h+1,5,4,2);ctx.fill();
-        // Pata trasera arriba (paso)
-        ctx.fillStyle=colorBase;
-        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-20,13,8,4);ctx.fill();
-      } else {
-        // Pata trasera abajo
-        ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-14,14,16,4);ctx.fill();
-        ctx.fillStyle=colorOscuro;
-        ctx.beginPath();ctx.roundRect(dino.x+2,dino.y+dino.h+1,5,4,2);ctx.fill();
-        ctx.beginPath();ctx.roundRect(dino.x+8,dino.y+dino.h+1,5,4,2);ctx.fill();
-        ctx.beginPath();ctx.roundRect(dino.x+14,dino.y+dino.h+1,5,4,2);ctx.fill();
-        // Pata delantera arriba
-        ctx.fillStyle=colorBase;
-        ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-20,13,8,4);ctx.fill();
-      }
+    // Franja roja inferior
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.roundRect(cx-w/2,bodyTop+bodyH*0.55,w,bodyH*0.45,{lowerLeft:8,lowerRight:8});ctx.fill();
+
+    // Franja blanca central
+    ctx.fillStyle="#f5f5f5";
+    ctx.fillRect(cx-w/2,bodyTop+bodyH*0.35,w,bodyH*0.22);
+
+    // Franja roja superior
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.roundRect(cx-w/2,bodyTop,w,bodyH*0.37,{upperLeft:8,upperRight:8});ctx.fill();
+
+    // Líneas decorativas horizontales en franjas rojas
+    ctx.strokeStyle="rgba(180,0,0,0.35)";ctx.lineWidth=1;
+    [bodyTop+6,bodyTop+12,bodyTop+bodyH*0.62,bodyTop+bodyH*0.72].forEach(ly=>{
+      ctx.beginPath();ctx.moveTo(cx-w/2+4,ly);ctx.lineTo(cx+w/2-4,ly);ctx.stroke();
+    });
+
+    // Borde del vaso (líneas laterales para dar volumen)
+    ctx.strokeStyle="rgba(0,0,0,0.1)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx-w/2+1,bodyTop);ctx.lineTo(cx-w/2-2,bodyTop+bodyH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+w/2-1,bodyTop);ctx.lineTo(cx+w/2+2,bodyTop+bodyH);ctx.stroke();
+
+    // ---- BRAZOS (blancos, de frente, salen a los lados) ----
+    ctx.strokeStyle="#f0f0f0";ctx.lineWidth=8;ctx.lineCap="round";
+    // Brazo izquierdo
+    const armY=bodyTop+bodyH*0.3;
+    const armLx2=cx-w/2-14;
+    const armLy2=muerto?armY+14:(af===0?armY-8:armY+5);
+    ctx.beginPath();ctx.moveTo(cx-w/2,armY);ctx.lineTo(armLx2,armLy2);ctx.stroke();
+    // Mano izquierda
+    ctx.fillStyle="#ffe0b2";ctx.beginPath();ctx.arc(armLx2,armLy2,7,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#ffcc80";ctx.lineWidth=1;ctx.beginPath();ctx.arc(armLx2,armLy2,7,0,Math.PI*2);ctx.stroke();
+
+    // Brazo derecho
+    const armRx2=cx+w/2+14;
+    const armRy2=muerto?armY+14:(af===0?armY+5:armY-8);
+    ctx.strokeStyle="#f0f0f0";ctx.lineWidth=8;
+    ctx.beginPath();ctx.moveTo(cx+w/2,armY);ctx.lineTo(armRx2,armRy2);ctx.stroke();
+    // Mano derecha
+    ctx.fillStyle="#ffe0b2";ctx.beginPath();ctx.arc(armRx2,armRy2,7,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#ffcc80";ctx.lineWidth=1;ctx.beginPath();ctx.arc(armRx2,armRy2,7,0,Math.PI*2);ctx.stroke();
+
+    // ---- CABEZA (grande, redonda, blanca) ----
+    const headY=bodyTop-22;
+    const headR=w/2+4;
+    // Sombra cabeza
+    ctx.fillStyle="rgba(0,0,0,0.06)";
+    ctx.beginPath();ctx.arc(cx+2,headY+2,headR,0,Math.PI*2);ctx.fill();
+    // Cabeza blanca
+    ctx.fillStyle="#ffffff";
+    ctx.beginPath();ctx.arc(cx,headY,headR,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#eee";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx,headY,headR,0,Math.PI*2);ctx.stroke();
+
+    // Mejillas rosadas
+    ctx.fillStyle="rgba(255,120,120,0.28)";
+    ctx.beginPath();ctx.arc(cx-headR*0.55,headY+6,9,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+headR*0.55,headY+6,9,0,Math.PI*2);ctx.fill();
+
+    if(!muerto){
+      // OJOS grandes negros (característica principal del personaje)
+      // Ojo izquierdo
+      ctx.fillStyle="#111";
+      ctx.beginPath();ctx.arc(cx-10,headY-2,9,0,Math.PI*2);ctx.fill();
+      // Ojo derecho
+      ctx.beginPath();ctx.arc(cx+10,headY-2,9,0,Math.PI*2);ctx.fill();
+      // Brillos ojos
+      ctx.fillStyle="#fff";
+      ctx.beginPath();ctx.arc(cx-7,headY-5,3.5,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(cx+13,headY-5,3.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,0.6)";
+      ctx.beginPath();ctx.arc(cx-12,headY,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(cx+8,headY,2,0,Math.PI*2);ctx.fill();
+      // Boca pequeña sonriente
+      ctx.strokeStyle="#333";ctx.lineWidth=2;ctx.lineCap="round";
+      ctx.beginPath();ctx.arc(cx,headY+10,5,0.3,Math.PI-0.3);ctx.stroke();
     } else {
-      // En el aire — patas extendidas
-      ctx.beginPath();ctx.roundRect(dino.x+4,dino.y+dino.h-12,13,13,4);ctx.fill();
-      ctx.beginPath();ctx.roundRect(dino.x+20,dino.y+dino.h-12,13,13,4);ctx.fill();
+      // Ojos X
+      ctx.strokeStyle="#111";ctx.lineWidth=3;ctx.lineCap="round";
+      [cx-10,cx+10].forEach(ox=>{
+        ctx.beginPath();ctx.moveTo(ox-5,headY-7);ctx.lineTo(ox+5,headY+3);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(ox+5,headY-7);ctx.lineTo(ox-5,headY+3);ctx.stroke();
+      });
+      // Boca triste
+      ctx.strokeStyle="#333";ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(cx,headY+14,5,Math.PI+0.3,-0.3);ctx.stroke();
     }
+
+    // ---- GORRO AZUL (plano, con franjas) ----
+    const gorroBaseY=headY-headR+4;
+    // Ala del gorro
+    ctx.fillStyle="#1565c0";
+    ctx.beginPath();ctx.roundRect(cx-headR-2,gorroBaseY-4,headR*2+4,7,4);ctx.fill();
+    // Cuerpo gorro
+    ctx.fillStyle="#1e88e5";
+    ctx.beginPath();ctx.roundRect(cx-headR+4,gorroBaseY-22,headR*2-8,20,5);ctx.fill();
+    // Franja blanca gorro
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.roundRect(cx-headR+4,gorroBaseY-14,headR*2-8,5,0);ctx.fill();
+    // Franja roja gorro
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.roundRect(cx-headR+4,gorroBaseY-14,headR*2-8,2.5,0);ctx.fill();
+    // Pompón blanco
+    ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.arc(cx,gorroBaseY-22,5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#ddd";ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,gorroBaseY-22,5,0,Math.PI*2);ctx.stroke();
+
+    // ---- PAJITA roja a rayas blancas (sale del vaso, curvada) ----
+    ctx.save();
+    ctx.strokeStyle="#e53935";ctx.lineWidth=4;ctx.lineCap="round";
+    ctx.beginPath();
+    ctx.moveTo(cx+w/2-4,bodyTop+4);
+    ctx.quadraticCurveTo(cx+w/2+10,bodyTop-10,cx+w/2+6,gorroBaseY-8);
+    ctx.stroke();
+    // Rayas blancas pajita
+    ctx.strokeStyle="#fff";ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+    ctx.beginPath();
+    ctx.moveTo(cx+w/2-4,bodyTop+4);
+    ctx.quadraticCurveTo(cx+w/2+10,bodyTop-10,cx+w/2+6,gorroBaseY-8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
   }
 
   function loop(){
     dinoRAF=requestAnimationFrame(loop);
     ctx.clearRect(0,0,W,H);
 
-    // Cielo con color dinámico según puntos
+    // Cielo
     const prog=Math.min(puntos/1800,1);
     const grad=ctx.createLinearGradient(0,0,0,H);
     grad.addColorStop(0,`hsl(${210-prog*30},${62-prog*20}%,${74-prog*22}%)`);
@@ -764,55 +818,51 @@ function iniciarDino(){
     grad.addColorStop(1,"#c8c8c8");
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 
-    // Sol decorativo en esquina
-    ctx.save();
-    ctx.globalAlpha=0.25;
+    // Sol
+    ctx.save();ctx.globalAlpha=0.22;
     const gSol=ctx.createRadialGradient(W-40,30,2,W-40,30,40);
     gSol.addColorStop(0,"#ffe066");gSol.addColorStop(1,"rgba(255,220,50,0)");
     ctx.fillStyle=gSol;ctx.beginPath();ctx.arc(W-40,30,40,0,Math.PI*2);ctx.fill();
     ctx.globalAlpha=1;ctx.restore();
 
-    // Nubes — solo zona alta
+    // Nubes
     nubes.forEach(n=>{
       ctx.fillStyle="rgba(255,255,255,0.92)";
       ctx.beginPath();ctx.ellipse(n.x,n.y,n.w/2,13,0,0,Math.PI*2);ctx.fill();
       ctx.beginPath();ctx.ellipse(n.x-13,n.y+5,n.w/3,9,0,0,Math.PI*2);ctx.fill();
       ctx.beginPath();ctx.ellipse(n.x+15,n.y+5,n.w/3.5,8,0,0,Math.PI*2);ctx.fill();
-      // Sombra nube
-      ctx.fillStyle="rgba(180,200,220,0.3)";
-      ctx.beginPath();ctx.ellipse(n.x,n.y+14,n.w/2-4,5,0,0,Math.PI*2);ctx.fill();
       n.x-=n.vel*(velocidad/4);
       if(n.x<-100)n.x=W+100;
     });
 
-    // Pájaros DECORATIVOS — zona alta del cielo (y máx 80px), nunca interfieren con el juego
+    // Pájaros decorativos zona alta
     pajaros.forEach(p=>{
       const batida=Math.sin(p.alas*Math.PI*2)*5*p.tam;
       const t=p.tam;
-      ctx.strokeStyle=`rgba(50,50,60,0.65)`;ctx.lineWidth=1.5*t;
+      ctx.strokeStyle="rgba(50,50,60,0.6)";ctx.lineWidth=1.5*t;
       ctx.beginPath();ctx.moveTo(p.x,p.y+5*t);ctx.quadraticCurveTo(p.x+7*t,p.y+batida,p.x+14*t,p.y+5*t);ctx.stroke();
       ctx.beginPath();ctx.moveTo(p.x+14*t,p.y+5*t);ctx.quadraticCurveTo(p.x+21*t,p.y+batida,p.x+28*t,p.y+5*t);ctx.stroke();
-      ctx.fillStyle="rgba(50,50,60,0.7)";
+      ctx.fillStyle="rgba(50,50,60,0.65)";
       ctx.beginPath();ctx.ellipse(p.x+14*t,p.y+6*t,4*t,2.5*t,0,0,Math.PI*2);ctx.fill();
       p.x-=p.vel;p.alas=(p.alas+0.1)%1;
       if(p.x<-40)p.x=W+40;
     });
 
-    // Montañas de fondo (decorativas)
-    ctx.globalAlpha=0.12;
-    ctx.fillStyle="#5577aa";
+    // Montañas fondo
+    ctx.globalAlpha=0.1;ctx.fillStyle="#5577aa";
     [[0,180,100],[80,160,120],[180,170,90],[260,155,110]].forEach(([mx,my,mw])=>{
       ctx.beginPath();ctx.moveTo(mx-mw,SUELO+dino.h);ctx.lineTo(mx,my);ctx.lineTo(mx+mw,SUELO+dino.h);ctx.fill();
     });
     ctx.globalAlpha=1;
 
-    // Suelo con textura
-    ctx.fillStyle="#6d6d6d";ctx.fillRect(0,SUELO+dino.h,W,3);
-    ctx.fillStyle="#b5b5b5";ctx.fillRect(0,SUELO+dino.h+3,W,H);
-    // Guijarros animados
-    for(let lx=(-frame*velocidad*0.5)%48;lx<W;lx+=48){
-      ctx.fillStyle="#9e9e9e";ctx.fillRect(lx,SUELO+dino.h+3,24,2);
-      ctx.fillStyle="#c0c0c0";ctx.beginPath();ctx.ellipse(lx+36,SUELO+dino.h+7,4,3,0,0,Math.PI*2);ctx.fill();
+    // Carretera (suelo más urbano para los coches)
+    ctx.fillStyle="#555";ctx.fillRect(0,SUELO+dino.h,W,3);
+    ctx.fillStyle="#999";ctx.fillRect(0,SUELO+dino.h+3,W,H);
+    // Líneas de carretera
+    for(let lx=(-frame*velocidad*0.5)%60;lx<W;lx+=60){
+      ctx.fillStyle="#bbb";ctx.fillRect(lx,SUELO+dino.h+3,30,3);
+      // Bordillo
+      ctx.fillStyle="#777";ctx.fillRect(lx,SUELO+dino.h+8,8,4);
     }
 
     if(vivo){
@@ -823,17 +873,23 @@ function iniciarDino(){
 
       const intervalo=Math.max(40,85-Math.floor(puntos/150));
       if(frame%intervalo===0){
-        const h=28+Math.random()*45,w=18+Math.random()*18;
-        obstaculos.push({x:W,y:SUELO+dino.h-h,w,h});
-        if(puntos>400&&Math.random()<0.3)
-          obstaculos.push({x:W+w+14,y:SUELO+dino.h-h*0.8,w:w*0.75,h:h*0.8});
+        const tipos=['sedan','furgoneta','deportivo','camioneta'];
+        const tipo=tipos[Math.floor(Math.random()*tipos.length)];
+        const colores=['#e53935','#1e88e5','#fdd835','#43a047','#fb8c00','#8e24aa','#00acc1','#f06292','#ff7043','#546e7a'];
+        const color=colores[Math.floor(Math.random()*colores.length)];
+        let cw,ch;
+        if(tipo==='sedan'){cw=52;ch=28;}
+        else if(tipo==='furgoneta'){cw=62;ch=36;}
+        else if(tipo==='deportivo'){cw=58;ch=22;}
+        else{cw=68;ch=32;}
+        obstaculos.push({x:W,y:SUELO+dino.h-ch,w:cw,h:ch,tipo,color});
       }
 
       obstaculos.forEach(o=>{o.x-=velocidad;});
-      obstaculos=obstaculos.filter(o=>o.x>-60);
+      obstaculos=obstaculos.filter(o=>o.x>-80);
       puntos++;
 
-      const m=9;
+      const m=10;
       obstaculos.forEach(o=>{
         if(dino.x+m<o.x+o.w&&dino.x+dino.w-m>o.x&&dino.y+m<o.y+o.h&&dino.y+dino.h-m>o.y){
           vivo=false;setTimeout(()=>{esperandoReinicio=true;},700);
@@ -841,47 +897,92 @@ function iniciarDino(){
       });
     }
 
-    // Cactus con más detalle
+    // Coches
     obstaculos.forEach(o=>{
-      // Sombra cactus
-      ctx.fillStyle="rgba(0,0,0,0.1)";
-      ctx.beginPath();ctx.ellipse(o.x+o.w/2,SUELO+dino.h+1,o.w/2+3,4,0,0,Math.PI*2);ctx.fill();
-      // Tronco
-      const cg=ctx.createLinearGradient(o.x,0,o.x+o.w,0);
-      cg.addColorStop(0,"#2e7d32");cg.addColorStop(0.5,"#43a047");cg.addColorStop(1,"#2e7d32");
-      ctx.fillStyle=cg;
-      ctx.beginPath();ctx.roundRect(o.x,o.y,o.w,o.h,3);ctx.fill();
-      // Brazos
-      ctx.fillStyle="#388e3c";
-      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.22,9,8,3);ctx.fill();
-      ctx.beginPath();ctx.roundRect(o.x-9,o.y+o.h*0.12,4,o.h*0.14,2);ctx.fill();
-      ctx.beginPath();ctx.roundRect(o.x+o.w,o.y+o.h*0.38,9,8,3);ctx.fill();
-      ctx.beginPath();ctx.roundRect(o.x+o.w+5,o.y+o.h*0.28,4,o.h*0.14,2);ctx.fill();
-      // Líneas textura
-      ctx.strokeStyle="#1b5e20";ctx.lineWidth=0.8;ctx.globalAlpha=0.5;
-      for(let ly=o.y+8;ly<o.y+o.h-8;ly+=8){
-        ctx.beginPath();ctx.moveTo(o.x+2,ly);ctx.lineTo(o.x+o.w-2,ly+3);ctx.stroke();
+      const x=o.x,y=o.y,w=o.w,h=o.h,c=o.color,t=o.tipo;
+      ctx.fillStyle="rgba(0,0,0,0.15)";
+      ctx.beginPath();ctx.ellipse(x+w/2,SUELO+dino.h+2,w/2,5,0,0,Math.PI*2);ctx.fill();
+
+      if(t==='sedan'){
+        ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y+10,w,h-10,4);ctx.fill();
+        ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x+8,y,w-16,14,6);ctx.fill();
+        ctx.fillStyle="rgba(180,230,255,0.8)";
+        ctx.beginPath();ctx.roundRect(x+w-18,y+1,12,12,3);ctx.fill();
+        ctx.beginPath();ctx.roundRect(x+6,y+1,12,12,3);ctx.fill();
+        [x+8,x+w-14].forEach(rx=>{
+          ctx.fillStyle="#222";ctx.beginPath();ctx.arc(rx,y+h,9,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#aaa";ctx.beginPath();ctx.arc(rx,y+h,5,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#666";ctx.beginPath();ctx.arc(rx,y+h,2,0,Math.PI*2);ctx.fill();
+        });
+        ctx.fillStyle="#ffe082";ctx.beginPath();ctx.roundRect(x+w-4,y+12,5,6,2);ctx.fill();
+        ctx.fillStyle="#ef5350";ctx.beginPath();ctx.roundRect(x-1,y+12,4,6,2);ctx.fill();
+
+      }else if(t==='furgoneta'){
+        ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y,w,h,5);ctx.fill();
+        ctx.fillStyle="rgba(180,230,255,0.75)";
+        ctx.beginPath();ctx.roundRect(x+6,y+4,w-28,h-16,3);ctx.fill();
+        ctx.fillStyle="rgba(180,230,255,0.85)";
+        ctx.beginPath();ctx.roundRect(x+w-20,y+4,14,h-16,3);ctx.fill();
+        [x+10,x+w-14].forEach(rx=>{
+          ctx.fillStyle="#222";ctx.beginPath();ctx.arc(rx,y+h,10,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#aaa";ctx.beginPath();ctx.arc(rx,y+h,5,0,Math.PI*2);ctx.fill();
+        });
+        ctx.fillStyle="#ffe082";ctx.beginPath();ctx.roundRect(x+w-3,y+8,5,8,2);ctx.fill();
+        ctx.fillStyle="#ef5350";ctx.beginPath();ctx.roundRect(x-2,y+8,4,8,2);ctx.fill();
+
+      }else if(t==='deportivo'){
+        ctx.fillStyle=c;
+        ctx.beginPath();ctx.moveTo(x,y+h);ctx.lineTo(x+6,y+8);ctx.lineTo(x+16,y+2);
+        ctx.lineTo(x+w-10,y+2);ctx.lineTo(x+w,y+8);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();
+        ctx.fillStyle="rgba(180,230,255,0.8)";
+        ctx.beginPath();ctx.moveTo(x+w-22,y+3);ctx.lineTo(x+w-8,y+3);ctx.lineTo(x+w-4,y+10);ctx.lineTo(x+w-20,y+10);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(x+10,y+3);ctx.lineTo(x+22,y+3);ctx.lineTo(x+20,y+10);ctx.lineTo(x+8,y+10);ctx.closePath();ctx.fill();
+        [x+10,x+w-12].forEach(rx=>{
+          ctx.fillStyle="#222";ctx.beginPath();ctx.arc(rx,y+h,8,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#aaa";ctx.beginPath();ctx.arc(rx,y+h,4,0,Math.PI*2);ctx.fill();
+        });
+        ctx.fillStyle="#ffe082";ctx.beginPath();ctx.roundRect(x+w-2,y+6,4,5,1);ctx.fill();
+        ctx.fillStyle="#ef5350";ctx.beginPath();ctx.roundRect(x-2,y+6,4,5,1);ctx.fill();
+
+      }else{
+        ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x+w-28,y,28,h,5);ctx.fill();
+        ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y+8,w-24,h-8,3);ctx.fill();
+        ctx.fillStyle="rgba(0,0,0,0.2)";ctx.beginPath();ctx.roundRect(x+2,y+10,w-28,h-14,2);ctx.fill();
+        ctx.fillStyle="rgba(180,230,255,0.85)";ctx.beginPath();ctx.roundRect(x+w-24,y+4,16,h-18,3);ctx.fill();
+        [x+10,x+w-20,x+w-10].forEach(rx=>{
+          ctx.fillStyle="#222";ctx.beginPath();ctx.arc(rx,y+h,9,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#aaa";ctx.beginPath();ctx.arc(rx,y+h,4,0,Math.PI*2);ctx.fill();
+        });
+        ctx.fillStyle="#ffe082";ctx.beginPath();ctx.roundRect(x+w-2,y+8,4,7,2);ctx.fill();
+        ctx.fillStyle="#ef5350";ctx.beginPath();ctx.roundRect(x-2,y+14,4,6,2);ctx.fill();
       }
-      ctx.globalAlpha=1;
     });
 
-    // Dino
-    dibujarDino();
+    // Personaje
+    dibujarPersonaje();
 
-    // Puntuación
-    ctx.fillStyle="rgba(0,0,0,0.2)";ctx.font="bold 13px monospace";ctx.textAlign="right";
-    ctx.fillText("PTS "+String(puntos).padStart(5,"0"),W-8,20);ctx.textAlign="left";
+    // Puntuación + récord mundial en esquina
+    ctx.fillStyle="rgba(0,0,0,0.18)";ctx.font="bold 12px monospace";ctx.textAlign="right";
+    ctx.fillText("PTS "+String(puntos).padStart(5,"0"),W-6,18);
+    ctx.fillStyle="rgba(180,120,0,0.7)";ctx.font="11px monospace";
+    ctx.fillText("🌍 "+String(recordMundial).padStart(5,"0"),W-6,32);
+    ctx.textAlign="left";
 
+    // Actualizar récords
     if(puntos>record){record=puntos;localStorage.setItem(DINO_RECORD_KEY,record);}
-    document.getElementById("dino-score-txt").textContent="Puntuación: "+puntos+" | Récord: "+record;
+    if(puntos>recordMundial){recordMundial=puntos;guardarRecordMundial(puntos);}
+    document.getElementById("dino-score-txt").textContent="Puntuación: "+puntos+" | 🏠 "+record+" | 🌍 "+recordMundial;
 
     if(!vivo){
-      ctx.fillStyle="rgba(0,0,0,0.52)";ctx.fillRect(0,0,W,H);
-      ctx.fillStyle="#fff";ctx.font="bold 26px Arial";ctx.textAlign="center";
-      ctx.fillText("💀 Game Over",W/2,H/2-28);
-      ctx.font="15px Arial";ctx.fillText("Puntuación: "+puntos,W/2,H/2+2);
-      if(puntos===record&&puntos>0){ctx.fillStyle="#ffd700";ctx.font="bold 15px Arial";ctx.fillText("🏆 ¡Nuevo récord!",W/2,H/2+26);}
-      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 13px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+55);}
+      ctx.fillStyle="rgba(0,0,0,0.55)";ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";ctx.font="bold 24px Arial";ctx.textAlign="center";
+      ctx.fillText("💀 Game Over",W/2,H/2-40);
+      ctx.font="14px Arial";
+      ctx.fillStyle="#fff";ctx.fillText("Tu puntuación: "+puntos,W/2,H/2-10);
+      ctx.fillStyle="#aef";ctx.fillText("🏠 Tu récord: "+record,W/2,H/2+14);
+      ctx.fillStyle="#ffd700";ctx.fillText("🌍 Récord mundial: "+recordMundial,W/2,H/2+36);
+      if(puntos>=recordMundial&&puntos>0){ctx.fillStyle="#ffd700";ctx.font="bold 14px Arial";ctx.fillText("🏆 ¡Eres el mejor del mundo!",W/2,H/2+58);}
+      if(esperandoReinicio){ctx.fillStyle="#2ecc71";ctx.font="bold 13px Arial";ctx.fillText("Pulsa ESPACIO o toca para reiniciar",W/2,H/2+82);}
       ctx.textAlign="left";
     }
   }
