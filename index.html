@@ -400,13 +400,15 @@ function cargar(){
  productos.forEach(pr=>{
   c.innerHTML+=`
   <div class="producto">
-   <img src="${pr.img}">
-   <h3>${pr.n}</h3>
-   <p>${pr.d}</p>
-   <div class="precio">${pr.oferta?pr.oferta:`<b>${pr.p}€</b>`}</div>
-   <div class="acciones">
-    <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-    <button onclick="add('${pr.n}',${pr.p},this)">Añadir</button>
+   <img src="${pr.img}" alt="${pr.n}">
+   <div class="producto-info">
+    <h3>${pr.n}</h3>
+    <p>${pr.d}</p>
+    <div class="precio">${pr.oferta?pr.oferta:`<b style="font-size:16px;color:#1a1a2e">${pr.p}€</b>`}</div>
+    <div class="acciones">
+     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+     <button onclick="add('${pr.n}',${pr.p},this)">🛒 Añadir al carrito</button>
+    </div>
    </div>
   </div>`;
  });
@@ -652,90 +654,151 @@ function iniciarDino(){
 
   function dibujarPersonaje(){
     const x=dino.x, y=dino.y, w=dino.w, h=dino.h;
-    const af=Math.floor(Date.now()/120)%2;
+    const af=Math.floor(Date.now()/110)%2;
     const muerto=!vivo;
     const cx=x+w/2;
+    const baseY=y+h;
 
-    // Sombra
+    // SOMBRA
     if(dino.enSuelo){
-      ctx.fillStyle="rgba(0,0,0,0.15)";
-      ctx.beginPath();ctx.ellipse(cx,SUELO+h+2,14,4,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(0,0,0,0.14)";
+      ctx.beginPath();ctx.ellipse(cx,baseY+2,15,4,0,0,Math.PI*2);ctx.fill();
     }
 
-    // Color piel
-    const skin="#f5c5a3";
-    const skinD="#e8a882";
-    const ropa="#3a3aaa";
-    const ropaClaor="#5555cc";
-    const zapatoC="#222";
+    // ===== ZAPATILLAS =====
+    // Trasera (más oscura, detrás)
+    const ztY=af===0?baseY-4:baseY-8;
+    ctx.fillStyle="#bbb"; // suela
+    ctx.beginPath();ctx.roundRect(cx-21,ztY+4,17,5,2);ctx.fill();
+    ctx.fillStyle="#c62828";
+    ctx.beginPath();ctx.roundRect(cx-20,ztY-4,16,9,4);ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,0.5)";
+    ctx.beginPath();ctx.roundRect(cx-20,ztY-4,5,9,{upperLeft:4,upperRight:0,lowerLeft:4,lowerRight:0});
+    ctx.fillStyle="rgba(255,255,255,0.5)";ctx.fillRect(cx-20,ztY-4,5,9);ctx.fill();
 
-    // === PIERNAS (mirando derecha) ===
+    // Delantera (más grande, derecha)
+    const zdY=af===0?baseY-8:baseY-4;
+    ctx.fillStyle="#ddd"; // suela blanca
+    ctx.beginPath();ctx.roundRect(cx,zdY+5,21,6,3);ctx.fill();
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.roundRect(cx+1,zdY-5,20,12,5);ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,0.6)"; // franja blanca
+    ctx.fillRect(cx+1,zdY-5,6,12);
+    ctx.fillStyle="rgba(255,255,255,0.8)"; // cordones
+    ctx.fillRect(cx+8,zdY-2,10,1.5);ctx.fillRect(cx+8,zdY+1,10,1.5);
+
+    // ===== PIERNAS (forma más natural, no cuadradas) =====
+    ctx.lineCap="round";
     if(af===0){
-      // Pierna delantera adelantada
-      ctx.fillStyle=ropa;ctx.beginPath();ctx.roundRect(cx+2,y+h-22,9,24,3);ctx.fill();
-      // Pierna trasera retrasada
-      ctx.fillStyle=ropaClaor;ctx.beginPath();ctx.roundRect(cx-10,y+h-18,9,18,3);ctx.fill();
-      // Zapato delantero
-      ctx.fillStyle=zapatoC;ctx.beginPath();ctx.roundRect(cx+1,y+h-3,16,7,3);ctx.fill();
-      // Zapato trasero
-      ctx.fillStyle="#333";ctx.beginPath();ctx.roundRect(cx-12,y+h-3,13,6,3);ctx.fill();
+      // Pierna delantera estirada hacia adelante
+      ctx.strokeStyle="#1a237e";ctx.lineWidth=9;
+      ctx.beginPath();ctx.moveTo(cx+6,baseY-22);ctx.lineTo(cx+9,baseY-5);ctx.stroke();
+      // Pierna trasera doblada
+      ctx.strokeStyle="#283593";ctx.lineWidth=8;
+      ctx.beginPath();ctx.moveTo(cx-6,baseY-22);ctx.lineTo(cx-12,baseY-10);ctx.stroke();
     } else {
-      ctx.fillStyle=ropa;ctx.beginPath();ctx.roundRect(cx-10,y+h-22,9,24,3);ctx.fill();
-      ctx.fillStyle=ropaClaor;ctx.beginPath();ctx.roundRect(cx+2,y+h-18,9,18,3);ctx.fill();
-      ctx.fillStyle=zapatoC;ctx.beginPath();ctx.roundRect(cx-12,y+h-3,16,7,3);ctx.fill();
-      ctx.fillStyle="#333";ctx.beginPath();ctx.roundRect(cx+1,y+h-3,13,6,3);ctx.fill();
+      ctx.strokeStyle="#1a237e";ctx.lineWidth=9;
+      ctx.beginPath();ctx.moveTo(cx-6,baseY-22);ctx.lineTo(cx-9,baseY-5);ctx.stroke();
+      ctx.strokeStyle="#283593";ctx.lineWidth=8;
+      ctx.beginPath();ctx.moveTo(cx+6,baseY-22);ctx.lineTo(cx+12,baseY-10);ctx.stroke();
     }
 
-    // === CUERPO ===
-    ctx.fillStyle=ropa;
-    ctx.beginPath();ctx.roundRect(cx-w/2+2,y+h-46,w-4,28,5);ctx.fill();
-    // Línea del cuello
-    ctx.fillStyle=skinD;
-    ctx.beginPath();ctx.roundRect(cx-5,y+h-48,10,6,3);ctx.fill();
+    // ===== CUERPO (ovalado, no cuadrado) =====
+    // Torso ovalado
+    ctx.fillStyle="#e53935";
+    ctx.beginPath();ctx.ellipse(cx,baseY-38,w/2-1,14,0,0,Math.PI*2);ctx.fill();
+    // Línea cuello
+    ctx.fillStyle="#f5c5a3";
+    ctx.beginPath();ctx.roundRect(cx-5,baseY-54,10,8,4);ctx.fill();
 
-    // === BRAZO DELANTERO (hacia los coches, derecha) ===
-    ctx.strokeStyle=ropa;ctx.lineWidth=7;ctx.lineCap="round";
-    const armY=y+h-38;
-    const dAex=cx+w/2+12;
-    const dAey=muerto?armY+12:(af===0?armY-8:armY+6);
-    ctx.beginPath();ctx.moveTo(cx+w/2-2,armY);ctx.lineTo(dAex,dAey);ctx.stroke();
-    // Mano delantera
-    ctx.fillStyle=skin;ctx.beginPath();ctx.arc(dAex,dAey,5,0,Math.PI*2);ctx.fill();
-
-    // === BRAZO TRASERO ===
-    ctx.strokeStyle=ropaClaor;ctx.lineWidth=6;
+    // ===== BRAZO TRASERO =====
+    ctx.strokeStyle="#c62828";ctx.lineWidth=7;ctx.lineCap="round";
+    const armY=baseY-42;
     const bAex=cx-w/2-10;
-    const bAey=muerto?armY+12:(af===0?armY+6:armY-8);
+    const bAey=muerto?armY+14:(af===0?armY+12:armY-10);
     ctx.beginPath();ctx.moveTo(cx-w/2+2,armY);ctx.lineTo(bAex,bAey);ctx.stroke();
-    ctx.fillStyle=skinD;ctx.beginPath();ctx.arc(bAex,bAey,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#e8a882";ctx.beginPath();ctx.arc(bAex,bAey,5,0,Math.PI*2);ctx.fill();
 
-    // === CABEZA (mirando derecha) ===
-    const hCx=cx+4;
-    const hCy=y+h-58;
-    const hR=12;
-    ctx.fillStyle=skin;
-    ctx.beginPath();ctx.arc(hCx,hCy,hR,0,Math.PI*2);ctx.fill();
+    // ===== BRAZO DELANTERO (hacia los coches) =====
+    ctx.strokeStyle="#ef5350";ctx.lineWidth=8;ctx.lineCap="round";
+    const dAex=cx+w/2+14;
+    const dAey=muerto?armY+14:(af===0?armY-12:armY+10);
+    ctx.beginPath();ctx.moveTo(cx+w/2-2,armY);ctx.lineTo(dAex,dAey);ctx.stroke();
+    ctx.fillStyle="#f5c5a3";ctx.beginPath();ctx.arc(dAex,dAey,6,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#e8a882";ctx.lineWidth=1;ctx.beginPath();ctx.arc(dAex,dAey,6,0,Math.PI*2);ctx.stroke();
 
-    // Pelo
-    ctx.fillStyle="#3d2b1f";
-    ctx.beginPath();ctx.arc(hCx,hCy,hR,Math.PI,0);ctx.fill();
-    ctx.beginPath();ctx.roundRect(hCx-hR,hCy-3,hR*2,5,2);ctx.fill();
+    // ===== CABEZA OVALADA (mirando derecha) =====
+    const hCx=cx+5;
+    const hCy=baseY-66;
+    // Cabeza ovalada horizontalmente (más natural que círculo)
+    ctx.fillStyle="#f5c5a3";
+    ctx.beginPath();ctx.ellipse(hCx,hCy,14,13,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#e8a882";ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.ellipse(hCx,hCy,14,13,0,0,Math.PI*2);ctx.stroke();
+
+    // Oreja (visible, lado derecho — hacia los coches)
+    ctx.fillStyle="#f5c5a3";
+    ctx.beginPath();ctx.ellipse(hCx+13,hCy+1,4,6,0.2,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#e8a882";ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.ellipse(hCx+13,hCy+1,4,6,0.2,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle="#e0a070";ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.arc(hCx+13,hCy+1,2,0,Math.PI);ctx.stroke();
+
+    // ===== PELO (ENCIMA de la cabeza, NO tapa el ojo) =====
+    ctx.fillStyle="#2c1810";
+    // Pelo — solo la parte superior de la cabeza
+    ctx.beginPath();
+    ctx.ellipse(hCx-1,hCy-7,13,8,0,Math.PI,0); // semicírculo superior
+    ctx.fill();
+    // Mechón lateral izquierdo
+    ctx.beginPath();ctx.ellipse(hCx-11,hCy-3,5,7,0.4,0,Math.PI*2);ctx.fill();
+    // Flequillo hacia la derecha (no llega al ojo)
+    ctx.beginPath();
+    ctx.moveTo(hCx-4,hCy-4);
+    ctx.quadraticCurveTo(hCx+2,hCy-9,hCx+8,hCy-5);
+    ctx.quadraticCurveTo(hCx+6,hCy-2,hCx+2,hCy-3);
+    ctx.closePath();ctx.fill();
 
     if(!muerto){
-      // Ojo (mirando derecha, un solo ojo visible)
-      ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(hCx+5,hCy+1,4,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#222";ctx.beginPath();ctx.arc(hCx+6,hCy+1,2.5,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(hCx+5,hCy-0.5,1,0,Math.PI*2);ctx.fill();
-      // Nariz
-      ctx.fillStyle=skinD;ctx.beginPath();ctx.arc(hCx+hR-1,hCy+2,2,0,Math.PI*2);ctx.fill();
-      // Boca
-      ctx.strokeStyle="#c0392b";ctx.lineWidth=1.5;ctx.lineCap="round";
-      ctx.beginPath();ctx.arc(hCx+8,hCy+5,3,0.1,Math.PI-0.1);ctx.stroke();
+      // ===== OJO (claramente por ENCIMA del pelo — se dibuja después) =====
+      // Esclerótica
+      ctx.fillStyle="#fff";
+      ctx.beginPath();ctx.ellipse(hCx+5,hCy+2,5,5,0,0,Math.PI*2);ctx.fill();
+      // Iris azul
+      ctx.fillStyle="#1565c0";
+      ctx.beginPath();ctx.arc(hCx+5.5,hCy+2,3.5,0,Math.PI*2);ctx.fill();
+      // Pupila
+      ctx.fillStyle="#0a0a0a";
+      ctx.beginPath();ctx.arc(hCx+6,hCy+2.5,2,0,Math.PI*2);ctx.fill();
+      // Brillo
+      ctx.fillStyle="#fff";
+      ctx.beginPath();ctx.arc(hCx+4.5,hCy+0.8,1.2,0,Math.PI*2);ctx.fill();
+      // Párpado superior (arco)
+      ctx.strokeStyle="#2c1810";ctx.lineWidth=1.2;ctx.lineCap="round";
+      ctx.beginPath();ctx.arc(hCx+5,hCy+2,5,Math.PI*1.1,-0.1);ctx.stroke();
+      // Ceja (SOBRE el ojo, bien separada)
+      ctx.strokeStyle="#2c1810";ctx.lineWidth=2.2;ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(hCx+1,hCy-4);ctx.quadraticCurveTo(hCx+5,hCy-6,hCx+10,hCy-4);ctx.stroke();
+
+      // Nariz pequeña
+      ctx.fillStyle="#e0967a";
+      ctx.beginPath();ctx.arc(hCx+12,hCy+3,2,0,Math.PI*2);ctx.fill();
+
+      // Boca sonrisa (perfil derecho)
+      ctx.strokeStyle="#c0392b";ctx.lineWidth=1.8;ctx.lineCap="round";
+      ctx.beginPath();ctx.arc(hCx+9,hCy+8,4,0.1,Math.PI-0.1);ctx.stroke();
+
+      // Mejilla rosada
+      ctx.fillStyle="rgba(230,110,90,0.2)";
+      ctx.beginPath();ctx.ellipse(hCx+9,hCy+6,5,3,0,0,Math.PI*2);ctx.fill();
+
     } else {
-      // Ojos X
-      ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.lineCap="round";
-      ctx.beginPath();ctx.moveTo(hCx+2,hCy-2);ctx.lineTo(hCx+8,hCy+4);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(hCx+8,hCy-2);ctx.lineTo(hCx+2,hCy+4);ctx.stroke();
+      // Ojos X de muerto
+      ctx.strokeStyle="#333";ctx.lineWidth=2.5;ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(hCx+2,hCy-1);ctx.lineTo(hCx+8,hCy+5);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(hCx+8,hCy-1);ctx.lineTo(hCx+2,hCy+5);ctx.stroke();
+      ctx.strokeStyle="#c0392b";ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.arc(hCx+8,hCy+9,4,Math.PI+0.3,-0.3);ctx.stroke();
     }
   }
   function dibujarFondo(){
@@ -1201,9 +1264,13 @@ function iniciarPong(){
     ctx.fillStyle="#e74c3c";ctx.beginPath();ctx.roundRect(ia.x,ia.y,ia.w,ia.h,5);ctx.fill();
 
     ctx.fillStyle="#fff";ctx.font="bold 22px Arial";ctx.textAlign="center";
-    ctx.fillText(scoreJugador,W/2,H-8);ctx.fillText(scoreIA,W/2,H/2-8);ctx.textAlign="left";
-    ctx.fillStyle="#3498db";ctx.font="12px Arial";ctx.fillText("TÚ",8,H-8);
-    ctx.fillStyle="#e74c3c";ctx.fillText("IA",8,26);
+    // Score IA: encima de la barra de la IA (arriba)
+    ctx.fillText(scoreIA,W/2,ia.y+ia.h+22);
+    // Score jugador: debajo de la barra del jugador (abajo)
+    ctx.fillText(scoreJugador,W/2,jugador.y-10);
+    ctx.textAlign="left";
+    ctx.fillStyle="#3498db";ctx.font="12px Arial";ctx.fillText("TÚ",8,jugador.y-10);
+    ctx.fillStyle="#e74c3c";ctx.fillText("IA",8,ia.y+ia.h+22);
 
     // Indicador de velocidad/rebotes
     if(rebotes>0){
