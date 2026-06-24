@@ -256,7 +256,57 @@ select:focus{outline:none;border-color:#1e4ddb}
 }
 #pantalla-gracias button:hover{background:#1a3fc0}
 
-footer{text-align:center;padding:20px;font-size:14px}
+/* MODAL PRODUCTO */
+.prod-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;
+  z-index:9000;padding:16px;
+}
+.prod-modal.abierto{display:flex}
+.prod-box{
+  background:#fff;border-radius:18px;
+  width:100%;max-width:460px;max-height:90vh;
+  overflow:auto;position:relative;
+  animation:fadeIn .25s ease;
+}
+.prod-box-img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px 18px 0 0;display:block}
+.prod-box-body{padding:20px;display:flex;flex-direction:column;gap:12px}
+.prod-box-cerrar{
+  position:absolute;top:12px;right:12px;
+  background:rgba(0,0,0,.5);color:#fff;border:none;
+  border-radius:50%;width:34px;height:34px;font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;z-index:1;
+}
+.prod-box-cerrar:hover{background:rgba(0,0,0,.8)}
+.prod-box-nombre{font-size:20px;font-weight:800;color:#111;margin:0}
+.prod-box-desc{font-size:14px;color:#666;line-height:1.5;margin:0}
+.prod-box-precio{font-size:18px;font-weight:700;color:#111}
+.tallas-grid{display:flex;gap:8px;flex-wrap:wrap}
+.talla-btn{
+  padding:8px 14px;border:2px solid #ddd;border-radius:8px;
+  background:#fff;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .15s;color:#333;
+}
+.talla-btn:hover{border-color:#1e4ddb;color:#1e4ddb}
+.talla-btn.seleccionada{border-color:#1e4ddb;background:#1e4ddb;color:#fff}
+.prod-box-btn{
+  background:#1e4ddb;color:#fff;border:none;padding:14px;
+  border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;
+  transition:background .15s,transform .1s;width:100%;
+}
+.prod-box-btn:hover{background:#1535c0;transform:scale(1.01)}
+.prod-box-info{
+  display:flex;flex-wrap:wrap;gap:6px;margin:2px 0;
+}
+.prod-box-info span{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#f0f4ff;border:1px solid #dde5ff;border-radius:20px;
+  padding:4px 11px;font-size:11.5px;color:#3a5bd9;font-weight:500;
+}
+.producto{cursor:pointer}
+.producto img{transition:transform .2s}
+.producto:hover img{transform:scale(1.04)}
 footer a{
  margin:0 8px;
  color:#1e4ddb;
@@ -368,6 +418,31 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
  
+<!-- MODAL PRODUCTO -->
+<div class="prod-modal" id="prodModal">
+  <div class="prod-box" id="prodBox">
+    <button class="prod-box-cerrar" onclick="cerrarProducto()">✕</button>
+    <img class="prod-box-img" id="prodImg" src="" alt="">
+    <div class="prod-box-body">
+      <h2 class="prod-box-nombre" id="prodNombre"></h2>
+      <p class="prod-box-desc" id="prodDesc"></p>
+      <div class="prod-box-info" id="prodInfo"></div>
+      <div class="prod-box-precio" id="prodPrecio"></div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#333;margin-bottom:8px">Selecciona tu talla:</div>
+        <div class="tallas-grid">
+          <button class="talla-btn seleccionada" onclick="seleccionarTalla(this)">XS</button>
+          <button class="talla-btn" onclick="seleccionarTalla(this)">S</button>
+          <button class="talla-btn" onclick="seleccionarTalla(this)">M</button>
+          <button class="talla-btn" onclick="seleccionarTalla(this)">L</button>
+          <button class="talla-btn" onclick="seleccionarTalla(this)">XL</button>
+        </div>
+      </div>
+      <button class="prod-box-btn" id="prodBtnAdd" onclick="addDesdeModal()">🛒 Añadir al carrito</button>
+    </div>
+  </div>
+</div>
+
 <footer>
 <a onclick="abrirLegal('terms')">Términos</a>
 <a onclick="abrirLegal('privacy')">Privacidad</a>
@@ -386,105 +461,192 @@ footer a:hover{text-decoration:underline}
 <div id="toast">🛒 ¡Añadido al carrito!</div>
 
 <script>
+const INFO_CAMISETA="100% algodón premium de 180g/m² · Corte unisex regular fit · Costuras reforzadas · Impresión de alta calidad resistente al lavado · Talla true to size";
+
 const productos=[
- {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
- {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park"},
- {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa"},
- {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat"},
- {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto"},
- {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás"},
- {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAA"},
- {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)"},
- {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
- {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh"},
- {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La camiseta perfecta si siempre la tienes"},
- {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐"},
- {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso muy triste)"},
- {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal"},
- {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes"}
+ {n:"Spiderman",p:9,img:"camiseta-spiderman.jpg",d:"Tu sentido arácnido sabe que la quieres comprar",info:INFO_CAMISETA,oferta:"<span class='oferta'><del>15€</del> <b style='color:red'>OFERTA 9€</b></span>"},
+ {n:"South Things",p:17,img:"camiseta-south-things.jpg",d:"Stranger Things x South Park",info:INFO_CAMISETA},
+ {n:"Jhon Pork",p:12,img:"camiseta-pork.jpg",d:"Cógeme el teléfono vaaaaaa",info:INFO_CAMISETA},
+ {n:"Steve Harrington",p:10,img:"camiseta-steve.jpg",d:"Stranger Things vibes Goat",info:INFO_CAMISETA},
+ {n:"Nointiendo",p:14,img:"camiseta-nointiendo.jpg",d:"No entiendo el Nointiendo",info:INFO_CAMISETA},
+ {n:"Dais Asco",p:15,img:"camiseta-asco.jpg",d:"Tremendo facto",info:INFO_CAMISETA},
+ {n:"Drunk",p:14,img:"camiseta-drunk.jpg",d:"En verdad lo estás",info:INFO_CAMISETA},
+ {n:"Alejense Gordas",p:14,img:"camiseta-clash.jpg",d:"TORRE INFERNAL YAAAA",info:INFO_CAMISETA},
+ {n:"Fortachón",p:10,img:"camiseta-fuerte.jpg",d:"Darás pena pero con estilo (laura)",info:INFO_CAMISETA},
+ {n:"Rarete",p:18,img:"camiseta-raro.jpg",d:"Rarete things",info:INFO_CAMISETA,oferta:"<span class='oferta'><del>25€</del> <b style='color:red'>OFERTA 18€</b></span>"},
+ {n:"Pedrito",p:15,img:"camiseta-pedrito.jpg",d:"Vaya presi eh",info:INFO_CAMISETA},
+ {n:"Llevo Razón",p:15,img:"camiseta-razon.jpg",d:"La camiseta perfecta si siempre la tienes",info:INFO_CAMISETA},
+ {n:"Como los dentistas",p:13,img:"camiseta-9de10.jpg",d:"Es verdad, no miento (pero pruebas no pidais)",info:INFO_CAMISETA},
+ {n:"Ollita",p:13,img:"camiseta-olla.jpg",d:"jaja😐",info:INFO_CAMISETA},
+ {n:"(C)Rock",p:10,img:"camiseta-crock.jpg",d:"Rocoso muy triste)",info:INFO_CAMISETA},
+ {n:"Cervecita",p:12,img:"camiseta-cerveza.jpg",d:"Una más nunca viene mal",info:INFO_CAMISETA},
+ {n:"Kill humans",p:13,img:"camiseta-future.jpg",d:"La necesitas y lo sabes",info:INFO_CAMISETA}
 ];
  
-const carrito={};
- 
+// ============================================================
+// SISTEMA DE COOKIES — comportamiento del usuario
+// ============================================================
+function getCookie(n){
+  const v=document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith(n+'='));
+  return v?decodeURIComponent(v.split('=')[1]):null;
+}
+function setCookie(n,v,dias=365){
+  const d=new Date();d.setDate(d.getDate()+dias);
+  document.cookie=n+'='+encodeURIComponent(v)+';expires='+d.toUTCString()+';path=/';
+}
+
+// Cargar historial de interacciones
+let interacciones={};
+try{interacciones=JSON.parse(getCookie('egp_inter')||'{}');}catch(e){}
+
+function registrarInteraccion(nombre,tipo,valor=1){
+  if(!interacciones[nombre]) interacciones[nombre]={vistas:0,clics:0,carrito:0,score:0};
+  interacciones[nombre][tipo]=(interacciones[nombre][tipo]||0)+valor;
+  // Score total ponderado: carrito vale más que un clic, que vale más que una vista
+  interacciones[nombre].score=
+    (interacciones[nombre].carrito||0)*5+
+    (interacciones[nombre].clics||0)*2+
+    (interacciones[nombre].vistas||0)*0.5;
+  setCookie('egp_inter',JSON.stringify(interacciones));
+}
+
+function ordenarProductos(){
+  return [...productos].sort((a,b)=>{
+    const sa=interacciones[a.n]?.score||0;
+    const sb=interacciones[b.n]?.score||0;
+    return sb-sa; // mayor score primero
+  });
+}
+
+// ============================================================
+// CARGAR PRODUCTOS ORDENADOS
+// ============================================================
 function cargar(){
- const c=document.getElementById("listaProductos");
- productos.forEach(pr=>{
-  c.innerHTML+=`
-  <div class="producto">
-   <img src="${pr.img}" alt="${pr.n}">
-   <div class="producto-body">
-    <h3>${pr.n}</h3>
-    <p>${pr.d}</p>
-    <div class="precio">${pr.oferta?pr.oferta:`<span>${pr.p}€</span>`}</div>
-    <div class="acciones">
-     <select><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-     <button onclick="add('${pr.n}',${pr.p},this)">🛒 Añadir al carrito</button>
-    </div>
-   </div>
-  </div>`;
- });
+  const c=document.getElementById("listaProductos");
+  c.innerHTML='';
+  const ordenados=ordenarProductos();
+  ordenados.forEach(pr=>{
+    const div=document.createElement('div');
+    div.className='producto';
+    div.innerHTML=`
+      <img src="${pr.img}" alt="${pr.n}">
+      <div class="producto-body">
+        <h3>${pr.n}</h3>
+        <p>${pr.d}</p>
+        <div class="precio">${pr.oferta?pr.oferta:`<span>${pr.p}€</span>`}</div>
+        <div class="acciones">
+          <button onclick="event.stopPropagation();addRapido('${pr.n}',${pr.p},this)">🛒 Añadir rápido</button>
+        </div>
+      </div>`;
+    // Clic en la tarjeta → abrir modal
+    div.addEventListener('click',()=>abrirProducto(pr));
+    // Registrar vista
+    registrarInteraccion(pr.n,'vistas');
+    c.appendChild(div);
+  });
 }
 cargar();
- 
-function add(n,p,btn){
-  const talla=btn.previousElementSibling.value;
-  const key=n+"_"+talla;
-  if(!carrito[key]) carrito[key]={n,p,talla,c:0};
-  carrito[key].c++;
 
-  // Animación: la imagen vuela al carrito
-  const producto=btn.closest('.producto');
-  const img=producto.querySelector('img');
-  const carritoBtn=document.getElementById('carritoBtn');
+// ============================================================
+// MODAL DE PRODUCTO
+// ============================================================
+let productoActual=null;
 
-  if(img&&carritoBtn){
-    const imgRect=img.getBoundingClientRect();
-    const btnRect=carritoBtn.getBoundingClientRect();
-
-    const clone=document.createElement('img');
-    clone.src=img.src;
-    clone.classList.add('vuela');
-    clone.style.left=imgRect.left+'px';
-    clone.style.top=imgRect.top+'px';
-    document.body.appendChild(clone);
-
-    // Animación con requestAnimationFrame para mayor fluidez
-    const startX=imgRect.left, startY=imgRect.top;
-    const endX=btnRect.left+btnRect.width/2-25;
-    const endY=btnRect.top+btnRect.height/2-25;
-    const startTime=performance.now();
-    const dur=620;
-
-    function animar(now){
-      const t=Math.min((now-startTime)/dur,1);
-      const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; // easeInOut
-      const arco=-160*Math.sin(Math.PI*t); // arco hacia arriba
-      const x=startX+(endX-startX)*ease;
-      const y=startY+(endY-startY)*ease+arco;
-      const escala=1-t*0.85;
-      clone.style.left=x+'px';
-      clone.style.top=y+'px';
-      clone.style.transform=`scale(${escala}) rotate(${t*30}deg)`;
-      clone.style.opacity=t>0.7?(1-t)*3.3:1;
-      if(t<1){requestAnimationFrame(animar);}
-      else{
-        clone.remove();
-        // Animación pop en el badge
-        const badge=document.getElementById('badge');
-        badge.classList.remove('badge-pop');
-        void badge.offsetWidth;
-        badge.classList.add('badge-pop');
-      }
-    }
-    requestAnimationFrame(animar);
+function abrirProducto(pr){
+  productoActual=pr;
+  registrarInteraccion(pr.n,'clics');
+  document.getElementById('prodImg').src=pr.img;
+  document.getElementById('prodImg').alt=pr.n;
+  document.getElementById('prodNombre').textContent=pr.n;
+  document.getElementById('prodDesc').textContent=pr.d;
+  document.getElementById('prodPrecio').innerHTML=pr.oferta?pr.oferta:`<b>${pr.p}€</b>`;
+  // Info de material como etiquetas
+  if(pr.info){
+    const etiquetas=pr.info.split('·').map(e=>`<span>${e.trim()}</span>`).join('');
+    document.getElementById('prodInfo').innerHTML=etiquetas;
+  } else {
+    document.getElementById('prodInfo').innerHTML='';
   }
+  // Reset talla seleccionada a XS
+  document.querySelectorAll('.talla-btn').forEach(b=>b.classList.remove('seleccionada'));
+  document.querySelector('.talla-btn').classList.add('seleccionada');
+  document.getElementById('prodModal').classList.add('abierto');
+}
 
-  // Toast
-  mostrarToast('🛒 '+n+' ('+talla+') añadido');
+function cerrarProducto(){
+  document.getElementById('prodModal').classList.remove('abierto');
+  productoActual=null;
+}
 
+// Cerrar al clicar fuera
+document.getElementById('prodModal').addEventListener('click',function(e){
+  if(e.target===this) cerrarProducto();
+});
+
+function seleccionarTalla(btn){
+  document.querySelectorAll('.talla-btn').forEach(b=>b.classList.remove('seleccionada'));
+  btn.classList.add('seleccionada');
+}
+
+function addDesdeModal(){
+  if(!productoActual) return;
+  const talla=document.querySelector('.talla-btn.seleccionada')?.textContent||'M';
+  const key=productoActual.n+'_'+talla;
+  if(!carrito[key]) carrito[key]={n:productoActual.n,p:productoActual.p,talla,c:0};
+  carrito[key].c++;
+  registrarInteraccion(productoActual.n,'carrito');
+  // Animación desde la imagen del modal
+  const img=document.getElementById('prodImg');
+  animarVueloAlCarrito(img);
+  mostrarToast('🛒 '+productoActual.n+' ('+talla+') añadido');
+  actualizarTotales();
+  cerrarProducto();
+}
+
+// Añadir rápido desde la tarjeta (sin abrir modal)
+function addRapido(n,p,btn){
+  registrarInteraccion(n,'carrito');
+  const key=n+'_M'; // talla M por defecto en añadir rápido
+  if(!carrito[key]) carrito[key]={n,p,talla:'M',c:0};
+  carrito[key].c++;
+  animarVueloAlCarrito(btn.closest('.producto').querySelector('img'));
+  mostrarToast('🛒 '+n+' (M) añadido — abre la camiseta para cambiar talla');
   actualizarTotales();
 }
 
+function animarVueloAlCarrito(img){
+  if(!img) return;
+  const carritoBtn=document.getElementById('carritoBtn');
+  const imgRect=img.getBoundingClientRect();
+  const btnRect=carritoBtn.getBoundingClientRect();
+  const clone=document.createElement('img');
+  clone.src=img.src;clone.classList.add('vuela');
+  clone.style.left=imgRect.left+'px';clone.style.top=imgRect.top+'px';
+  document.body.appendChild(clone);
+  const startX=imgRect.left,startY=imgRect.top;
+  const endX=btnRect.left+btnRect.width/2-25;
+  const endY=btnRect.top+btnRect.height/2-25;
+  const startTime=performance.now();const dur=620;
+  function animar(now){
+    const t=Math.min((now-startTime)/dur,1);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const arco=-160*Math.sin(Math.PI*t);
+    const x=startX+(endX-startX)*ease;
+    const y=startY+(endY-startY)*ease+arco;
+    const escala=1-t*0.85;
+    clone.style.left=x+'px';clone.style.top=y+'px';
+    clone.style.transform=`scale(${escala}) rotate(${t*30}deg)`;
+    clone.style.opacity=t>0.7?(1-t)*3.3:1;
+    if(t<1){requestAnimationFrame(animar);}
+    else{
+      clone.remove();
+      const badge=document.getElementById('badge');
+      badge.classList.remove('badge-pop');void badge.offsetWidth;badge.classList.add('badge-pop');
+    }
+  }
+  requestAnimationFrame(animar);
+}
+ 
 let toastTimer=null;
 function mostrarToast(msg){
   const t=document.getElementById('toast');
