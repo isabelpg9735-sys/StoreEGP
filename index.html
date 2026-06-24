@@ -493,6 +493,7 @@ function setCookie(n,v,dias=365){
   document.cookie=n+'='+encodeURIComponent(v)+';expires='+d.toUTCString()+';path=/';
 }
 
+  
 // Cargar historial de interacciones
 let interacciones={};
 try{interacciones=JSON.parse(getCookie('egp_inter')||'{}');}catch(e){}
